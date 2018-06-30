@@ -35,4 +35,4 @@ UploadResourceGroup("TestGroup")
 -- В этот момент у виджетов слоя один раз вызывается метод AcceptMessage("Init")
 -- и начинают вызываться методы Draw() и Update() в каждом кадре.
 --
-Screen:pushLayer("TestLayer")
+Screen:pushLayer("MainLayer")

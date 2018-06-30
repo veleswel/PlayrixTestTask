@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <GUI>
-	<Layer name="TestLayer">
+	<Layer name="MainLayer">
 		<Controls>
-			<TestWidget name="TestWidget"/>
+			<MainSceneWidget name="MainSceneWidget"/>
 		</Controls>
 	</Layer>
 </GUI>
