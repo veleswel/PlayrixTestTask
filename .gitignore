@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+*.log
+*.tlog
+projects/VS2017/.vs/Test/v15/ipch/93c6f80e205a6724.ipch
+projects/VS2017/.vs/Test/v15/Browse.VC.opendb
+projects/VS2017/.vs/Test/v15/Browse.VC.db
+projects/VS2017/.vs/Test/v15/.suo
+obj/Debug/resource.res
+bin/Testd.pdb

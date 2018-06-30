@@ -63,7 +63,7 @@
     <ClCompile>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\libs\boost;$(ProjectDir)..\..\libs\ogg\include;$(ProjectDir)..\..\libs\vorbis\include;$(ProjectDir)..\..\libs\theora\include;$(ProjectDir)..\..\libs\zlib\include;$(ProjectDir)..\..\libs\luabind\include;$(ProjectDir)..\..\libs\lua\include;$(ProjectDir)..\..\libs\jpeg\include;$(ProjectDir)..\..\libs\png\include;$(ProjectDir)..\..\libs\webp\include;$(ProjectDir)..\..\libs\freetype\include;$(ProjectDir)..\..\libs\angle\include;$(ProjectDir)..\..\libs\pugixml\include;$(ProjectDir)..\..\libs\OpenAL\include;$(ProjectDir)..\..\engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\libs\boost;$(ProjectDir)..\..\libs\boost;$(ProjectDir)..\..\..\libs\ogg\include;$(ProjectDir)..\..\libs\ogg\include;$(ProjectDir)..\..\..\libs\vorbis\include;$(ProjectDir)..\..\libs\vorbis\include;$(ProjectDir)..\..\..\libs\theora\include;$(ProjectDir)..\..\libs\theora\include;$(ProjectDir)..\..\..\libs\zlib\include;$(ProjectDir)..\..\libs\zlib\include;$(ProjectDir)..\..\..\libs\luabind\include;$(ProjectDir)..\..\libs\luabind\include;$(ProjectDir)..\..\..\libs\lua\include;$(ProjectDir)..\..\libs\lua\include;$(ProjectDir)..\..\..\libs\jpeg\include;$(ProjectDir)..\..\libs\jpeg\include;$(ProjectDir)..\..\..\libs\png\include;$(ProjectDir)..\..\libs\png\include;$(ProjectDir)..\..\..\libs\webp\include;$(ProjectDir)..\..\libs\webp\include;$(ProjectDir)..\..\..\libs\freetype\include;$(ProjectDir)..\..\libs\freetype\include;$(ProjectDir)..\..\..\libs\angle\include;$(ProjectDir)..\..\libs\angle\include;$(ProjectDir)..\..\..\libs\pugixml\include;$(ProjectDir)..\..\libs\pugixml\include;$(ProjectDir)..\..\..\libs\OpenAL\include;$(ProjectDir)..\..\libs\OpenAL\include;$(ProjectDir)..\..\..\engine\include;$(ProjectDir)..\..\engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -79,7 +79,7 @@
     <Link>
       <AdditionalDependencies>Version.lib;comctl32.lib;psapi.lib;shell32.lib;advapi32.lib;user32.lib;gdi32.lib;comdlg32.lib;luad.lib;luabindd.lib;pngd.lib;jpegd.lib;oggd.lib;vorbisd.lib;theorad.lib;zlibd.lib;engined.lib;freetyped.lib;libwebp.lib;pugixmld.lib;OpenAL32.lib;libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\libs\boost\stage\lib;$(ProjectDir)..\..\libs\zlib\lib\vc14.1;$(ProjectDir)..\..\libs\jpeg\lib\vc14.1;$(ProjectDir)..\..\libs\png\lib\vc14.1;$(ProjectDir)..\..\libs\lua\lib\vc14.1;$(ProjectDir)..\..\libs\luabind\lib\vc14.1;$(ProjectDir)..\..\libs\ogg\lib\vc14.1;$(ProjectDir)..\..\libs\vorbis\lib\vc14.1;$(ProjectDir)..\..\libs\theora\lib\vc14.1;$(ProjectDir)..\..\libs\freetype\lib\vc14.1;$(ProjectDir)..\..\libs\openal\libs\Win32;$(ProjectDir)..\..\libs\libwebp\lib\vc14.1;$(ProjectDir)..\..\libs\pugixml\lib\vc14.1;$(ProjectDir)..\..\libs\angle\lib;$(ProjectDir)..\..\engine\bin\vc2017;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\libs\boost\stage\lib;$(ProjectDir)..\..\libs\boost\stage\lib;$(ProjectDir)..\..\..\libs\zlib\lib\vc14.1;$(ProjectDir)..\..\libs\zlib\lib\vc14.1;$(ProjectDir)..\..\..\libs\jpeg\lib\vc14.1;$(ProjectDir)..\..\libs\jpeg\lib\vc14.1;$(ProjectDir)..\..\..\libs\png\lib\vc14.1;$(ProjectDir)..\..\libs\png\lib\vc14.1;$(ProjectDir)..\..\..\libs\lua\lib\vc14.1;$(ProjectDir)..\..\libs\lua\lib\vc14.1;$(ProjectDir)..\..\..\libs\luabind\lib\vc14.1;$(ProjectDir)..\..\libs\luabind\lib\vc14.1;$(ProjectDir)..\..\..\libs\ogg\lib\vc14.1;$(ProjectDir)..\..\libs\ogg\lib\vc14.1;$(ProjectDir)..\..\..\libs\vorbis\lib\vc14.1;$(ProjectDir)..\..\libs\vorbis\lib\vc14.1;$(ProjectDir)..\..\..\libs\theora\lib\vc14.1;$(ProjectDir)..\..\libs\theora\lib\vc14.1;$(ProjectDir)..\..\..\libs\freetype\lib\vc14.1;$(ProjectDir)..\..\libs\freetype\lib\vc14.1;$(ProjectDir)..\..\..\libs\openal\libs\Win32;$(ProjectDir)..\..\libs\openal\libs\Win32;$(ProjectDir)..\..\..\libs\libwebp\lib\vc14.1;$(ProjectDir)..\..\libs\libwebp\lib\vc14.1;$(ProjectDir)..\..\..\libs\pugixml\lib\vc14.1;$(ProjectDir)..\..\libs\pugixml\lib\vc14.1;$(ProjectDir)..\..\..\libs\angle\lib;$(ProjectDir)..\..\libs\angle\lib;$(ProjectDir)..\..\..\engine\bin\vc2017;$(ProjectDir)..\..\engine\bin\vc2017;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -94,7 +94,7 @@
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\libs\boost;$(ProjectDir)..\..\libs\ogg\include;$(ProjectDir)..\..\libs\vorbis\include;$(ProjectDir)..\..\libs\theora\include;$(ProjectDir)..\..\libs\zlib\include;$(ProjectDir)..\..\libs\luabind\include;$(ProjectDir)..\..\libs\lua\include;$(ProjectDir)..\..\libs\jpeg\include;$(ProjectDir)..\..\libs\png\include;$(ProjectDir)..\..\libs\webp\include;$(ProjectDir)..\..\libs\freetype\include;$(ProjectDir)..\..\libs\angle\include;$(ProjectDir)..\..\libs\pugixml\include;$(ProjectDir)..\..\libs\OpenAL\include;$(ProjectDir)..\..\engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\libs\boost;$(ProjectDir)..\..\libs\boost;$(ProjectDir)..\..\..\libs\ogg\include;$(ProjectDir)..\..\libs\ogg\include;$(ProjectDir)..\..\..\libs\vorbis\include;$(ProjectDir)..\..\libs\vorbis\include;$(ProjectDir)..\..\..\libs\theora\include;$(ProjectDir)..\..\libs\theora\include;$(ProjectDir)..\..\..\libs\zlib\include;$(ProjectDir)..\..\libs\zlib\include;$(ProjectDir)..\..\..\libs\luabind\include;$(ProjectDir)..\..\libs\luabind\include;$(ProjectDir)..\..\..\libs\lua\include;$(ProjectDir)..\..\libs\lua\include;$(ProjectDir)..\..\..\libs\jpeg\include;$(ProjectDir)..\..\libs\jpeg\include;$(ProjectDir)..\..\..\libs\png\include;$(ProjectDir)..\..\libs\png\include;$(ProjectDir)..\..\..\libs\webp\include;$(ProjectDir)..\..\libs\webp\include;$(ProjectDir)..\..\..\libs\freetype\include;$(ProjectDir)..\..\libs\freetype\include;$(ProjectDir)..\..\..\libs\angle\include;$(ProjectDir)..\..\libs\angle\include;$(ProjectDir)..\..\..\libs\pugixml\include;$(ProjectDir)..\..\libs\pugixml\include;$(ProjectDir)..\..\..\libs\OpenAL\include;$(ProjectDir)..\..\libs\OpenAL\include;$(ProjectDir)..\..\..\engine\include;$(ProjectDir)..\..\engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -106,7 +106,7 @@
     <Link>
       <AdditionalDependencies>Version.lib;psapi.lib;shell32.lib;advapi32.lib;user32.lib;gdi32.lib;comdlg32.lib;comctl32.lib;lua.lib;luabind.lib;png.lib;jpeg.lib;ogg.lib;vorbis.lib;theora.lib;zlib.lib;engine.lib;freetype.lib;libwebp.lib;pugixml.lib;OpenAL32.lib;libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\libs\boost\stage\lib;$(ProjectDir)..\..\libs\zlib\lib\vc14.1;$(ProjectDir)..\..\libs\jpeg\lib\vc14.1;$(ProjectDir)..\..\libs\png\lib\vc14.1;$(ProjectDir)..\..\libs\lua\lib\vc14.1;$(ProjectDir)..\..\libs\luabind\lib\vc14.1;$(ProjectDir)..\..\libs\ogg\lib\vc14.1;$(ProjectDir)..\..\libs\vorbis\lib\vc14.1;$(ProjectDir)..\..\libs\theora\lib\vc14.1;$(ProjectDir)..\..\libs\freetype\lib\vc14.1;$(ProjectDir)..\..\libs\openal\libs\Win32;$(ProjectDir)..\..\libs\libwebp\lib\vc14.1;$(ProjectDir)..\..\libs\pugixml\lib\vc14.1;$(ProjectDir)..\..\libs\angle\lib;$(ProjectDir)..\..\engine\bin\vc2017;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\libs\boost\stage\lib;$(ProjectDir)..\..\libs\boost\stage\lib;$(ProjectDir)..\..\..\libs\zlib\lib\vc14.1;$(ProjectDir)..\..\libs\zlib\lib\vc14.1;$(ProjectDir)..\..\..\libs\jpeg\lib\vc14.1;$(ProjectDir)..\..\libs\jpeg\lib\vc14.1;$(ProjectDir)..\..\..\libs\png\lib\vc14.1;$(ProjectDir)..\..\libs\png\lib\vc14.1;$(ProjectDir)..\..\..\libs\lua\lib\vc14.1;$(ProjectDir)..\..\libs\lua\lib\vc14.1;$(ProjectDir)..\..\..\libs\luabind\lib\vc14.1;$(ProjectDir)..\..\libs\luabind\lib\vc14.1;$(ProjectDir)..\..\..\libs\ogg\lib\vc14.1;$(ProjectDir)..\..\libs\ogg\lib\vc14.1;$(ProjectDir)..\..\..\libs\vorbis\lib\vc14.1;$(ProjectDir)..\..\libs\vorbis\lib\vc14.1;$(ProjectDir)..\..\..\libs\theora\lib\vc14.1;$(ProjectDir)..\..\libs\theora\lib\vc14.1;$(ProjectDir)..\..\..\libs\freetype\lib\vc14.1;$(ProjectDir)..\..\libs\freetype\lib\vc14.1;$(ProjectDir)..\..\..\libs\openal\libs\Win32;$(ProjectDir)..\..\libs\openal\libs\Win32;$(ProjectDir)..\..\..\libs\libwebp\lib\vc14.1;$(ProjectDir)..\..\libs\libwebp\lib\vc14.1;$(ProjectDir)..\..\..\libs\pugixml\lib\vc14.1;$(ProjectDir)..\..\libs\pugixml\lib\vc14.1;$(ProjectDir)..\..\..\libs\angle\lib;$(ProjectDir)..\..\libs\angle\lib;$(ProjectDir)..\..\..\engine\bin\vc2017;$(ProjectDir)..\..\engine\bin\vc2017;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -118,7 +118,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Bubble.cpp" />
+    <ClCompile Include="..\..\src\Cannon.cpp" />
+    <ClCompile Include="..\..\src\GameObject.cpp" />
     <ClCompile Include="..\..\src\Main.cpp" />
+    <ClCompile Include="..\..\src\MainSceneWidget.cpp" />
     <ClCompile Include="..\..\src\TestAppDelegate.cpp" />
     <ClCompile Include="..\..\src\TestWidget.cpp" />
     <ClCompile Include="..\..\src\stdafx.cpp">
@@ -127,6 +131,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Bubble.hpp" />
+    <ClInclude Include="..\..\src\Cannon.hpp" />
+    <ClInclude Include="..\..\src\GameObject.hpp" />
+    <ClInclude Include="..\..\src\MainSceneWidget.hpp" />
     <ClInclude Include="..\..\src\TestAppDelegate.h" />
     <ClInclude Include="..\..\src\TestWidget.h" />
     <ClInclude Include="..\..\src\stdafx.h" />
