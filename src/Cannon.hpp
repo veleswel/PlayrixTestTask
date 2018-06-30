@@ -11,17 +11,11 @@
 class Cannon: public GameObject
 {
 public:
-	Cannon();
+	static Cannon* create();
 	virtual ~Cannon();
-	
-	void Draw();
-	void Update(float dt);
-	
+
 protected:
-	void Init();
-	
-protected:
-	Render::Texture* _texture;
+	static const std::string CannonTextureName;
 };
 
 typedef boost::intrusive_ptr<Cannon> CannonPtr;

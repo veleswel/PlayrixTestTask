@@ -146,6 +146,7 @@
     <Xml Include="..\..\bin\base_p\Resources.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\bin\base_p\gui.lua" />
     <None Include="..\..\bin\base_p\start.lua" />
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@
 //
 
 #pragma once
+#include "Cannon.hpp"
 
 class MainSceneWidget: public GUI::Widget
 {
@@ -32,6 +33,8 @@ protected:
 	void UpdateBubbles(float dt);
 	void UpdateProjectiles(float dt);
 	
+	void UpdateCannon(float dt);
+
 protected:
 	static const float Speed;
 	
@@ -40,7 +43,7 @@ protected:
 	
 	float _timer;
 
-	Render::Texture* _cannon;
+	CannonPtr _cannon;
 	
 	Render::Texture* _projectile;
 	FPoint _projPosition;

@@ -81,6 +81,9 @@
     <None Include="..\..\bin\base_p\start.lua">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="..\..\bin\base_p\gui.lua">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

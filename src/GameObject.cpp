@@ -8,12 +8,12 @@
 #include "stdafx.h"
 #include "GameObject.hpp"
 
-GameObject::GameObject(const std::string& textureName)
+GameObject::GameObject()
 	: _texture(nullptr)
 	, _angle(0.f)
 	, _scale(1.f)
 	, _position(FPoint(0.f, 0.f))
-	, _anchorPoint(FPoint(0.f, 0.f))
+	, _anchorPoint(FPoint(.5f, .5f))
 	, _anchorPointTransform(FPoint(0.f, 0.f))
 {
 	
@@ -27,16 +27,23 @@ GameObject::~GameObject()
 void GameObject::Init(const std::string& textureName)
 {
 	_texture = Core::resourceManager.Get<Render::Texture>(textureName);
+
+	IRect textureRect = _texture->getBitmapRect();
+
+	_anchorPointTransform.x = -textureRect.Width() * _anchorPoint.x;
+	_anchorPointTransform.y = -textureRect.Height() * _anchorPoint.y;
 }
 
 void GameObject::Draw()
 {
 	Render::device.PushMatrix();
+
 	Render::device.MatrixScale(_scale);
+	Render::device.MatrixTranslate(_position + _anchorPointTransform);
 	Render::device.MatrixRotate(math::Vector3(0, 0, 1), _angle);
-	Render::device.MatrixTranslate(GetPosition());
-	Render::device.MatrixTranslate(_anchorPointTransform);
+
 	_texture->Draw();
+
 	Render::device.PopMatrix();
 }
 

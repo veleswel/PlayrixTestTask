@@ -25,7 +25,10 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 
 void MainSceneWidget::Init()
 {
-	_cannon = Core::resourceManager.Get<Render::Texture>("Circle");
+	_cannon = Cannon::create();
+	_cannon->SetPosition(_startPosition);
+	_cannon->SetAnchorPoint(FPoint(.5f, 0.f));
+	_cannon->SetRotationAngle(0.f);
 }
 
 void MainSceneWidget::Draw()
@@ -41,13 +44,7 @@ void MainSceneWidget::Draw()
 	Render::EndColor();
 	Render::device.SetTexturing(true);
 	
-	Render::device.PushMatrix();
-	auto cannonRect = _cannon->getBitmapRect();
-	Render::device.MatrixTranslate(_startPosition);
-	Render::device.MatrixScale(.5f);
-	Render::device.MatrixTranslate(-cannonRect.Width() / 2, -cannonRect.Height() / 2, 0.f);
 	_cannon->Draw();
-	Render::device.PopMatrix();
 	
 	if (_isProjectileLaunched && _projectile)
 	{
@@ -75,6 +72,10 @@ void MainSceneWidget::Draw()
 
 void MainSceneWidget::Update(float dt)
 {
+	UpdateCannon(dt);
+	UpdateBubbles(dt);
+	UpdateProjectiles(dt);
+
 	if (_isProjectileLaunched)
 	{
 		_projPosition.x += math::cos(_angle) * (Speed * dt * 10);
@@ -100,6 +101,25 @@ void MainSceneWidget::Update(float dt)
 bool MainSceneWidget::MouseDown(const IPoint &mouse_pos)
 {
 	LaunchProjectile(mouse_pos);
+
+	float angle = _cannon->GetRotationAngle();
+
+	if (Core::mainInput.GetMouseRightButton())
+	{
+		angle -= 15;
+	}
+	else
+	{
+		angle += 15;
+	}
+
+	while (angle > 360)
+	{
+		angle -= 360;
+	}
+
+	_cannon->SetRotationAngle(angle);
+
 	return false;
 }
 
@@ -156,4 +176,30 @@ void MainSceneWidget::DestroyProjectile()
 	_isProjectileLaunched = false;
 	_projectile = nullptr;
 //	_angle = 0.f;
+}
+
+void MainSceneWidget::UpdateBubbles(float dt)
+{
+}
+
+void MainSceneWidget::UpdateProjectiles(float dt)
+{
+}
+
+void MainSceneWidget::UpdateCannon(float dt)
+{
+	_cannon->Update(dt);
+
+	FPoint mousePosition = static_cast<FPoint>(Core::mainInput.GetMousePos());
+
+	float slope = (mousePosition.y - _startPosition.y) / (mousePosition.x - _startPosition.x);
+	float angle = atan(slope);
+	if (angle < 0)
+	{
+		angle += math::PI;
+	}
+
+	angle = (angle * 180) / math::PI;
+
+	//_cannon->SetRotationAngle(angle);
 }

@@ -10,10 +10,10 @@
 class GameObject: public RefCounter
 {
 public:
-	GameObject(const std::string& textureName);
 	virtual ~GameObject();
 	
 protected:
+	GameObject();
 	GameObject(const GameObject& gameObject) = delete;
 	GameObject& operator=(const GameObject& gameObject) = delete;
 	
