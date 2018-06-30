@@ -27,8 +27,8 @@ void MainSceneWidget::Init()
 {
 	_cannon = Cannon::create();
 	_cannon->SetPosition(_startPosition);
-	_cannon->SetAnchorPoint(FPoint(.5f, 0.f));
-	_cannon->SetRotationAngle(0.f);
+	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
+	_cannon->SetRotationAngle(90.f);
 }
 
 void MainSceneWidget::Draw()
@@ -64,10 +64,32 @@ void MainSceneWidget::Draw()
 	
 	_effCont.Draw();
 	
+	FPoint mousePosition = static_cast<FPoint>(mouse_pos);
+
+	if (mousePosition.x == 0.f && mousePosition.y == 0)
+	{
+		return;
+	}
+
+	float slope = (mousePosition.y - _startPosition.y) / (mousePosition.x - _startPosition.x);
+	float angle = atan(slope);
+	if (angle < 0)
+	{
+		angle += math::PI;
+	}
+
+	angle = (angle * 180) / math::PI;
+
+	_cannon->SetRotationAngle(angle);
+
+	float theirAngle = _startPosition.GetDirectedAngle(mousePosition);
+	float theirAngleNorm = _startPosition.GetDirectedAngleNormalize(mousePosition);
+
 	Render::BindFont("arial");
-	Render::PrintString(924 + 100 / 2, 50, utils::lexical_cast(mouse_pos.x) + ", " + utils::lexical_cast(mouse_pos.y), 1.f, CenterAlign);
-	
-	Render::PrintString(924 + 100 / 2, 35, utils::lexical_cast(_angle), 1.f, CenterAlign);
+	Render::PrintString(924 + 100 / 2, 100, "my angle: " + utils::lexical_cast(angle), 1.f, CenterAlign);
+	Render::PrintString(924 + 100 / 2, 75, "their angle: " + utils::lexical_cast(theirAngle), 1.f, CenterAlign);
+	Render::PrintString(924 + 100 / 2, 50, "their angle normalized: " + utils::lexical_cast(theirAngleNorm), 1.f, CenterAlign);
+	Render::PrintString(924 + 100 / 2, 25, utils::lexical_cast(mouse_pos.x) + ", " + utils::lexical_cast(mouse_pos.y), 1.f, CenterAlign);
 }
 
 void MainSceneWidget::Update(float dt)
@@ -101,25 +123,6 @@ void MainSceneWidget::Update(float dt)
 bool MainSceneWidget::MouseDown(const IPoint &mouse_pos)
 {
 	LaunchProjectile(mouse_pos);
-
-	float angle = _cannon->GetRotationAngle();
-
-	if (Core::mainInput.GetMouseRightButton())
-	{
-		angle -= 15;
-	}
-	else
-	{
-		angle += 15;
-	}
-
-	while (angle > 360)
-	{
-		angle -= 360;
-	}
-
-	_cannon->SetRotationAngle(angle);
-
 	return false;
 }
 
@@ -180,10 +183,12 @@ void MainSceneWidget::DestroyProjectile()
 
 void MainSceneWidget::UpdateBubbles(float dt)
 {
+
 }
 
 void MainSceneWidget::UpdateProjectiles(float dt)
 {
+
 }
 
 void MainSceneWidget::UpdateCannon(float dt)
@@ -191,6 +196,11 @@ void MainSceneWidget::UpdateCannon(float dt)
 	_cannon->Update(dt);
 
 	FPoint mousePosition = static_cast<FPoint>(Core::mainInput.GetMousePos());
+
+	if (mousePosition.x == 0.f && mousePosition.y == 0)
+	{
+		return;
+	}
 
 	float slope = (mousePosition.y - _startPosition.y) / (mousePosition.x - _startPosition.x);
 	float angle = atan(slope);
@@ -201,5 +211,5 @@ void MainSceneWidget::UpdateCannon(float dt)
 
 	angle = (angle * 180) / math::PI;
 
-	//_cannon->SetRotationAngle(angle);
+	_cannon->SetRotationAngle(angle);
 }
