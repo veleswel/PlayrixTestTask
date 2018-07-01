@@ -11,8 +11,21 @@
 class Projectile: public GameObject
 {
 public:
-	Projectile();
+	static Projectile* Create();
 	virtual ~Projectile();
+
+protected:
+	Projectile();
+
+public:
+	void SetDirectionAngle(float angle);
+	float GetDirectionAngle() const;
+
+protected:
+	static const std::string ProjectileTextureName;
+
+protected:
+	float _directionAngle;
 };
 
 typedef boost::intrusive_ptr<Projectile> ProjectilePtr;

@@ -14,10 +14,6 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 	: Widget(name)
 	, _timer(0.f)
 	, _cannon(nullptr)
-	, _projectile(nullptr)
-	, _projPosition(FPoint(0.f, 0.f))
-	, _angle(0.f)
-	, _isProjectileLaunched(false)
 	, _startPosition(FPoint(Render::device.Width() / 2, 0.f))
 {
 	Init();
@@ -44,17 +40,12 @@ void MainSceneWidget::Draw()
 	Render::EndColor();
 	Render::device.SetTexturing(true);
 	
-	_cannon->Draw();
-	
-	if (_isProjectileLaunched && _projectile)
+	for (const auto& projectilePtr : _launchedProjectiles)
 	{
-		Render::device.PushMatrix();
-		Render::device.MatrixTranslate(_projPosition);
-		auto projRect = _projectile->getBitmapRect();
-		Render::device.MatrixTranslate(-projRect.Width() / 2, -projRect.Height() / 2, 0.f);
-		_projectile->Draw();
-		Render::device.PopMatrix();
+		projectilePtr->Draw();
 	}
+
+	_cannon->Draw();
 	
 	Render::device.SetTexturing(false);
 	Render::BeginColor(Color(255, 128, 0, 255));
@@ -64,31 +55,7 @@ void MainSceneWidget::Draw()
 	
 	_effCont.Draw();
 	
-	FPoint mousePosition = static_cast<FPoint>(mouse_pos);
-
-	if (mousePosition.x == 0.f && mousePosition.y == 0)
-	{
-		return;
-	}
-
-	float slope = (mousePosition.y - _startPosition.y) / (mousePosition.x - _startPosition.x);
-	float angle = atan(slope);
-	if (angle < 0)
-	{
-		angle += math::PI;
-	}
-
-	angle = (angle * 180) / math::PI;
-
-	_cannon->SetRotationAngle(angle);
-
-	float theirAngle = _startPosition.GetDirectedAngle(mousePosition);
-	float theirAngleNorm = _startPosition.GetDirectedAngleNormalize(mousePosition);
-
 	Render::BindFont("arial");
-	Render::PrintString(924 + 100 / 2, 100, "my angle: " + utils::lexical_cast(angle), 1.f, CenterAlign);
-	Render::PrintString(924 + 100 / 2, 75, "their angle: " + utils::lexical_cast(theirAngle), 1.f, CenterAlign);
-	Render::PrintString(924 + 100 / 2, 50, "their angle normalized: " + utils::lexical_cast(theirAngleNorm), 1.f, CenterAlign);
 	Render::PrintString(924 + 100 / 2, 25, utils::lexical_cast(mouse_pos.x) + ", " + utils::lexical_cast(mouse_pos.y), 1.f, CenterAlign);
 }
 
@@ -97,18 +64,6 @@ void MainSceneWidget::Update(float dt)
 	UpdateCannon(dt);
 	UpdateBubbles(dt);
 	UpdateProjectiles(dt);
-
-	if (_isProjectileLaunched)
-	{
-		_projPosition.x += math::cos(_angle) * (Speed * dt * 10);
-		_projPosition.y += math::sin(_angle) * (Speed * dt * 10);
-		
-		FRect screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height());
-		if (!screenRect.Contains(_projPosition))
-		{
-			DestroyProjectile();
-		}
-	}
 	
 	_effCont.Update(dt);
 	
@@ -163,22 +118,36 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 {
 	FPoint mousePosition((float)position.x, (float)position.y);
 	
-	float slope = (mousePosition.y - _startPosition.y) / (mousePosition.x - _startPosition.x);
-	_angle = atan(slope);
-	if (_angle < 0)
-	{
-		_angle += math::PI;
-	}
-	_projPosition = _startPosition;
-	_projectile = Core::resourceManager.Get<Render::Texture>("Star");
-	_isProjectileLaunched = true;
+	float directionAngle = math::atan(mousePosition.y - _startPosition.y, mousePosition.x - _startPosition.x);
+
+	ProjectilePtr projectilePtr = Projectile::Create();
+	
+	projectilePtr->SetPosition(CalculateProjectileStartPosition());
+	projectilePtr->SetDirectionAngle(directionAngle);
+
+	_launchedProjectiles.push_back(projectilePtr);
 }
 
-void MainSceneWidget::DestroyProjectile()
+FPoint MainSceneWidget::CalculateProjectileStartPosition() const
 {
-	_isProjectileLaunched = false;
-	_projectile = nullptr;
-//	_angle = 0.f;
+	float angle = (math::PI * _cannon->GetRotationAngle()) / 180;
+	float cannonTextHeight = _cannon->GetTextureRect().Height();
+
+	FPoint position(
+		_startPosition.x + cannonTextHeight * math::cos(angle), 
+		_startPosition.y + cannonTextHeight * math::sin(angle)
+	);
+
+	return position;
+}
+
+void MainSceneWidget::DestroyProjectile(const ProjectilePtr& projectile)
+{
+	const auto iter = std::find(_launchedProjectiles.begin(), _launchedProjectiles.end(), projectile);
+	if (iter != _launchedProjectiles.end())
+	{
+		_launchedProjectiles.erase(iter);
+	}
 }
 
 void MainSceneWidget::UpdateBubbles(float dt)
@@ -188,7 +157,33 @@ void MainSceneWidget::UpdateBubbles(float dt)
 
 void MainSceneWidget::UpdateProjectiles(float dt)
 {
+	FRect screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height());
 
+	std::vector<ProjectilePtr> projectilesToDestroy;
+
+	for (const auto& projectilePtr : _launchedProjectiles)
+	{
+		projectilePtr->Update(dt);
+
+		FPoint position = projectilePtr->GetPosition();
+		float directionAngle = projectilePtr->GetDirectionAngle();
+
+		position.x += math::cos(directionAngle) * (Speed * dt * 10);
+		position.y += math::sin(directionAngle) * (Speed * dt * 10);
+
+		projectilePtr->SetPosition(position);
+
+		if (!screenRect.Contains(position))
+		{
+			projectilesToDestroy.push_back(projectilePtr);
+		}
+	}
+
+	for (auto& projectilePtr : projectilesToDestroy)
+	{
+		DestroyProjectile(projectilePtr);
+		projectilePtr = nullptr;
+	}
 }
 
 void MainSceneWidget::UpdateCannon(float dt)
@@ -202,14 +197,7 @@ void MainSceneWidget::UpdateCannon(float dt)
 		return;
 	}
 
-	float slope = (mousePosition.y - _startPosition.y) / (mousePosition.x - _startPosition.x);
-	float angle = atan(slope);
-	if (angle < 0)
-	{
-		angle += math::PI;
-	}
-
-	angle = (angle * 180) / math::PI;
+	float angle = (math::atan(mousePosition.y - _startPosition.y, mousePosition.x -_startPosition.x) * 180.0f) / math::PI;
 
 	_cannon->SetRotationAngle(angle);
 }

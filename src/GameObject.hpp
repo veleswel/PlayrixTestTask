@@ -34,6 +34,8 @@ public:
 	void SetScale(float scale);
 	float GetScale() const;
 	
+	FRect GetTextureRect() const;
+
 protected:
 	virtual void Init(const std::string& textureName);
 	

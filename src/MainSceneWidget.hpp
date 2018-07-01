@@ -7,6 +7,7 @@
 
 #pragma once
 #include "Cannon.hpp"
+#include "Projectile.hpp"
 
 class MainSceneWidget: public GUI::Widget
 {
@@ -28,7 +29,9 @@ protected:
 	void Init();
 	
 	void LaunchProjectile(const IPoint& position);
-	void DestroyProjectile();
+	FPoint CalculateProjectileStartPosition() const;
+
+	void DestroyProjectile(const ProjectilePtr& projectile);
 	
 	void UpdateBubbles(float dt);
 	void UpdateProjectiles(float dt);
@@ -44,12 +47,7 @@ protected:
 	float _timer;
 
 	CannonPtr _cannon;
-	
-	Render::Texture* _projectile;
-	FPoint _projPosition;
-	float _angle;
-	
-	bool _isProjectileLaunched;
+	std::list<ProjectilePtr> _launchedProjectiles;
 	
 	EffectsContainer _effCont;
 };

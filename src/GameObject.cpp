@@ -104,3 +104,8 @@ float GameObject::GetScale() const
 {
 	return _scale;
 }
+
+FRect GameObject::GetTextureRect() const
+{
+	return static_cast<FRect>(_texture->getBitmapRect());
+}
