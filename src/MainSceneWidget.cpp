@@ -182,6 +182,12 @@ void MainSceneWidget::UpdateProjectiles(float dt)
 
 		projectilePtr->SetPosition(position);
 
+		if (position.x < 0 || position.x >= screenRect.xEnd)
+		{
+			projectilePtr->OnCollideWithWall();
+			continue;
+		}
+
 		if (!screenRect.Contains(position))
 		{
 			projectilesToDestroy.push_back(projectilePtr);

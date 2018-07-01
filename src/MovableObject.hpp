@@ -13,6 +13,8 @@ public:
 	void SetDirectionAngle(float angle);
 	float GetDirectionAngle() const;
 
+	virtual void OnCollideWithWall();
+
 protected:
 	float _directionAngle;
 };

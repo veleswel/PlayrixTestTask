@@ -14,5 +14,6 @@
 		<texture id="cancel_pressed" path="textures/cancel_pressed" />
 		<texture id="cannon_2" path="textures/cannon2.png" group="TestGroup" upload="false"/>
 		<texture id="projectile" path="textures/projectile.png" group="TestGroup" upload="false"/>
+		<texture id="bubble" path="textures/bubble1.png" group="TestGroup" upload="false"/>
 	</Textures>
 </Resources>

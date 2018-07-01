@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Bubble.hpp"
 
-const std::string Bubble::BubbleTextureName = "Star";
+const std::string Bubble::BubbleTextureName = "bubble";
 
 Bubble* Bubble::Create()
 {

@@ -24,3 +24,9 @@ float MovableObject::GetDirectionAngle() const
 {
 	return _directionAngle;
 }
+
+void MovableObject::OnCollideWithWall()
+{
+	_directionAngle = math::PI - _directionAngle;
+	_angle = 180 - _angle;
+}
