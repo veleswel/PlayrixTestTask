@@ -1,14 +1,17 @@
-//
-//  Bubble.hpp
-//  Test
-//
-//  Created by Alexey Vlasenko on 6/30/18.
-//
-
 #pragma once
-#include "GameObject.hpp"
+#include "MovableObject.hpp"
 
-class Bubble: public GameObject
+class Bubble: public MovableObject
 {
-	
+public:
+	static Bubble* Create();
+	virtual ~Bubble();
+
+protected:
+	Bubble();
+
+protected:
+	static const std::string BubbleTextureName;
 };
+
+typedef boost::intrusive_ptr<Bubble> BubblePtr;

@@ -1,9 +1,21 @@
-//
-//  Bubble.cpp
-//  Test
-//
-//  Created by Alexey Vlasenko on 6/30/18.
-//
-
 #include "stdafx.h"
 #include "Bubble.hpp"
+
+const std::string Bubble::BubbleTextureName = "Star";
+
+Bubble* Bubble::Create()
+{
+	Bubble* bubble = new (std::nothrow) Bubble();
+	bubble->Init(BubbleTextureName);
+	return bubble;
+}
+
+Bubble::Bubble()
+{
+
+}
+
+Bubble::~Bubble()
+{
+
+}

@@ -1,13 +1,7 @@
-//
-//  MainSceneWidget.hpp
-//  Test
-//
-//  Created by Alexey Vlasenko on 6/29/18.
-//
-
 #pragma once
 #include "Cannon.hpp"
 #include "Projectile.hpp"
+#include "Bubble.hpp"
 
 class MainSceneWidget: public GUI::Widget
 {
@@ -33,7 +27,10 @@ protected:
 
 	void DestroyProjectile(const ProjectilePtr& projectile);
 	
+	void DrawBubbles();
 	void UpdateBubbles(float dt);
+
+	void DrawProjectiles();
 	void UpdateProjectiles(float dt);
 	
 	void UpdateCannon(float dt);
@@ -48,6 +45,7 @@ protected:
 
 	CannonPtr _cannon;
 	std::list<ProjectilePtr> _launchedProjectiles;
+	std::list<BubblePtr> _bubbles;
 	
 	EffectsContainer _effCont;
 };

@@ -1,10 +1,3 @@
-//
-//  MainSceneWidget.cpp
-//  Test
-//
-//  Created by Alexey Vlasenko on 6/29/18.
-//
-
 #include "stdafx.h"
 #include "MainSceneWidget.hpp"
 
@@ -40,10 +33,8 @@ void MainSceneWidget::Draw()
 	Render::EndColor();
 	Render::device.SetTexturing(true);
 	
-	for (const auto& projectilePtr : _launchedProjectiles)
-	{
-		projectilePtr->Draw();
-	}
+	DrawBubbles();
+	DrawProjectiles();
 
 	_cannon->Draw();
 	
@@ -119,11 +110,13 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 	FPoint mousePosition((float)position.x, (float)position.y);
 	
 	float directionAngle = math::atan(mousePosition.y - _startPosition.y, mousePosition.x - _startPosition.x);
+	float rotationAngle = (directionAngle * 180) / math::PI;
 
 	ProjectilePtr projectilePtr = Projectile::Create();
 	
 	projectilePtr->SetPosition(CalculateProjectileStartPosition());
 	projectilePtr->SetDirectionAngle(directionAngle);
+	projectilePtr->SetRotationAngle(rotationAngle);
 
 	_launchedProjectiles.push_back(projectilePtr);
 }
@@ -150,9 +143,25 @@ void MainSceneWidget::DestroyProjectile(const ProjectilePtr& projectile)
 	}
 }
 
+void MainSceneWidget::DrawBubbles()
+{
+	for (const auto& bubblePtr : _bubbles)
+	{
+		bubblePtr->Draw();
+	}
+}
+
 void MainSceneWidget::UpdateBubbles(float dt)
 {
 
+}
+
+void MainSceneWidget::DrawProjectiles()
+{
+	for (const auto& projectilePtr : _launchedProjectiles)
+	{
+		projectilePtr->Draw();
+	}
 }
 
 void MainSceneWidget::UpdateProjectiles(float dt)

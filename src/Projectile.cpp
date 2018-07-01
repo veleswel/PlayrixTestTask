@@ -1,14 +1,7 @@
-//
-//  Projectile.cpp
-//  Test
-//
-//  Created by Alexey Vlasenko on 6/30/18.
-//
-
 #include "stdafx.h"
 #include "Projectile.hpp"
 
-const std::string Projectile::ProjectileTextureName = "Star";
+const std::string Projectile::ProjectileTextureName = "projectile";
 
 Projectile* Projectile::Create()
 {
@@ -18,7 +11,6 @@ Projectile* Projectile::Create()
 }
 
 Projectile::Projectile()
-	:_directionAngle(0.f)
 {
 
 }
@@ -26,17 +18,4 @@ Projectile::Projectile()
 Projectile::~Projectile()
 {
 
-}
-
-void Projectile::SetDirectionAngle(float angle)
-{
-	if (_directionAngle != angle)
-	{
-		_directionAngle = angle;
-	}
-}
-
-float Projectile::GetDirectionAngle() const
-{
-	return _directionAngle;
 }
