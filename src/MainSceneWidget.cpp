@@ -184,7 +184,7 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 	
 	projectilePtr->SetPosition(CalculateProjectileStartPosition());
 	projectilePtr->SetDirectionAngle(directionAngle);
-	projectilePtr->SetAnchorPoint(FPoint(0.f, 0.f));
+	projectilePtr->SetAnchorPoint(FPoint(.5f, .5f));
 
 	_launchedProjectiles.push_back(projectilePtr);
 }

@@ -134,9 +134,11 @@ FRect MovableObject::GetBoundingBox() const
 	math::Matrix4 matrixScale = math::Matrix4::Scaling(_scale, _scale, 1.f);
 	math::Matrix4 matrixRotation = math::Matrix4::RotationZ(_directionAngle);
 	math::Matrix4 matrixTranslate = math::Matrix4::Translation(_position.x, _position.y, 0.f);
+	math::Matrix4 resultTransform(matrixScale * matrixRotation * matrixTranslate);
+	
 	math::Matrix4 matrixTranslateAnchor = math::Matrix4::Translation(_anchorPointTransform.x, _anchorPointTransform.y, 0.f);
 	
-	FRect newRect = RectApplyTransform(textureRect, matrixScale * matrixRotation * matrixTranslateAnchor * matrixTranslate);
+	FRect newRect = RectApplyTransform(textureRect, matrixTranslateAnchor * resultTransform);
 	
 	return newRect;
 }
