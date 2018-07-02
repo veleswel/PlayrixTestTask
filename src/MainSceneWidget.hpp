@@ -12,7 +12,7 @@ public:
 	void Update(float dt) override;
 	
 	void AcceptMessage(const Message& message) override;
-	
+
 	bool MouseDown(const IPoint& mouse_pos) override;
 	void MouseMove(const IPoint& mouse_pos) override;
 	void MouseUp(const IPoint& mouse_pos) override;
@@ -22,6 +22,11 @@ public:
 protected:
 	void Init();
 	
+	void UpdateCannon(float dt);
+	
+	void DrawProjectiles();
+	void UpdateProjectiles(float dt);
+	
 	void LaunchProjectile(const IPoint& position);
 	FPoint CalculateProjectileStartPosition() const;
 
@@ -29,14 +34,15 @@ protected:
 	
 	void DrawBubbles();
 	void UpdateBubbles(float dt);
-
-	void DrawProjectiles();
-	void UpdateProjectiles(float dt);
 	
-	void UpdateCannon(float dt);
+	void LaunchBubbles();
+	
+	FRect GetScreenRect() const;
 
 protected:
-	static const float Speed;
+	static const float ProjectileSpeed;
+	static const float BubbleSpeed;
+	static const int BubblesCount;
 	
 protected:
 	const FPoint _startPosition;

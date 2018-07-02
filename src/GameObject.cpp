@@ -38,10 +38,11 @@ void GameObject::Draw()
 {
 	Render::device.PushMatrix();
 
-	Render::device.MatrixScale(_scale);
 	Render::device.MatrixTranslate(_position);
+//	Render::device.MatrixTranslate(_anchorPointTransform);
 	Render::device.MatrixRotate(math::Vector3(0, 0, 1), _angle);
 	Render::device.MatrixTranslate(_anchorPointTransform);
+	Render::device.MatrixScale(_scale);
 	_texture->Draw();
 
 	Render::device.PopMatrix();

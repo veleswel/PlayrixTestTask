@@ -30,6 +30,7 @@
 		E32AF6A520E7DF1C00E73913 /* Bubble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF69A20E7DF1C00E73913 /* Bubble.cpp */; };
 		E32AF6A620E7DF1C00E73913 /* GameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF69D20E7DF1C00E73913 /* GameObject.cpp */; };
 		E32AF6A720E7DF1C00E73913 /* stdafx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF6A120E7DF1C00E73913 /* stdafx.cpp */; };
+		E32AF6AB20EA1A1100E73913 /* MovableObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF6A920EA1A1100E73913 /* MovableObject.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -79,6 +80,8 @@
 		E32AF69F20E7DF1C00E73913 /* Projectile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Projectile.hpp; path = ../../src/Projectile.hpp; sourceTree = "<group>"; };
 		E32AF6A020E7DF1C00E73913 /* stdafx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stdafx.h; path = ../../src/stdafx.h; sourceTree = "<group>"; };
 		E32AF6A120E7DF1C00E73913 /* stdafx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stdafx.cpp; path = ../../src/stdafx.cpp; sourceTree = "<group>"; };
+		E32AF6A920EA1A1100E73913 /* MovableObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MovableObject.cpp; path = ../../src/MovableObject.cpp; sourceTree = "<group>"; };
+		E32AF6AA20EA1A1100E73913 /* MovableObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MovableObject.hpp; path = ../../src/MovableObject.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +108,8 @@
 		C6B8C3531AD502F700AF7B11 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E32AF6A920EA1A1100E73913 /* MovableObject.cpp */,
+				E32AF6AA20EA1A1100E73913 /* MovableObject.hpp */,
 				E32AF69A20E7DF1C00E73913 /* Bubble.cpp */,
 				E32AF69B20E7DF1C00E73913 /* Bubble.hpp */,
 				E32AF69820E7DF1C00E73913 /* Cannon.cpp */,
@@ -284,6 +289,7 @@
 				E32AF6A720E7DF1C00E73913 /* stdafx.cpp in Sources */,
 				E32AF6A620E7DF1C00E73913 /* GameObject.cpp in Sources */,
 				A6869E101D229EF600C1D1B1 /* TestAppDelegate.cpp in Sources */,
+				E32AF6AB20EA1A1100E73913 /* MovableObject.cpp in Sources */,
 				A6869E111D229EF600C1D1B1 /* TestWidget.cpp in Sources */,
 				E32AF6A420E7DF1C00E73913 /* Projectile.cpp in Sources */,
 				E32AF6A520E7DF1C00E73913 /* Bubble.cpp in Sources */,

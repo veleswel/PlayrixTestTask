@@ -37,7 +37,7 @@ public:
 	FRect GetTextureRect() const;
 
 protected:
-	virtual void Init(const std::string& textureName);
+	void Init(const std::string& textureName);
 	
 protected:
 	Render::Texture* _texture;

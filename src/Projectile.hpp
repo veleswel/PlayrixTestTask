@@ -4,7 +4,7 @@
 class Projectile: public MovableObject
 {
 public:
-	static Projectile* Create();
+	static Projectile* Create(float speed);
 	virtual ~Projectile();
 
 protected:
