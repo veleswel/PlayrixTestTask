@@ -3,7 +3,10 @@
 #include <limits>
 
 const float MainSceneWidget::ProjectileSpeed = 50.f;
-const float MainSceneWidget::BubbleSpeed = 50.f;
+
+const float MainSceneWidget::MinBubbleSpeed = 100.f;
+const float MainSceneWidget::MaxBubbleSpeed = 200.f;
+const float MainSceneWidget::BubbleLaunchScreenPrecision = 50.f;
 const int MainSceneWidget::BubblesCount = 20;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
@@ -287,17 +290,15 @@ void MainSceneWidget::UpdateBubbles(float dt)
 
 void MainSceneWidget::LaunchBubbles()
 {
-	const float width = _screenRect.Width() - 50.f;
-	const float height = _screenRect.Height() - 50.f;
-	const float minSpeed = BubbleSpeed;
-	const float maxSpeed = BubbleSpeed * 5.f;
+	const float width = _screenRect.Width() - BubbleLaunchScreenPrecision;
+	const float height = _screenRect.Height() - BubbleLaunchScreenPrecision;
 	
 	for (int i = 0; i < BubblesCount; ++i)
 	{
-		BubblePtr bubblePtr = Bubble::Create(math::random(minSpeed, maxSpeed));
+		BubblePtr bubblePtr = Bubble::Create(math::random(MinBubbleSpeed, MaxBubbleSpeed));
 		
-		const FPoint position1(math::random(50.f, width), math::random(50.f, height));
-		const FPoint position2(math::random(50.f, width), math::random(50.f, height));
+		const FPoint position1(math::random(BubbleLaunchScreenPrecision, width), math::random(BubbleLaunchScreenPrecision, height));
+		const FPoint position2(math::random(BubbleLaunchScreenPrecision, width), math::random(BubbleLaunchScreenPrecision, height));
 		
 		const float angle = (math::atan(position2.y - position1.y, position2.x - position1.x) * 180) / math::PI;
 		

@@ -179,7 +179,12 @@ protected:
 
 protected:
 	static const float ProjectileSpeed;
-	static const float BubbleSpeed;
+	
+	static const float MinBubbleSpeed;
+	static const float MaxBubbleSpeed;
+	
+	static const float BubbleLaunchScreenPrecision;
+	
 	static const int BubblesCount;
 	
 protected:
