@@ -39,6 +39,8 @@ protected:
 	
 	FRect GetScreenRect() const;
 
+	static EColissionSide DoBoxesCollide(const FRect& bbox1, const FRect& bbox2);
+
 protected:
 	static const float ProjectileSpeed;
 	static const float BubbleSpeed;

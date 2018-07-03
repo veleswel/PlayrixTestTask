@@ -10,9 +10,6 @@ public:
 protected:
 	Bubble();
 	
-public:
-	virtual void OnCollideWithScreenBorder(const FRect& screenRect) override;
-	
 protected:
 	static const std::string BubbleTextureName;
 };

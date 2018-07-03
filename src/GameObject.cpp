@@ -39,7 +39,6 @@ void GameObject::Draw()
 	Render::device.PushMatrix();
 
 	Render::device.MatrixTranslate(_position);
-//	Render::device.MatrixTranslate(_anchorPointTransform);
 	Render::device.MatrixRotate(math::Vector3(0, 0, 1), _angle);
 	Render::device.MatrixTranslate(_anchorPointTransform);
 	Render::device.MatrixScale(_scale);
@@ -55,13 +54,19 @@ void GameObject::Update(float dt)
 
 void GameObject::SetPosition(const FPoint& position)
 {
-	_position = position;
+	if (_position != position)
+	{
+		_position = position;
+	}
 }
 
 void GameObject::SetPosition(float x, float y)
 {
-	_position.x = x;
-	_position.y = y;
+	if (_position.x != x && _position.y != y)
+	{
+		_position.x = x;
+		_position.y = y;
+	}
 }
 
 const FPoint& GameObject::GetPosition() const
@@ -88,7 +93,10 @@ const FPoint& GameObject::GetAnchorPoint() const
 
 void GameObject::SetRotationAngle(float angle)
 {
-	_angle = angle;
+	if (_angle != angle)
+	{
+		_angle = angle;
+	}
 }
 
 float GameObject::GetRotationAngle() const
@@ -98,7 +106,10 @@ float GameObject::GetRotationAngle() const
 
 void GameObject::SetScale(float scale)
 {
-	_scale = scale;
+	if (_scale != scale)
+	{
+		_scale = scale;
+	}
 }
 
 float GameObject::GetScale() const
@@ -108,5 +119,5 @@ float GameObject::GetScale() const
 
 FRect GameObject::GetTextureRect() const
 {
-	return static_cast<FRect>(_texture->getBitmapRect());
+	return FRect(_texture->getBitmapRect());
 }

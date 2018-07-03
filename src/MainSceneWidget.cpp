@@ -2,7 +2,7 @@
 #include "MainSceneWidget.hpp"
 
 const float MainSceneWidget::ProjectileSpeed = 25.f;
-const float MainSceneWidget::BubbleSpeed = 100.f;
+const float MainSceneWidget::BubbleSpeed = 25.f;
 const int MainSceneWidget::BubblesCount = 0;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
@@ -26,14 +26,13 @@ void MainSceneWidget::Init()
 
 void MainSceneWidget::Draw()
 {
-	IPoint mouse_pos = Core::mainInput.GetMousePos();
+	const IPoint mouse_pos = Core::mainInput.GetMousePos();
 	
-	float width = Render::device.Width();
-	float height = Render::device.Height();
+	const FRect screenRect = GetScreenRect();
 	
 	Render::device.SetTexturing(false);
 	Render::BeginColor(Color(106, 126, 160, 255));
-	Render::DrawRect(0, 0, width, height);
+	Render::DrawRect(0, 0, screenRect.Width(), screenRect.Height());
 	Render::EndColor();
 	Render::device.SetTexturing(true);
 	
@@ -64,34 +63,15 @@ void MainSceneWidget::Update(float dt)
 	
 	_timer += dt * 2;
 	
-	while (_timer > 2 * math::PI)
+	while (_timer > 1.f)
 	{
-		_timer -= 2 * math::PI;
+		_timer -= 1.f;
 	}
 }
 
 bool MainSceneWidget::MouseDown(const IPoint &mouse_pos)
 {
-	LaunchProjectile(mouse_pos);
-	
-//	float angle = _cannon->GetRotationAngle();
-//
-//	if (Core::mainInput.GetMouseRightButton())
-//	{
-//		angle -= 15;
-//	}
-//	else
-//	{
-//		angle += 15;
-//	}
-//
-//	while (angle > 360)
-//	{
-//		angle -= 360;
-//	}
-//
-//	_cannon->SetRotationAngle(angle);
-	
+	LaunchProjectile(mouse_pos);	
 	return false;
 }
 
@@ -117,15 +97,7 @@ void MainSceneWidget::AcceptMessage(const Message& message)
 
 void MainSceneWidget::KeyPressed(int keyCode)
 {
-	//
-	// keyCode - виртуальный код клавиши.
-	// В качестве значений для проверки нужно использовать константы VK_.
-	//
-	
-	if (keyCode == VK_A)
-	{
-		// Реакция на нажатие кнопки A
-	}
+
 }
 
 void MainSceneWidget::UpdateCannon(float dt)
@@ -143,30 +115,28 @@ void MainSceneWidget::DrawProjectiles()
 
 void MainSceneWidget::UpdateProjectiles(float dt)
 {
-	FRect screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height());
+	const FRect screenRect = GetScreenRect();
 	
 	std::vector<ProjectilePtr> projectilesToDestroy;
 	
 	for (const auto& projectilePtr : _launchedProjectiles)
 	{
 		projectilePtr->Update(dt);
-		
-		const FPoint position = projectilePtr->GetPosition();
-		
-		if (position.x <= 0 || position.x >= screenRect.xEnd)
+		const FRect bbox = projectilePtr->GetBoundingBox();
+
+		if (bbox.xStart <= screenRect.xStart || bbox.xEnd >= screenRect.xEnd)
 		{
-			projectilePtr->OnCollideWithScreenBorder(screenRect);
-			continue;
+			projectilePtr->InvertVelocityX();
+			projectilePtr->UpdatePosition(dt);
 		}
 		
-		if (!screenRect.Contains(position))
+		if (bbox.yStart <= screenRect.yStart || bbox.yEnd >= screenRect.yEnd)
 		{
 			projectilesToDestroy.push_back(projectilePtr);
-			projectilePtr->Stop();
 		}
 	}
 	
-	for (auto& projectilePtr : projectilesToDestroy)
+	for (auto& projectilePtr: projectilesToDestroy)
 	{
 		DestroyProjectile(projectilePtr);
 		projectilePtr = nullptr;
@@ -175,24 +145,31 @@ void MainSceneWidget::UpdateProjectiles(float dt)
 
 void MainSceneWidget::LaunchProjectile(const IPoint& position)
 {
-	FPoint mousePosition((float)position.x, (float)position.y);
+	const FPoint mousePosition(position);
 	
-	float directionAngle = math::atan(mousePosition.y - _startPosition.y, mousePosition.x - _startPosition.x);
-	float rotationAngle = (directionAngle * 180) / math::PI;
+	const float directionAngle = math::atan(mousePosition.y - _startPosition.y, mousePosition.x - _startPosition.x);
+	const float rotationAngle = (directionAngle * 180) / math::PI;
 
 	ProjectilePtr projectilePtr = Projectile::Create(ProjectileSpeed * 10.f);
 	
+	math::Vector3 start(_startPosition.x, _startPosition.y, 0);
+	math::Vector3 end(mousePosition.x, mousePosition.y, 0);
+	math::Vector3 velocity = end - start;
+	velocity.Normalize();
+
 	projectilePtr->SetPosition(CalculateProjectileStartPosition());
-	projectilePtr->SetDirectionAngle(directionAngle);
-	projectilePtr->SetAnchorPoint(FPoint(.5f, .5f));
+	projectilePtr->SetRotationAngle(rotationAngle);
+	projectilePtr->SetVelocity(velocity);
+
+	//projectilePtr->SetDirectionAngle(directionAngle);
 
 	_launchedProjectiles.push_back(projectilePtr);
 }
 
 FPoint MainSceneWidget::CalculateProjectileStartPosition() const
 {
-	float angle = (math::PI * _cannon->GetRotationAngle()) / 180;
-	float cannonTextHeight = _cannon->GetTextureRect().Height();
+	const float angle = (math::PI * _cannon->GetRotationAngle()) / 180;
+	const float cannonTextHeight = _cannon->GetTextureRect().Height();
 
 	FPoint position(
 		_startPosition.x + cannonTextHeight * math::cos(angle), 
@@ -221,17 +198,30 @@ void MainSceneWidget::DrawBubbles()
 
 void MainSceneWidget::UpdateBubbles(float dt)
 {
-	FRect screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height());
+	const FRect screenRect = GetScreenRect();;
 	
-	for (const auto& bubblePtr : _bubbles)
+	for (const auto& bubblePtr: _bubbles)
 	{
 		bubblePtr->Update(dt);
-		
-		FPoint position = bubblePtr->GetPosition();
+		const FRect bbox = bubblePtr->GetBoundingBox();
 
-		if (!screenRect.Contains(position))
+		const float dirAngle = bubblePtr->GetDirectionAngle();
+		float newDirAngle = dirAngle;
+
+		if (bbox.xStart <= screenRect.xStart || bbox.xEnd >= screenRect.xEnd)
 		{
-			bubblePtr->OnCollideWithScreenBorder(screenRect);
+			newDirAngle = math::PI - dirAngle;
+		}
+		
+		if (bbox.yStart <= screenRect.yStart || bbox.yEnd >= screenRect.yEnd)
+		{
+			newDirAngle = 2 * math::PI - dirAngle;
+		}
+
+		if (dirAngle != newDirAngle)
+		{
+			bubblePtr->SetDirectionAngle(newDirAngle);
+			bubblePtr->UpdatePosition(dt);
 		}
 	}
 }
@@ -239,14 +229,14 @@ void MainSceneWidget::UpdateBubbles(float dt)
 void MainSceneWidget::LaunchBubbles()
 {
 	const FRect screenRect = GetScreenRect();
-	const float minDirectionAngle = 0.f;
-	const float maxDirectionAngle = 2 * math::PI;
+	const float minDirAngle = 0.f;
+	const float maxDirAngle = 2 * math::PI;
 	
 	for (int i = 0; i < BubblesCount; ++i)
 	{
 		BubblePtr bubblePtr = Bubble::Create(BubbleSpeed * 10.f);
 		const FPoint position = math::random(screenRect.LeftBottom(), screenRect.RightTop());
-		const float directionAngle = math::random(minDirectionAngle, maxDirectionAngle);
+		const float directionAngle = math::random(minDirAngle, maxDirAngle);
 		
 		bubblePtr->SetPosition(position);
 		bubblePtr->SetDirectionAngle(directionAngle);
@@ -258,4 +248,49 @@ void MainSceneWidget::LaunchBubbles()
 FRect MainSceneWidget::GetScreenRect() const
 {
 	return FRect(0.f, Render::device.Width(), 0.f, Render::device.Height());
+}
+
+EColissionSide MainSceneWidget::DoBoxesCollide(const FRect& bbox1, const FRect& bbox2)
+{
+	const float w = 0.5 * (bbox1.Width() + bbox2.Width());
+	const float h = 0.5 * (bbox1.Height() + bbox2.Height());
+
+	const float dx = bbox1.CenterPoint().x - bbox2.CenterPoint().x;
+	const float dy = bbox1.CenterPoint().y - bbox2.CenterPoint().y;
+
+	if (abs(dx) <= w && abs(dy) <= h)
+	{
+		/* collision! */
+		float wy = w * dy;
+		float hx = h * dx;
+
+		if (wy > hx)
+		{
+			if (wy > -hx)
+			{
+				/* collision at the top */
+				return EColissionSide::ETop;
+			}
+			else
+			{
+				/* on the left */
+				return EColissionSide::ELeft;
+			}
+		}
+		else
+		{
+			if (wy > -hx)
+			{
+				/* on the right */
+				return EColissionSide::ERight;
+			}
+			else
+			{
+				/* at the bottom */
+				return EColissionSide::EBottom;
+			}
+		}
+	}
+
+	return EColissionSide::ENone;
 }
