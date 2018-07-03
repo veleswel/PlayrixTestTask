@@ -1,14 +1,16 @@
 #include "stdafx.h"
 #include "MainSceneWidget.hpp"
+#include <limits>
 
-const float MainSceneWidget::ProjectileSpeed = 25.f;
-const float MainSceneWidget::BubbleSpeed = 25.f;
-const int MainSceneWidget::BubblesCount = 0;
+const float MainSceneWidget::ProjectileSpeed = 50.f;
+const float MainSceneWidget::BubbleSpeed = 50.f;
+const int MainSceneWidget::BubblesCount = 20;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
 	, _timer(0.f)
 	, _cannon(nullptr)
+	, _screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height())
 	, _startPosition(FPoint(Render::device.Width() / 2, 0))
 {
 	Init();
@@ -16,6 +18,13 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 
 void MainSceneWidget::Init()
 {
+	_walls = {
+		Wall(_screenRect.xStart, _screenRect.yStart, _screenRect.xEnd, _screenRect.yStart), // bottom
+		Wall(_screenRect.xEnd, _screenRect.yStart, _screenRect.xEnd, _screenRect.yEnd), // right
+		Wall(_screenRect.xEnd, _screenRect.yEnd, _screenRect.xStart, _screenRect.yEnd), // top
+		Wall(_screenRect.xStart, _screenRect.yEnd, _screenRect.xStart, _screenRect.yStart) // left
+	};
+	
 	_cannon = Cannon::create();
 	_cannon->SetPosition(_startPosition);
 	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
@@ -28,11 +37,9 @@ void MainSceneWidget::Draw()
 {
 	const IPoint mouse_pos = Core::mainInput.GetMousePos();
 	
-	const FRect screenRect = GetScreenRect();
-	
 	Render::device.SetTexturing(false);
 	Render::BeginColor(Color(106, 126, 160, 255));
-	Render::DrawRect(0, 0, screenRect.Width(), screenRect.Height());
+	Render::DrawRect(_screenRect.xStart, _screenRect.yStart, _screenRect.Width(), _screenRect.Height());
 	Render::EndColor();
 	Render::device.SetTexturing(true);
 	
@@ -40,6 +47,11 @@ void MainSceneWidget::Draw()
 	DrawProjectiles();
 
 	_cannon->Draw();
+	
+	for (auto wall: _walls)
+	{
+		wall.Draw();
+	}
 	
 	Render::device.SetTexturing(false);
 	Render::BeginColor(Color(255, 128, 0, 255));
@@ -115,24 +127,39 @@ void MainSceneWidget::DrawProjectiles()
 
 void MainSceneWidget::UpdateProjectiles(float dt)
 {
-	const FRect screenRect = GetScreenRect();
-	
 	std::vector<ProjectilePtr> projectilesToDestroy;
 	
 	for (const auto& projectilePtr : _launchedProjectiles)
 	{
 		projectilePtr->Update(dt);
-		const FRect bbox = projectilePtr->GetBoundingBox();
-
-		if (bbox.xStart <= screenRect.xStart || bbox.xEnd >= screenRect.xEnd)
-		{
-			projectilePtr->InvertVelocityX();
-			projectilePtr->UpdatePosition(dt);
-		}
 		
-		if (bbox.yStart <= screenRect.yStart || bbox.yEnd >= screenRect.yEnd)
+		const FRect& bbox = projectilePtr->GetBoundingBox();
+		const math::Vector3& v = projectilePtr->GetVelocity();
+		const float angle = projectilePtr->GetRotationAngle();
+	
+		for (const Wall& wall: _walls)
 		{
-			projectilesToDestroy.push_back(projectilePtr);
+			if (!wall.GetBBox().Intersects(bbox))
+			{
+				continue;
+			}
+			
+			if (wall == _walls.at(0) || wall == _walls.at(2))
+			{
+				projectilesToDestroy.push_back(projectilePtr);
+				continue;
+			}
+			
+			// Collision
+			const math::Vector3& n = wall.GetNormal();
+			
+			const math::Vector3 u = v.DotProduct(n) * n;
+			const math::Vector3 w = v - u;
+			
+			const math::Vector3 v1 = w - u;
+			
+			projectilePtr->SetVelocity(v1);
+			projectilePtr->UpdatePosition(dt);
 		}
 	}
 	
@@ -147,23 +174,27 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 {
 	const FPoint mousePosition(position);
 	
-	const float directionAngle = math::atan(mousePosition.y - _startPosition.y, mousePosition.x - _startPosition.x);
-	const float rotationAngle = (directionAngle * 180) / math::PI;
+	const float angle = (math::atan(mousePosition.y - _startPosition.y, mousePosition.x - _startPosition.x) * 180) / math::PI;
 
 	ProjectilePtr projectilePtr = Projectile::Create(ProjectileSpeed * 10.f);
 	
-	math::Vector3 start(_startPosition.x, _startPosition.y, 0);
+	const FPoint startPosition(CalculateProjectileStartPosition());
+	
+	math::Vector3 start(startPosition.x, startPosition.y, 0);
 	math::Vector3 end(mousePosition.x, mousePosition.y, 0);
 	math::Vector3 velocity = end - start;
 	velocity.Normalize();
 
-	projectilePtr->SetPosition(CalculateProjectileStartPosition());
-	projectilePtr->SetRotationAngle(rotationAngle);
+	projectilePtr->SetPosition(startPosition);
+	projectilePtr->SetRotationAngle(angle);
 	projectilePtr->SetVelocity(velocity);
 
-	//projectilePtr->SetDirectionAngle(directionAngle);
-
-	_launchedProjectiles.push_back(projectilePtr);
+	const FRect& bbox = projectilePtr->GetBoundingBox();
+	
+	if (!_walls[0].GetBBox().Intersects(bbox))
+	{
+		_launchedProjectiles.push_back(projectilePtr);
+	}
 }
 
 FPoint MainSceneWidget::CalculateProjectileStartPosition() const
@@ -198,29 +229,57 @@ void MainSceneWidget::DrawBubbles()
 
 void MainSceneWidget::UpdateBubbles(float dt)
 {
-	const FRect screenRect = GetScreenRect();;
-	
 	for (const auto& bubblePtr: _bubbles)
 	{
 		bubblePtr->Update(dt);
-		const FRect bbox = bubblePtr->GetBoundingBox();
-
-		const float dirAngle = bubblePtr->GetDirectionAngle();
-		float newDirAngle = dirAngle;
-
-		if (bbox.xStart <= screenRect.xStart || bbox.xEnd >= screenRect.xEnd)
-		{
-			newDirAngle = math::PI - dirAngle;
-		}
 		
-		if (bbox.yStart <= screenRect.yStart || bbox.yEnd >= screenRect.yEnd)
+		const FRect& bbox = bubblePtr->GetBoundingBox();
+		const math::Vector3& v = bubblePtr->GetVelocity();
+		
+//		if (_walls[0].GetBBox().Intersects(bbox) && _walls[1].GetBBox().Intersects(bbox))
+//		{
+//			const math::Vector3 v1 = -v;
+//
+//			bubblePtr->SetVelocity(v1);
+//			bubblePtr->UpdatePosition(dt);
+//		}
+//		else if (_walls[1].GetBBox().Intersects(bbox) && _walls[2].GetBBox().Intersects(bbox))
+//		{
+//			const math::Vector3 v1 = -v;
+//
+//			bubblePtr->SetVelocity(v1);
+//			bubblePtr->UpdatePosition(dt);
+//		}
+//		else if (_walls[2].GetBBox().Intersects(bbox) && _walls[3].GetBBox().Intersects(bbox))
+//		{
+//			const math::Vector3 v1 = -v;
+//
+//			bubblePtr->SetVelocity(v1);
+//			bubblePtr->UpdatePosition(dt);
+//		}
+//		else if (_walls[3].GetBBox().Intersects(bbox) && _walls[0].GetBBox().Intersects(bbox))
+//		{
+//			const math::Vector3 v1 = -v;
+//
+//			bubblePtr->SetVelocity(v1);
+//			bubblePtr->UpdatePosition(dt);
+//		}
+		
+		for (const Wall& wall: _walls)
 		{
-			newDirAngle = 2 * math::PI - dirAngle;
-		}
-
-		if (dirAngle != newDirAngle)
-		{
-			bubblePtr->SetDirectionAngle(newDirAngle);
+			if (!wall.GetBBox().Intersects(bbox))
+			{
+				continue;
+			}
+			
+			// Collision
+			const math::Vector3& n = wall.GetNormal();
+			
+			const math::Vector3 u = v.DotProduct(n) * n;
+			const math::Vector3 w = v - u;
+			const math::Vector3 v1 = w - u;
+			
+			bubblePtr->SetVelocity(v1);
 			bubblePtr->UpdatePosition(dt);
 		}
 	}
@@ -228,26 +287,50 @@ void MainSceneWidget::UpdateBubbles(float dt)
 
 void MainSceneWidget::LaunchBubbles()
 {
-	const FRect screenRect = GetScreenRect();
-	const float minDirAngle = 0.f;
-	const float maxDirAngle = 2 * math::PI;
+	const float width = _screenRect.Width() - 50.f;
+	const float height = _screenRect.Height() - 50.f;
+	const float minSpeed = BubbleSpeed;
+	const float maxSpeed = BubbleSpeed * 5.f;
 	
 	for (int i = 0; i < BubblesCount; ++i)
 	{
-		BubblePtr bubblePtr = Bubble::Create(BubbleSpeed * 10.f);
-		const FPoint position = math::random(screenRect.LeftBottom(), screenRect.RightTop());
-		const float directionAngle = math::random(minDirAngle, maxDirAngle);
+		BubblePtr bubblePtr = Bubble::Create(math::random(minSpeed, maxSpeed));
 		
-		bubblePtr->SetPosition(position);
-		bubblePtr->SetDirectionAngle(directionAngle);
+		const FPoint position1(math::random(50.f, width), math::random(50.f, height));
+		const FPoint position2(math::random(50.f, width), math::random(50.f, height));
+		
+		const float angle = (math::atan(position2.y - position1.y, position2.x - position1.x) * 180) / math::PI;
+		
+		const math::Vector3 start(position1.x, position1.y, 0);
+		const math::Vector3 end(position2.x, position2.y, 0);
+		math::Vector3 v = end - start;
+		v.Normalize();
+		
+		bubblePtr->SetPosition(position1);
+		bubblePtr->SetRotationAngle(angle);
+		bubblePtr->SetVelocity(v);
+		
+		const FRect& bbox = bubblePtr->GetBoundingBox();
+
+		for (const Wall& wall: _walls)
+		{
+			if (!wall.GetBBox().Intersects(bbox))
+			{
+				continue;
+			}
+
+			// Collision
+			const math::Vector3& n = wall.GetNormal();
+
+			const math::Vector3 u = v.DotProduct(n) * n;
+			const math::Vector3 w = v - u;
+			const math::Vector3 v1 = w - u;
+
+			bubblePtr->SetVelocity(v1);
+		}
 		
 		_bubbles.push_back(bubblePtr);
 	}
-}
-
-FRect MainSceneWidget::GetScreenRect() const
-{
-	return FRect(0.f, Render::device.Width(), 0.f, Render::device.Height());
 }
 
 EColissionSide MainSceneWidget::DoBoxesCollide(const FRect& bbox1, const FRect& bbox2)

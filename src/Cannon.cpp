@@ -32,5 +32,4 @@ void Cannon::Update(float dt)
 	}
 	
 	_angle = (math::atan(mousePosition.y - _position.y, mousePosition.x - _position.x) * 180.f) / math::PI;
-//	_angle = (math::atan(_position.y - mousePosition.y, _position.x - mousePosition.x) * 180.f) / math::PI;
 }

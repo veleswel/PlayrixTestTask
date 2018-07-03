@@ -32,8 +32,7 @@ FRect GetTransformedBoundingBox(const FRect& rect, const math::Matrix4& transfor
 }
 
 MovableObject::MovableObject()
-	: _directionAngle(0.f)
-	, _speed(0.f)
+	: _speed(0.f)
 {
 
 }
@@ -75,22 +74,14 @@ void MovableObject::Update(float dt)
 	UpdatePosition(dt);
 }
 
-void MovableObject::SetDirectionAngle(float angle)
-{
-	if (_directionAngle != angle)
-	{
-		_directionAngle = angle;
-		//SetRotationAngle((_directionAngle * 180) / math::PI);
-	}
-}
-
-float MovableObject::GetDirectionAngle() const
-{
-	return _directionAngle;
-}
-
 void MovableObject::SetVelocity(const math::Vector3& velocity)
 {
+	if (_velocity != math::Vector3::Zero)
+	{
+		const float angle = (180 * math::GetXYVectorAngle(_velocity, velocity)) / math::PI;
+		_angle += angle;
+	}
+	
 	_velocity = velocity;
 }
 
@@ -111,27 +102,10 @@ void MovableObject::Stop()
 
 void MovableObject::UpdatePosition(float dt)
 {
-	/*float dx = _position.x + math::cos(_directionAngle) * _speed;
-	float dy = _position.y + math::sin(_directionAngle) * _speed;
-
-	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));*/
-
 	float dx = _position.x + _velocity.x * _speed;
 	float dy = _position.y + _velocity.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
-}
-
-void MovableObject::InvertVelocityX()
-{
-	_velocity.x *= -1;
-	_angle = 180 - _angle;
-}
-
-void MovableObject::InvertVelocityY()
-{
-	_velocity.y *= -1;
-	_angle = 360 - _angle;
 }
 
 FRect MovableObject::GetBoundingBox() const
