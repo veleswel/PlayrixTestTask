@@ -25,13 +25,12 @@ public:
 	virtual ~CollideableDelegate() { }
 
 	virtual const FRect GetAABB() const = 0;
+	virtual const OBB2D GetOBB() const = 0;
+
 	virtual EColliderType GetColliderType() const = 0;
 };
 
-typedef boost::intrusive_ptr<CollideableDelegate> CollideableDelegatePtr;
-
-class MovableObject;
-typedef boost::intrusive_ptr<MovableObject> MovableObjectPtr;
+typedef std::shared_ptr<CollideableDelegate> CollideableDelegatePtr;
 
 class QuadTree
 {
@@ -39,17 +38,17 @@ public:
 	QuadTree(int level, const FRect& bounds);
 	~QuadTree();
 
-	void Insert(const MovableObjectPtr& object);
+	void Insert(const CollideableDelegatePtr& object);
 
-	void Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect& rect);
-	void Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect& rect, EColliderType mask);
+	void Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const FRect& rect);
+	void Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const FRect& rect, EColliderType mask);
 
 	void Clear();
 	
 protected:
 	void Split();
 	int GetIndex(const FRect& rect);
-	bool InsertInChild(const MovableObjectPtr& object);
+	bool InsertInChild(const CollideableDelegatePtr& object);
 
 protected:
 	static const int MaxObjects;
@@ -58,7 +57,7 @@ protected:
 protected:
 	int _level;
 	
-	std::list<MovableObjectPtr> _objects;
+	std::list<CollideableDelegatePtr> _objects;
 	
 	FRect _bounds;
 	
@@ -66,4 +65,3 @@ protected:
 
 	bool _hasChildren;
 };
-

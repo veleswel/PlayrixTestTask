@@ -57,6 +57,8 @@ public:
 		Init();
 	}
 	
+	virtual ~Wall() { }
+
 	Wall& operator = (const Wall& wall)
 	{
 		if (this == &wall)
@@ -135,11 +137,6 @@ public:
 		return _normal;
 	}
 	
-	const OBB2D& GetOBB() const
-	{
-		return _obb;
-	}
-	
 	void Draw()
 	{
 		Render::device.SetTexturing(false);
@@ -165,9 +162,9 @@ public:
 		Render::device.SetTexturing(true);
 	}
 
-	virtual EColliderType GetColliderType() const
+	virtual const OBB2D GetOBB() const override
 	{
-		return EColliderType::EWall;
+		return _obb;
 	}
 
 	virtual const FRect GetAABB() const override
@@ -175,7 +172,14 @@ public:
 		const auto& corner = _obb.GetCorners();
 		return FRect(corner[0].x, corner[1].x, corner[0].y, corner[2].y);
 	}
+
+	virtual EColliderType GetColliderType() const
+	{
+		return EColliderType::EWall;
+	}
 };
+
+typedef std::shared_ptr<Wall> WallPtr;
 
 class MainSceneWidget: public GUI::Widget
 {
@@ -199,7 +203,6 @@ protected:
 	void UpdateCannon(float dt);
 	
 	void DrawProjectiles();
-	void UpdateProjectiles(float dt);
 	
 	void LaunchProjectile(const IPoint& position);
 	FPoint CalculateProjectileStartPosition() const;
@@ -207,13 +210,12 @@ protected:
 	void DestroyProjectile(const ProjectilePtr& projectile);
 	
 	void DrawBubbles();
-	void UpdateBubbles(float dt);
 	
 	void LaunchBubbles();
 
 	void DestroyBubble(const BubblePtr& projectile);
 
-	void FillQuadTree(QuadTree& quad);
+	void UpdateObjectsAndFillQuadTree(float dt, QuadTree& quad);
 
 protected:
 	static const float ProjectileSpeed;
@@ -236,5 +238,5 @@ protected:
 
 	EffectsContainer _effCont;
 	
-	std::array<Wall, 4> _walls;
+	std::array<WallPtr, 4> _walls;
 };

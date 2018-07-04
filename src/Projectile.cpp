@@ -3,9 +3,9 @@
 
 const std::string Projectile::ProjectileTextureName = "projectile";
 
-Projectile* Projectile::Create(float speed)
+ProjectilePtr Projectile::Create(float speed)
 {
-	Projectile* projectile = new (std::nothrow) Projectile();
+	auto projectile = std::make_shared<Projectile>();
 	projectile->Init(ProjectileTextureName, speed);
 	return projectile;
 }
@@ -17,7 +17,7 @@ Projectile::Projectile()
 
 Projectile::~Projectile()
 {
-	
+	Log::Debug("Projectile died!");
 }
 
 EColliderType Projectile::GetColliderType() const

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "QuadTree.hpp"
-#include "MovableObject.hpp"
 
 const int QuadTree::MaxObjects = 10;
 const int QuadTree::MaxLevels = 5;
@@ -68,7 +67,7 @@ int QuadTree::GetIndex(const FRect& rect)
 	return IndexNotFound;
 }
 
-bool QuadTree::InsertInChild(const MovableObjectPtr& object)
+bool QuadTree::InsertInChild(const CollideableDelegatePtr& object)
 {
 	auto index = GetIndex(object->GetAABB());
 
@@ -81,7 +80,7 @@ bool QuadTree::InsertInChild(const MovableObjectPtr& object)
 	return true;
 }
 
-void QuadTree::Insert(const MovableObjectPtr& object)
+void QuadTree::Insert(const CollideableDelegatePtr& object)
 {
 	if (_hasChildren && InsertInChild(object))
 	{ 
@@ -107,7 +106,7 @@ void QuadTree::Insert(const MovableObjectPtr& object)
 
 	Split();
 
-	const auto predicate = [this](const MovableObjectPtr& object)
+	const auto predicate = [this](const CollideableDelegatePtr& object)
 	{
 		return InsertInChild(object);
 	};
@@ -115,7 +114,7 @@ void QuadTree::Insert(const MovableObjectPtr& object)
 	_objects.erase(std::remove_if(_objects.begin(), _objects.end(), predicate), _objects.end());
 }
 
-void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect& rect)
+void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const FRect& rect)
 {
 	if (_hasChildren)
 	{
@@ -130,7 +129,7 @@ void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect&
 	std::copy(_objects.begin(), _objects.end(), std::back_inserter(returnObjects));
 }
 
-void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect& rect, EColliderType mask)
+void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const FRect& rect, EColliderType mask)
 {
 	if (_hasChildren)
 	{
@@ -142,7 +141,7 @@ void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect&
 		}
 	}
 
-	const auto predicate = [mask](const MovableObjectPtr& object)
+	const auto predicate = [mask](const CollideableDelegatePtr& object)
 	{
 		EColliderType type = object->GetColliderType();
 		return (mask & type) == type;

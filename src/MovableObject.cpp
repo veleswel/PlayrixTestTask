@@ -92,7 +92,6 @@ const FRect MovableObject::GetAABB() const
 	return GetAABB(textureRect, matrixTranslateAnchor * resultTransform);
 }
 
-
 const FRect MovableObject::GetAABB(const FRect& rect, const math::Matrix4& transform) const
 {
 	math::Vector4 leftTop(rect.xStart, rect.yEnd, 0, 1);

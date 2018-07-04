@@ -1,20 +1,20 @@
 #pragma once
 #include "MovableObject.hpp"
 
+class Bubble;
+typedef std::shared_ptr<Bubble> BubblePtr;
+
 class Bubble: public MovableObject
 {
 public:
-	static Bubble* Create(float speed);
+	static BubblePtr Create(float speed);
+
+	Bubble();
 	virtual ~Bubble();
 
-protected:
-	Bubble();
-	
 public:
 	virtual EColliderType GetColliderType() const override;
 
 protected:
 	static const std::string BubbleTextureName;
 };
-
-typedef boost::intrusive_ptr<Bubble> BubblePtr;

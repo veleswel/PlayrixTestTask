@@ -3,9 +3,9 @@
 
 const std::string Cannon::CannonTextureName = "cannon_2";
 
-Cannon* Cannon::create()
+CannonPtr Cannon::create()
 {
-	Cannon* cannon = new (std::nothrow) Cannon();
+	auto cannon = std::make_unique<Cannon>();
 	cannon->Init(CannonTextureName);
 	return cannon;
 }

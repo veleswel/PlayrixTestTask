@@ -7,7 +7,7 @@
 
 #pragma once
 
-class GameObject: public RefCounter
+class GameObject
 {
 public:
 	virtual ~GameObject();

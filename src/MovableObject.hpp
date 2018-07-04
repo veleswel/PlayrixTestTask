@@ -20,7 +20,7 @@ public:
 	void SetVelocity(const math::Vector3& velocity);
 	const math::Vector3& GetVelocity() const;
 
-	const OBB2D GetOBB() const;
+	virtual const OBB2D GetOBB() const override;
 	virtual const FRect GetAABB() const override;
 	
 protected:
@@ -33,5 +33,4 @@ protected:
 	math::Vector3 _velocity;
 };
 
-class MovableObject;
-typedef boost::intrusive_ptr<MovableObject> MovableObjectPtr;
+typedef std::shared_ptr<MovableObject> MovableObjectPtr;
