@@ -7,7 +7,7 @@ const float MainSceneWidget::ProjectileSpeed = 30.f;
 const float MainSceneWidget::MinBubbleSpeed = 100.f;
 const float MainSceneWidget::MaxBubbleSpeed = 200.f;
 const float MainSceneWidget::BubbleLaunchScreenPrecision = 50.f;
-const int MainSceneWidget::BubblesCount = 20;
+const int MainSceneWidget::BubblesCount = 0;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)

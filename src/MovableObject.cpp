@@ -24,15 +24,23 @@ void MovableObject::Draw()
 
 	Render::device.SetTexturing(false);
 
+	const OBB2D obb = GetOBB();
+	
 	Render::BeginColor(Color(0, 255, 255, 255));
-
-	const OBB2D& obb = GetOBB();
 	
 	Render::DrawLine(obb._corner[0], obb._corner[1]);
 	Render::DrawLine(obb._corner[1], obb._corner[2]);
 	Render::DrawLine(obb._corner[2], obb._corner[3]);
 	Render::DrawLine(obb._corner[3], obb._corner[0]);
-
+	
+	Render::EndColor();
+	
+	const FRect aabb = GetAABB();
+	Render::BeginColor(Color(255, 0, 0, 255));
+	Render::DrawLine(aabb.LeftBottom(), aabb.LeftTop());
+	Render::DrawLine(aabb.LeftTop(), aabb.RightTop());
+	Render::DrawLine(aabb.RightTop(), aabb.RightBottom());
+	Render::DrawLine(aabb.RightBottom(), aabb.LeftBottom());
 	Render::EndColor();
 
 	Render::device.SetTexturing(true);
@@ -67,6 +75,42 @@ OBB2D MovableObject::GetOBB() const
 	const float angle = (_angle * math::PI) / 180.f;
 	
 	return OBB2D(position, texture.Width(), texture.Height(), angle);
+}
+
+FRect MovableObject::GetAABB() const
+{
+	FRect textureRect = GetTextureRect();
+	const math::Vector3 center(_position.x, _position.y, 0);
+	
+	const FRect texture = GetTextureRect();
+	
+	const math::Matrix4 matrixScale = math::Matrix4::Scaling(_scale, _scale, 1.f);
+	const math::Matrix4 matrixRotation = math::Matrix4::RotationZ((_angle * math::PI) / 180.f);
+	const math::Matrix4 matrixTranslate = math::Matrix4::Translation(_position.x, _position.y, 0.f);
+	const math::Matrix4 resultTransform(matrixScale * matrixRotation * matrixTranslate);
+	const math::Matrix4 matrixTranslateAnchor = math::Matrix4::Translation(_anchorPointTransform.x, _anchorPointTransform.y, 0.f);
+	
+	return GetAABB(textureRect, matrixTranslateAnchor * resultTransform);;
+}
+
+FRect MovableObject::GetAABB(const FRect& rect, const math::Matrix4& transform) const
+{
+	math::Vector4 leftTop(rect.xStart, rect.yEnd, 0, 1);
+	math::Vector4 rightTop(rect.xEnd, rect.yEnd, 0, 1);
+	math::Vector4 leftBottom(rect.xStart, rect.yStart, 0, 1);
+	math::Vector4 rightBottom(rect.xEnd, rect.yStart, 0, 1);
+	
+	leftTop = leftTop.Transform(transform);
+	rightTop = rightTop.Transform(transform);
+	leftBottom = leftBottom.Transform(transform);
+	rightBottom = rightBottom.Transform(transform);
+	
+	const float minX = fmin(fmin(leftTop.x, rightTop.x), fmin(leftBottom.x, rightBottom.x));
+	const float maxX = fmax(fmax(leftTop.x, rightTop.x), fmax(leftBottom.x, rightBottom.x));
+	const float minY = fmin(fmin(leftTop.y, rightTop.y), fmin(leftBottom.y, rightBottom.y));
+	const float maxY = fmax(fmax(leftTop.y, rightTop.y), fmax(leftBottom.y, rightBottom.y));
+	
+	return FRect(minX, maxX, minY, maxY);
 }
 
 void MovableObject::UpdatePosition(float dt)

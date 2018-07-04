@@ -129,10 +129,13 @@ public:
 	const math::Vector3& GetVelocity() const;
 
 	OBB2D GetOBB() const;
+	FRect GetAABB() const;
 	
 protected:
 	void Init(const std::string& textureName, float speed);
 	void UpdatePosition(float dt);
+	
+	FRect GetAABB(const FRect& rect, const math::Matrix4& transform) const;
 	
 protected:
 	float _speed;
