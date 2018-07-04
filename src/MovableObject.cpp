@@ -24,15 +24,13 @@ void MovableObject::Draw()
 
 	Render::device.SetTexturing(false);
 
-	const OBB2D obb = GetOBB();
+	const auto& corner = GetOBB().GetCorners();
 	
 	Render::BeginColor(Color(0, 255, 255, 255));
-	
-	Render::DrawLine(obb._corner[0], obb._corner[1]);
-	Render::DrawLine(obb._corner[1], obb._corner[2]);
-	Render::DrawLine(obb._corner[2], obb._corner[3]);
-	Render::DrawLine(obb._corner[3], obb._corner[0]);
-	
+	Render::DrawLine(corner[0], corner[1]);
+	Render::DrawLine(corner[1], corner[2]);
+	Render::DrawLine(corner[2], corner[3]);
+	Render::DrawLine(corner[3], corner[0]);
 	Render::EndColor();
 	
 	const FRect aabb = GetAABB();
@@ -68,7 +66,7 @@ const math::Vector3& MovableObject::GetVelocity() const
 	return _velocity;
 }
 
-OBB2D MovableObject::GetOBB() const
+const OBB2D MovableObject::GetOBB() const
 {
 	const math::Vector3 position(_position.x, _position.y, 0);
 	const FRect texture = GetTextureRect();
@@ -77,21 +75,22 @@ OBB2D MovableObject::GetOBB() const
 	return OBB2D(position, texture.Width(), texture.Height(), angle);
 }
 
-FRect MovableObject::GetAABB() const
+const FRect MovableObject::GetAABB() const
 {
 	FRect textureRect = GetTextureRect();
 	const math::Vector3 center(_position.x, _position.y, 0);
-	
+
 	const FRect texture = GetTextureRect();
-	
+
 	const math::Matrix4 matrixScale = math::Matrix4::Scaling(_scale, _scale, 1.f);
 	const math::Matrix4 matrixRotation = math::Matrix4::RotationZ((_angle * math::PI) / 180.f);
 	const math::Matrix4 matrixTranslate = math::Matrix4::Translation(_position.x, _position.y, 0.f);
 	const math::Matrix4 resultTransform(matrixScale * matrixRotation * matrixTranslate);
 	const math::Matrix4 matrixTranslateAnchor = math::Matrix4::Translation(_anchorPointTransform.x, _anchorPointTransform.y, 0.f);
-	
-	return GetAABB(textureRect, matrixTranslateAnchor * resultTransform);;
+
+	return GetAABB(textureRect, matrixTranslateAnchor * resultTransform);
 }
+
 
 FRect MovableObject::GetAABB(const FRect& rect, const math::Matrix4& transform) const
 {

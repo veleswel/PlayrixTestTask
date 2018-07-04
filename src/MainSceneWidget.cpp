@@ -1,17 +1,15 @@
 #include "stdafx.h"
 #include "MainSceneWidget.hpp"
-#include <limits>
 
 const float MainSceneWidget::ProjectileSpeed = 30.f;
 
 const float MainSceneWidget::MinBubbleSpeed = 100.f;
 const float MainSceneWidget::MaxBubbleSpeed = 200.f;
 const float MainSceneWidget::BubbleLaunchScreenPrecision = 50.f;
-const int MainSceneWidget::BubblesCount = 0;
+const int MainSceneWidget::BubblesCount = 20;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
-	, _timer(0.f)
 	, _cannon(nullptr)
 	, _screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height())
 	, _startPosition(FPoint(Render::device.Width() / 2, 0))
@@ -71,17 +69,28 @@ void MainSceneWidget::Draw()
 void MainSceneWidget::Update(float dt)
 {
 	UpdateCannon(dt);
+
+	QuadTree quad(0, _screenRect);
+	quad.Clear();
+
+	FillQuadTree(quad);
+
+	std::list<MovableObjectPtr> returnObjects;
+	for (const auto& objectPtr : _objectsOnScene)
+	{
+		returnObjects.clear();
+		quad.Retrieve(returnObjects, objectPtr->GetAABB());
+
+		for (int x = 0; x < returnObjects.size(); x++)
+		{
+			// Run collision detection algorithm between objects
+		}
+	}
+
 	UpdateBubbles(dt);
 	UpdateProjectiles(dt);
 	
 	_effCont.Update(dt);
-	
-	_timer += dt * 2;
-	
-	while (_timer > 1.f)
-	{
-		_timer -= 1.f;
-	}
 }
 
 bool MainSceneWidget::MouseDown(const IPoint &mouse_pos)
@@ -184,6 +193,8 @@ void MainSceneWidget::UpdateProjectiles(float dt)
 			const math::Vector3 v1 = w - u;
 
 			projectilePtr->SetVelocity(v1);
+
+			projectilePtr->UpdatePosition(dt);
 		}
 	}
 	
@@ -232,7 +243,7 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 
 FPoint MainSceneWidget::CalculateProjectileStartPosition() const
 {
-	const float angle = (math::PI * _cannon->GetRotationAngle()) / 180;
+	const float angle = (math::PI * _cannon->GetRotationAngle()) / 180.f;
 	const float cannonTextHeight = _cannon->GetTextureRect().Height();
 
 	FPoint position(
@@ -261,13 +272,7 @@ void MainSceneWidget::DrawBubbles()
 }
 
 void MainSceneWidget::UpdateBubbles(float dt)
-{
-	if (_bubbles.empty())
-	{
-		LaunchBubbles();
-		return;
-	}
-	
+{	
 	for (const auto& bubblePtr: _bubbles)
 	{
 		bubblePtr->Update(dt);
@@ -290,6 +295,8 @@ void MainSceneWidget::UpdateBubbles(float dt)
 			const math::Vector3 v1 = w - u;
 
 			bubblePtr->SetVelocity(v1);
+
+			bubblePtr->UpdatePosition(dt);
 		}
 	}
 }
@@ -346,5 +353,20 @@ void MainSceneWidget::DestroyBubble(const BubblePtr& bubble)
 	if (iter != _bubbles.end())
 	{
 		_bubbles.erase(iter);
+	}
+}
+
+void MainSceneWidget::FillQuadTree(QuadTree& quad)
+{
+	quad.Clear();
+
+	for (const auto& projPtr: _launchedProjectiles)
+	{
+		quad.Insert(projPtr);
+	}
+
+	for (const auto& bubblePtr: _bubbles)
+	{
+		quad.Insert(bubblePtr);
 	}
 }

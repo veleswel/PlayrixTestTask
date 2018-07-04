@@ -2,6 +2,7 @@
 #include "Cannon.hpp"
 #include "Projectile.hpp"
 #include "Bubble.hpp"
+#include "QuadTree.hpp"
 
 static const float Width = 10.f;
 
@@ -139,12 +140,15 @@ struct Wall
 	
 	void Draw()
 	{
+		const auto& corner = _obb.GetCorners();
+
 		Render::device.SetTexturing(false);
 		Render::BeginColor(Color(0, 255, 255, 255));
-		Render::DrawLine(_obb._corner[0], _obb._corner[1]);
-		Render::DrawLine(_obb._corner[1], _obb._corner[2]);
-		Render::DrawLine(_obb._corner[2], _obb._corner[3]);
-		Render::DrawLine(_obb._corner[3], _obb._corner[0]);
+
+		Render::DrawLine(corner[0], corner[1]);
+		Render::DrawLine(corner[1], corner[2]);
+		Render::DrawLine(corner[2], corner[3]);
+		Render::DrawLine(corner[3], corner[0]);
 		Render::EndColor();
 		Render::device.SetTexturing(true);
 	}
@@ -186,6 +190,8 @@ protected:
 
 	void DestroyBubble(const BubblePtr& projectile);
 
+	void FillQuadTree(QuadTree& quad);
+
 protected:
 	static const float ProjectileSpeed;
 	
@@ -199,13 +205,12 @@ protected:
 protected:
 	const FPoint _startPosition;
 	const FRect _screenRect;
-	
-	float _timer;
 
 	CannonPtr _cannon;
+
 	std::list<ProjectilePtr> _launchedProjectiles;
 	std::list<BubblePtr> _bubbles;
-	
+
 	EffectsContainer _effCont;
 	
 	std::array<Wall, 4> _walls;
