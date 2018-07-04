@@ -13,14 +13,14 @@ struct Wall
 	math::Vector3 _vector;
 	math::Vector3 _normal;
 	
-	FRect _bbox;
+	OBB2D _obb;
 	
 	Wall()
 		: _start(0, 0)
 		, _end(0, 0)
 		, _normal(0, 0, 0)
 		, _vector(0, 0, 0)
-		, _bbox(0, 0, 0, 0)
+		, _obb()
 	{
 		
 	}
@@ -30,7 +30,7 @@ struct Wall
 		, _end(wall._end)
 		, _normal(wall._normal)
 		, _vector(wall._vector)
-		, _bbox(wall._bbox)
+		, _obb(wall._obb)
 	{
 		
 	}
@@ -40,22 +40,18 @@ struct Wall
 		, _end(end)
 		, _normal(0, 0, 0)
 		, _vector(0, 0, 0)
-		, _bbox(0, 0, 0, 0)
+		, _obb()
 	{
-		CalculateVector();
-		CalculateNormal();
-		CalculateBBox();
+		Init();
 	}
 	
 	Wall(float xStart, float yStart, float xEnd, float yEnd)
 		: _start(FPoint(xStart, yStart))
 		, _end(FPoint(xEnd, yEnd))
 		, _normal(0, 0, 0)
-		, _bbox(0, 0, 0, 0)
+		, _obb()
 	{
-		CalculateVector();
-		CalculateNormal();
-		CalculateBBox();
+		Init();
 	}
 	
 	Wall& operator = (const Wall& wall)
@@ -69,7 +65,7 @@ struct Wall
 		_end = wall._end;
 		_normal = wall._normal;
 		_vector = wall._vector;
-		_bbox = wall._bbox;
+		_obb = wall._obb;
 		
 		return *this;
 	}
@@ -77,6 +73,13 @@ struct Wall
 	friend bool operator == (const Wall& left, const Wall& right)
 	{
 		return (left._start == right._start) && (left._end == right._end);
+	}
+	
+	void Init()
+	{
+		CalculateVector();
+		CalculateNormal();
+		CalculateOBB();
 	}
 	
 	void CalculateVector()
@@ -96,7 +99,7 @@ struct Wall
 		_normal.z = 0.f;
 	}
 	
-	void CalculateBBox()
+	void CalculateOBB()
 	{
 		float xStart = _start.x;
 		float xEnd = _end.x + _normal.x * Width;
@@ -107,13 +110,16 @@ struct Wall
 		const float minX = math::min(xStart, xEnd);
 		const float maxX = math::max(xStart, xEnd);
 		
+		const float width = maxX - minX;
+		
 		const float minY = math::min(yStart, yEnd);
 		const float maxY = math::max(yStart, yEnd);
 		
-		_bbox.xStart = minX;
-		_bbox.xEnd = maxX;
-		_bbox.yStart = minY;
-		_bbox.yEnd = maxY;
+		const float height = maxY - minY;
+		
+		const math::Vector3 center(minX + width / 2, minY + height / 2, 0);
+		
+		_obb = OBB2D(center, width, height, 0.f);
 	}
 	
 	const math::Vector3& GetVector() const
@@ -126,16 +132,19 @@ struct Wall
 		return _normal;
 	}
 	
-	const FRect& GetBBox() const
+	const OBB2D& GetOBB() const
 	{
-		return _bbox;
+		return _obb;
 	}
 	
 	void Draw()
 	{
 		Render::device.SetTexturing(false);
-		Render::BeginColor(Color(228, 237, 113, 255));
-		Render::DrawRect(_bbox.xStart, _bbox.yStart, _bbox.Width(), _bbox.Height());
+		Render::BeginColor(Color(0, 255, 255, 255));
+		Render::DrawLine(_obb._corner[0], _obb._corner[1]);
+		Render::DrawLine(_obb._corner[1], _obb._corner[2]);
+		Render::DrawLine(_obb._corner[2], _obb._corner[3]);
+		Render::DrawLine(_obb._corner[3], _obb._corner[0]);
 		Render::EndColor();
 		Render::device.SetTexturing(true);
 	}
@@ -175,7 +184,7 @@ protected:
 	
 	void LaunchBubbles();
 
-	static EColissionSide DoBoxesCollide(const FRect& bbox1, const FRect& bbox2);
+	void DestroyBubble(const BubblePtr& projectile);
 
 protected:
 	static const float ProjectileSpeed;

@@ -2,12 +2,12 @@
 #include "MainSceneWidget.hpp"
 #include <limits>
 
-const float MainSceneWidget::ProjectileSpeed = 50.f;
+const float MainSceneWidget::ProjectileSpeed = 30.f;
 
 const float MainSceneWidget::MinBubbleSpeed = 100.f;
 const float MainSceneWidget::MaxBubbleSpeed = 200.f;
 const float MainSceneWidget::BubbleLaunchScreenPrecision = 50.f;
-const int MainSceneWidget::BubblesCount = 20;
+const int MainSceneWidget::BubblesCount = 1000;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
@@ -131,36 +131,58 @@ void MainSceneWidget::DrawProjectiles()
 void MainSceneWidget::UpdateProjectiles(float dt)
 {
 	std::vector<ProjectilePtr> projectilesToDestroy;
+	std::vector<BubblePtr> bubblesToDestroy;
 	
 	for (const auto& projectilePtr : _launchedProjectiles)
 	{
 		projectilePtr->Update(dt);
 		
-		const FRect& bbox = projectilePtr->GetBoundingBox();
+		const auto& obb = projectilePtr->GetOBB();
 		const math::Vector3& v = projectilePtr->GetVelocity();
 		const float angle = projectilePtr->GetRotationAngle();
 	
-		for (const Wall& wall: _walls)
+		bool doesCollideWithBubble = false;
+		
+		for (const auto& bubblePtr: _bubbles)
 		{
-			if (!wall.GetBBox().Intersects(bbox))
+			if (!obb.overlaps(bubblePtr->GetOBB()))
 			{
 				continue;
 			}
 			
+			doesCollideWithBubble = true;
+			bubblesToDestroy.push_back(bubblePtr);
+			projectilesToDestroy.push_back(projectilePtr);
+			
+			break;
+		}
+		
+		if (doesCollideWithBubble)
+		{
+			break;
+		}
+		
+		for (const Wall& wall: _walls)
+		{
+			if (!obb.overlaps(wall.GetOBB()))
+			{
+				continue;
+			}
+
 			if (wall == _walls.at(0) || wall == _walls.at(2))
 			{
 				projectilesToDestroy.push_back(projectilePtr);
 				continue;
 			}
-			
+
 			// Collision
 			const math::Vector3& n = wall.GetNormal();
-			
+
 			const math::Vector3 u = v.DotProduct(n) * n;
 			const math::Vector3 w = v - u;
-			
+
 			const math::Vector3 v1 = w - u;
-			
+
 			projectilePtr->SetVelocity(v1);
 			projectilePtr->UpdatePosition(dt);
 		}
@@ -170,6 +192,12 @@ void MainSceneWidget::UpdateProjectiles(float dt)
 	{
 		DestroyProjectile(projectilePtr);
 		projectilePtr = nullptr;
+	}
+	
+	for (auto& bubblePtr: bubblesToDestroy)
+	{
+		DestroyBubble(bubblePtr);
+		bubblePtr = nullptr;
 	}
 }
 
@@ -192,12 +220,15 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 	projectilePtr->SetRotationAngle(angle);
 	projectilePtr->SetVelocity(velocity);
 
-	const FRect& bbox = projectilePtr->GetBoundingBox();
+	const auto& obb = projectilePtr->GetOBB();
 	
-	if (!_walls[0].GetBBox().Intersects(bbox))
+	if (obb.overlaps(_walls[0].GetOBB()))
 	{
-		_launchedProjectiles.push_back(projectilePtr);
+		projectilePtr = nullptr;
+		return;
 	}
+	
+	_launchedProjectiles.push_back(projectilePtr);
 }
 
 FPoint MainSceneWidget::CalculateProjectileStartPosition() const
@@ -232,56 +263,33 @@ void MainSceneWidget::DrawBubbles()
 
 void MainSceneWidget::UpdateBubbles(float dt)
 {
+	if (_bubbles.empty())
+	{
+		LaunchBubbles();
+		return;
+	}
+	
 	for (const auto& bubblePtr: _bubbles)
 	{
 		bubblePtr->Update(dt);
 		
-		const FRect& bbox = bubblePtr->GetBoundingBox();
+		const auto& obb = bubblePtr->GetOBB();
 		const math::Vector3& v = bubblePtr->GetVelocity();
-		
-//		if (_walls[0].GetBBox().Intersects(bbox) && _walls[1].GetBBox().Intersects(bbox))
-//		{
-//			const math::Vector3 v1 = -v;
-//
-//			bubblePtr->SetVelocity(v1);
-//			bubblePtr->UpdatePosition(dt);
-//		}
-//		else if (_walls[1].GetBBox().Intersects(bbox) && _walls[2].GetBBox().Intersects(bbox))
-//		{
-//			const math::Vector3 v1 = -v;
-//
-//			bubblePtr->SetVelocity(v1);
-//			bubblePtr->UpdatePosition(dt);
-//		}
-//		else if (_walls[2].GetBBox().Intersects(bbox) && _walls[3].GetBBox().Intersects(bbox))
-//		{
-//			const math::Vector3 v1 = -v;
-//
-//			bubblePtr->SetVelocity(v1);
-//			bubblePtr->UpdatePosition(dt);
-//		}
-//		else if (_walls[3].GetBBox().Intersects(bbox) && _walls[0].GetBBox().Intersects(bbox))
-//		{
-//			const math::Vector3 v1 = -v;
-//
-//			bubblePtr->SetVelocity(v1);
-//			bubblePtr->UpdatePosition(dt);
-//		}
 		
 		for (const Wall& wall: _walls)
 		{
-			if (!wall.GetBBox().Intersects(bbox))
+			if (!obb.overlaps(wall.GetOBB()))
 			{
 				continue;
 			}
-			
+
 			// Collision
 			const math::Vector3& n = wall.GetNormal();
-			
+
 			const math::Vector3 u = v.DotProduct(n) * n;
 			const math::Vector3 w = v - u;
 			const math::Vector3 v1 = w - u;
-			
+
 			bubblePtr->SetVelocity(v1);
 			bubblePtr->UpdatePosition(dt);
 		}
@@ -311,11 +319,11 @@ void MainSceneWidget::LaunchBubbles()
 		bubblePtr->SetRotationAngle(angle);
 		bubblePtr->SetVelocity(v);
 		
-		const FRect& bbox = bubblePtr->GetBoundingBox();
+		const auto& obb = bubblePtr->GetOBB();
 
 		for (const Wall& wall: _walls)
 		{
-			if (!wall.GetBBox().Intersects(bbox))
+			if (!wall.GetOBB().overlaps(obb))
 			{
 				continue;
 			}
@@ -334,47 +342,11 @@ void MainSceneWidget::LaunchBubbles()
 	}
 }
 
-EColissionSide MainSceneWidget::DoBoxesCollide(const FRect& bbox1, const FRect& bbox2)
+void MainSceneWidget::DestroyBubble(const BubblePtr& bubble)
 {
-	const float w = 0.5 * (bbox1.Width() + bbox2.Width());
-	const float h = 0.5 * (bbox1.Height() + bbox2.Height());
-
-	const float dx = bbox1.CenterPoint().x - bbox2.CenterPoint().x;
-	const float dy = bbox1.CenterPoint().y - bbox2.CenterPoint().y;
-
-	if (abs(dx) <= w && abs(dy) <= h)
+	const auto iter = std::find(_bubbles.begin(), _bubbles.end(), bubble);
+	if (iter != _bubbles.end())
 	{
-		/* collision! */
-		float wy = w * dy;
-		float hx = h * dx;
-
-		if (wy > hx)
-		{
-			if (wy > -hx)
-			{
-				/* collision at the top */
-				return EColissionSide::ETop;
-			}
-			else
-			{
-				/* on the left */
-				return EColissionSide::ELeft;
-			}
-		}
-		else
-		{
-			if (wy > -hx)
-			{
-				/* on the right */
-				return EColissionSide::ERight;
-			}
-			else
-			{
-				/* at the bottom */
-				return EColissionSide::EBottom;
-			}
-		}
+		_bubbles.erase(iter);
 	}
-
-	return EColissionSide::ENone;
 }

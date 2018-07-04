@@ -1,32 +1,22 @@
 #include "stdafx.h"
 #include "MovableObject.hpp"
 
-math::Vector4 transformVec4(const math::Matrix4& m, const math::Vector4& v)
-{
-	const float x = v[0] * m[0] + v[1] * m[4] + v[2] * m[8] + v[3] * m[12];
-	const float y = v[0] * m[1] + v[1] * m[5] + v[2] * m[9] + v[3] * m[13];
-	const float z = v[0] * m[2] + v[1] * m[6] + v[2] * m[10] + v[3] * m[14];
-	const float w = v[0] * m[3] + v[1] * m[7] + v[2] * m[11] + v[3] * m[15];
-	
-	return math::Vector4(x, y, z, w);
-}
-
 FRect GetTransformedBoundingBox(const FRect& rect, const math::Matrix4& transform)
 {
-	math::Vector4 topLeft(rect.xStart, rect.yEnd, 0, 1);
-	math::Vector4 topRight(rect.xEnd, rect.yEnd, 0, 1);
-	math::Vector4 bottomLeft(rect.xStart, rect.yStart, 0, 1);
-	math::Vector4 bottomRight(rect.xEnd, rect.yStart, 0, 1);
+	math::Vector4 leftTop(rect.xStart, rect.yEnd, 0, 1);
+	math::Vector4 rightTop(rect.xEnd, rect.yEnd, 0, 1);
+	math::Vector4 leftBottom(rect.xStart, rect.yStart, 0, 1);
+	math::Vector4 rightBottom(rect.xEnd, rect.yStart, 0, 1);
 	
-	topLeft = transformVec4(transform, topLeft);
-	topRight = transformVec4(transform, topRight);
-	bottomLeft = transformVec4(transform, bottomLeft);
-	bottomRight = transformVec4(transform, bottomRight);
+	leftTop = leftTop.Transform(transform);
+	rightTop = rightTop.Transform(transform);
+	leftBottom = leftBottom.Transform(transform);
+	rightBottom = rightBottom.Transform(transform);
 	
-	const float minX = fmin(fmin(topLeft.x, topRight.x), fmin(bottomLeft.x, bottomRight.x));
-	const float maxX = fmax(fmax(topLeft.x, topRight.x), fmax(bottomLeft.x, bottomRight.x));
-	const float minY = fmin(fmin(topLeft.y, topRight.y), fmin(bottomLeft.y, bottomRight.y));
-	const float maxY = fmax(fmax(topLeft.y, topRight.y), fmax(bottomLeft.y, bottomRight.y));
+	const float minX = fmin(fmin(leftTop.x, rightTop.x), fmin(leftBottom.x, rightBottom.x));
+	const float maxX = fmax(fmax(leftTop.x, rightTop.x), fmax(leftBottom.x, rightBottom.x));
+	const float minY = fmin(fmin(leftTop.y, rightTop.y), fmin(leftBottom.y, rightBottom.y));
+	const float maxY = fmax(fmax(leftTop.y, rightTop.y), fmax(leftBottom.y, rightBottom.y));
 	
 	return FRect(minX, maxX, minY, maxY);
 }
@@ -52,19 +42,19 @@ void MovableObject::Draw()
 {
 	GameObject::Draw();
 	
-	FRect bbox = GetBoundingBox();
+	OBB2D obb = GetOBB();
 	
 	Render::device.SetTexturing(false);
 	
-	Render::BeginColor(Color(255, 255, 0, 255));
+	Render::BeginColor(Color(0, 255, 255, 255));
 	
-	Render::DrawLine(bbox.LeftBottom(), bbox.LeftTop());
-	Render::DrawLine(bbox.LeftTop(), bbox.RightTop());
-	Render::DrawLine(bbox.RightTop(), bbox.RightBottom());
-	Render::DrawLine(bbox.RightBottom(), bbox.LeftBottom());
+	Render::DrawLine(obb._corner[0], obb._corner[1]);
+	Render::DrawLine(obb._corner[1], obb._corner[2]);
+	Render::DrawLine(obb._corner[2], obb._corner[3]);
+	Render::DrawLine(obb._corner[3], obb._corner[0]);
 	
 	Render::EndColor();
-	
+
 	Render::device.SetTexturing(true);
 }
 
@@ -108,15 +98,13 @@ void MovableObject::UpdatePosition(float dt)
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
 }
 
-FRect MovableObject::GetBoundingBox() const
+OBB2D MovableObject::GetOBB() const
 {
-	FRect textureRect = GetTextureRect();
+	const math::Vector3 center(_position.x, _position.y, 0);
 	
-	math::Matrix4 matrixScale = math::Matrix4::Scaling(_scale, _scale, 1.f);
-	math::Matrix4 matrixRotation = math::Matrix4::RotationZ((_angle * math::PI) / 180.f);
-	math::Matrix4 matrixTranslate = math::Matrix4::Translation(_position.x, _position.y, 0.f);
-	math::Matrix4 resultTransform(matrixScale * matrixRotation * matrixTranslate);
-	math::Matrix4 matrixTranslateAnchor = math::Matrix4::Translation(_anchorPointTransform.x, _anchorPointTransform.y, 0.f);
+	const FRect texture = GetTextureRect();
 	
-	return GetTransformedBoundingBox(textureRect, matrixTranslateAnchor * resultTransform);;
+	const float angle = (_angle * math::PI) / 180.f;
+	
+	return OBB2D(center, texture.Width(), texture.Height(), angle);
 }
