@@ -34,6 +34,7 @@ void MovableObject::Draw()
 	Render::EndColor();
 	
 	const FRect aabb = GetAABB();
+
 	Render::BeginColor(Color(255, 0, 0, 255));
 	Render::DrawLine(aabb.LeftBottom(), aabb.LeftTop());
 	Render::DrawLine(aabb.LeftTop(), aabb.RightTop());
@@ -92,7 +93,7 @@ const FRect MovableObject::GetAABB() const
 }
 
 
-FRect MovableObject::GetAABB(const FRect& rect, const math::Matrix4& transform) const
+const FRect MovableObject::GetAABB(const FRect& rect, const math::Matrix4& transform) const
 {
 	math::Vector4 leftTop(rect.xStart, rect.yEnd, 0, 1);
 	math::Vector4 rightTop(rect.xEnd, rect.yEnd, 0, 1);

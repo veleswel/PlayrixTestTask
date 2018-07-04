@@ -11,6 +11,9 @@ protected:
 	Projectile();
 
 protected:
+	virtual EColliderType GetColliderType() const override;
+
+protected:
 	static const std::string ProjectileTextureName;
 };
 

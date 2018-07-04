@@ -17,5 +17,10 @@ Projectile::Projectile()
 
 Projectile::~Projectile()
 {
-	std::cout << "Projectile destroyed" << std::endl;
+	
+}
+
+EColliderType Projectile::GetColliderType() const
+{
+	return EColliderType::EProjectile;
 }

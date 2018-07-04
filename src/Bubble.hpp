@@ -10,6 +10,9 @@ public:
 protected:
 	Bubble();
 	
+public:
+	virtual EColliderType GetColliderType() const override;
+
 protected:
 	static const std::string BubbleTextureName;
 };

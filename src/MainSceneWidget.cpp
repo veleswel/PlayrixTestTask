@@ -76,16 +76,16 @@ void MainSceneWidget::Update(float dt)
 	FillQuadTree(quad);
 
 	std::list<MovableObjectPtr> returnObjects;
-	for (const auto& objectPtr : _objectsOnScene)
-	{
-		returnObjects.clear();
-		quad.Retrieve(returnObjects, objectPtr->GetAABB());
+	//for (const auto& objectPtr : _objectsOnScene)
+	//{
+	//	returnObjects.clear();
+	//	quad.Retrieve(returnObjects, objectPtr->GetAABB());
 
-		for (int x = 0; x < returnObjects.size(); x++)
-		{
-			// Run collision detection algorithm between objects
-		}
-	}
+	//	for (int x = 0; x < returnObjects.size(); x++)
+	//	{
+	//		// Run collision detection algorithm between objects
+	//	}
+	//}
 
 	UpdateBubbles(dt);
 	UpdateProjectiles(dt);

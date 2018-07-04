@@ -34,14 +34,14 @@ public:
 	void SetScale(float scale);
 	float GetScale() const;
 	
-	FRect GetTextureRect() const;
+	const FRect GetTextureRect() const;
 
 protected:
 	void Init(const std::string& textureName);
 	
 protected:
 	Render::Texture* _texture;
-	
+
 	FPoint _position;
 	
 	float _angle;

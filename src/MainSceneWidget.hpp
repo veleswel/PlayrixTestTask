@@ -6,8 +6,9 @@
 
 static const float Width = 10.f;
 
-struct Wall
+class Wall: public CollideableDelegate
 {
+protected:
 	FPoint _start;
 	FPoint _end;
 	
@@ -15,7 +16,8 @@ struct Wall
 	math::Vector3 _normal;
 	
 	OBB2D _obb;
-	
+
+public:
 	Wall()
 		: _start(0, 0)
 		, _end(0, 0)
@@ -140,17 +142,38 @@ struct Wall
 	
 	void Draw()
 	{
+		Render::device.SetTexturing(false);
+		
 		const auto& corner = _obb.GetCorners();
 
-		Render::device.SetTexturing(false);
 		Render::BeginColor(Color(0, 255, 255, 255));
-
 		Render::DrawLine(corner[0], corner[1]);
 		Render::DrawLine(corner[1], corner[2]);
 		Render::DrawLine(corner[2], corner[3]);
 		Render::DrawLine(corner[3], corner[0]);
 		Render::EndColor();
+
+		const FRect aabb = GetAABB();
+
+		Render::BeginColor(Color(255, 0, 0, 255));
+		Render::DrawLine(aabb.LeftBottom(), aabb.LeftTop());
+		Render::DrawLine(aabb.LeftTop(), aabb.RightTop());
+		Render::DrawLine(aabb.RightTop(), aabb.RightBottom());
+		Render::DrawLine(aabb.RightBottom(), aabb.LeftBottom());
+		Render::EndColor();
+
 		Render::device.SetTexturing(true);
+	}
+
+	virtual EColliderType GetColliderType() const
+	{
+		return EColliderType::EWall;
+	}
+
+	virtual const FRect GetAABB() const override
+	{
+		const auto& corner = _obb.GetCorners();
+		return FRect(corner[0].x, corner[1].x, corner[0].y, corner[2].y);
 	}
 };
 

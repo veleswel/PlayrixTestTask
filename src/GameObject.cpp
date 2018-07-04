@@ -117,7 +117,7 @@ float GameObject::GetScale() const
 	return _scale;
 }
 
-FRect GameObject::GetTextureRect() const
+const FRect GameObject::GetTextureRect() const
 {
-	return FRect(_texture->getBitmapRect());
+	return FRect(_texture->getBitmapRect()).Scaled(_scale);
 }

@@ -19,3 +19,8 @@ Bubble::~Bubble()
 {
 
 }
+
+EColliderType Bubble::GetColliderType() const
+{
+	return EColliderType::EBubble;
+}

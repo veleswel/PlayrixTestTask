@@ -26,7 +26,7 @@ public:
 protected:
 	void Init(const std::string& textureName, float speed);
 	
-	FRect GetAABB(const FRect& rect, const math::Matrix4& transform) const;
+	const FRect GetAABB(const FRect& rect, const math::Matrix4& transform) const;
 	
 protected:
 	float _speed;

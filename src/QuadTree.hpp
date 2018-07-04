@@ -1,13 +1,23 @@
 #pragma once
 #include "OBB.hpp"
+#include <bitset>
 
-class MovableObject;
-typedef boost::intrusive_ptr<MovableObject> MovableObjectPtr;
-
-enum class EColliderType
+enum class EColliderType: int
 {
-	EWall, EProjectile, EBubble
+	EWall = 1 << 0, 
+	EProjectile = 1 << 1, 
+	EBubble = 1 << 2
 };
+
+inline EColliderType operator | (EColliderType lhs, EColliderType rhs)
+{
+	return static_cast<EColliderType>(static_cast<int>(lhs) | static_cast<int>(rhs));
+}
+
+inline EColliderType operator & (EColliderType lhs, EColliderType rhs)
+{
+	return static_cast<EColliderType>(static_cast<int>(lhs) & static_cast<int>(rhs));
+}
 
 class CollideableDelegate
 {
@@ -20,6 +30,9 @@ public:
 
 typedef boost::intrusive_ptr<CollideableDelegate> CollideableDelegatePtr;
 
+class MovableObject;
+typedef boost::intrusive_ptr<MovableObject> MovableObjectPtr;
+
 class QuadTree
 {
 public:
@@ -29,6 +42,7 @@ public:
 	void Insert(const MovableObjectPtr& object);
 
 	void Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect& rect);
+	void Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect& rect, EColliderType mask);
 
 	void Clear();
 	

@@ -51,9 +51,6 @@ void QuadTree::Split()
 
 int QuadTree::GetIndex(const FRect& rect)
 {
-	assert(rect.Height() >= 0.f);
-	assert(rect.Width() >= 0.f);
-
 	const float verticalMidpoint = _bounds.xStart + _bounds.Width() / 2.f;
 	const float horizontalMidpoint = _bounds.yStart + _bounds.Height() / 2.f;
 
@@ -73,8 +70,6 @@ int QuadTree::GetIndex(const FRect& rect)
 
 bool QuadTree::InsertInChild(const MovableObjectPtr& object)
 {
-	assert(_hasChildren);
-
 	auto index = GetIndex(object->GetAABB());
 
 	if (index == IndexNotFound)
@@ -133,4 +128,25 @@ void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect&
 	}
 
 	std::copy(_objects.begin(), _objects.end(), std::back_inserter(returnObjects));
+}
+
+void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const FRect& rect, EColliderType mask)
+{
+	if (_hasChildren)
+	{
+		const int index = GetIndex(rect);
+
+		if (index != IndexNotFound)
+		{
+			_nodes[index]->Retrieve(returnObjects, rect);
+		}
+	}
+
+	const auto predicate = [mask](const MovableObjectPtr& object)
+	{
+		EColliderType type = object->GetColliderType();
+		return (mask & type) == type;
+	};
+
+	std::copy_if(_objects.begin(), _objects.end(), std::back_inserter(returnObjects), predicate);
 }
