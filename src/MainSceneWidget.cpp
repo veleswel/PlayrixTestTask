@@ -7,7 +7,7 @@ const float MainSceneWidget::ProjectileSpeed = 30.f;
 const float MainSceneWidget::MinBubbleSpeed = 100.f;
 const float MainSceneWidget::MaxBubbleSpeed = 200.f;
 const float MainSceneWidget::BubbleLaunchScreenPrecision = 50.f;
-const int MainSceneWidget::BubblesCount = 1000;
+const int MainSceneWidget::BubblesCount = 20;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
@@ -145,7 +145,7 @@ void MainSceneWidget::UpdateProjectiles(float dt)
 		
 		for (const auto& bubblePtr: _bubbles)
 		{
-			if (!obb.overlaps(bubblePtr->GetOBB()))
+			if (!obb.Overlaps(bubblePtr->GetOBB()))
 			{
 				continue;
 			}
@@ -164,7 +164,7 @@ void MainSceneWidget::UpdateProjectiles(float dt)
 		
 		for (const Wall& wall: _walls)
 		{
-			if (!obb.overlaps(wall.GetOBB()))
+			if (!obb.Overlaps(wall.GetOBB()))
 			{
 				continue;
 			}
@@ -184,7 +184,6 @@ void MainSceneWidget::UpdateProjectiles(float dt)
 			const math::Vector3 v1 = w - u;
 
 			projectilePtr->SetVelocity(v1);
-			projectilePtr->UpdatePosition(dt);
 		}
 	}
 	
@@ -222,7 +221,7 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 
 	const auto& obb = projectilePtr->GetOBB();
 	
-	if (obb.overlaps(_walls[0].GetOBB()))
+	if (obb.Overlaps(_walls[0].GetOBB()))
 	{
 		projectilePtr = nullptr;
 		return;
@@ -278,7 +277,7 @@ void MainSceneWidget::UpdateBubbles(float dt)
 		
 		for (const Wall& wall: _walls)
 		{
-			if (!obb.overlaps(wall.GetOBB()))
+			if (!obb.Overlaps(wall.GetOBB()))
 			{
 				continue;
 			}
@@ -291,7 +290,6 @@ void MainSceneWidget::UpdateBubbles(float dt)
 			const math::Vector3 v1 = w - u;
 
 			bubblePtr->SetVelocity(v1);
-			bubblePtr->UpdatePosition(dt);
 		}
 	}
 }
@@ -323,7 +321,7 @@ void MainSceneWidget::LaunchBubbles()
 
 		for (const Wall& wall: _walls)
 		{
-			if (!wall.GetOBB().overlaps(obb))
+			if (!wall.GetOBB().Overlaps(obb))
 			{
 				continue;
 			}

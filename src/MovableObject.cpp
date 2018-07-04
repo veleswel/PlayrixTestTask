@@ -1,26 +1,6 @@
 #include "stdafx.h"
 #include "MovableObject.hpp"
 
-FRect GetTransformedBoundingBox(const FRect& rect, const math::Matrix4& transform)
-{
-	math::Vector4 leftTop(rect.xStart, rect.yEnd, 0, 1);
-	math::Vector4 rightTop(rect.xEnd, rect.yEnd, 0, 1);
-	math::Vector4 leftBottom(rect.xStart, rect.yStart, 0, 1);
-	math::Vector4 rightBottom(rect.xEnd, rect.yStart, 0, 1);
-	
-	leftTop = leftTop.Transform(transform);
-	rightTop = rightTop.Transform(transform);
-	leftBottom = leftBottom.Transform(transform);
-	rightBottom = rightBottom.Transform(transform);
-	
-	const float minX = fmin(fmin(leftTop.x, rightTop.x), fmin(leftBottom.x, rightBottom.x));
-	const float maxX = fmax(fmax(leftTop.x, rightTop.x), fmax(leftBottom.x, rightBottom.x));
-	const float minY = fmin(fmin(leftTop.y, rightTop.y), fmin(leftBottom.y, rightBottom.y));
-	const float maxY = fmax(fmax(leftTop.y, rightTop.y), fmax(leftBottom.y, rightBottom.y));
-	
-	return FRect(minX, maxX, minY, maxY);
-}
-
 MovableObject::MovableObject()
 	: _speed(0.f)
 {
@@ -41,18 +21,18 @@ void MovableObject::Init(const std::string& textureName, float speed)
 void MovableObject::Draw()
 {
 	GameObject::Draw();
-	
-	OBB2D obb = GetOBB();
-	
+
 	Render::device.SetTexturing(false);
-	
+
 	Render::BeginColor(Color(0, 255, 255, 255));
+
+	const OBB2D& obb = GetOBB();
 	
 	Render::DrawLine(obb._corner[0], obb._corner[1]);
 	Render::DrawLine(obb._corner[1], obb._corner[2]);
 	Render::DrawLine(obb._corner[2], obb._corner[3]);
 	Render::DrawLine(obb._corner[3], obb._corner[0]);
-	
+
 	Render::EndColor();
 
 	Render::device.SetTexturing(true);
@@ -80,14 +60,13 @@ const math::Vector3& MovableObject::GetVelocity() const
 	return _velocity;
 }
 
-float MovableObject::GetSpeed() const
+OBB2D MovableObject::GetOBB() const
 {
-	return _speed;
-}
-
-void MovableObject::Stop()
-{
-	_speed = 0;
+	const math::Vector3 position(_position.x, _position.y, 0);
+	const FRect texture = GetTextureRect();
+	const float angle = (_angle * math::PI) / 180.f;
+	
+	return OBB2D(position, texture.Width(), texture.Height(), angle);
 }
 
 void MovableObject::UpdatePosition(float dt)
@@ -96,15 +75,4 @@ void MovableObject::UpdatePosition(float dt)
 	float dy = _position.y + _velocity.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
-}
-
-OBB2D MovableObject::GetOBB() const
-{
-	const math::Vector3 center(_position.x, _position.y, 0);
-	
-	const FRect texture = GetTextureRect();
-	
-	const float angle = (_angle * math::PI) / 180.f;
-	
-	return OBB2D(center, texture.Width(), texture.Height(), angle);
 }
