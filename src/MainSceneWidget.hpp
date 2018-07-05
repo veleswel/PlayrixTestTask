@@ -162,7 +162,7 @@ public:
 		Render::device.SetTexturing(true);
 	}
 
-	virtual const OBB2D GetOBB() const override
+	virtual const OBB2D& GetOBB() const override
 	{
 		return _obb;
 	}
@@ -173,7 +173,7 @@ public:
 		return FRect(corner[0].x, corner[1].x, corner[0].y, corner[2].y);
 	}
 
-	virtual EColliderType GetColliderType() const
+	virtual EColliderType GetColliderType() const override
 	{
 		return EColliderType::EWall;
 	}

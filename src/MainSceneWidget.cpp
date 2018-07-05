@@ -2,8 +2,7 @@
 #include "MainSceneWidget.hpp"
 #include <boost/polymorphic_pointer_cast.hpp>
 
-const float MainSceneWidget::ProjectileSpeed = 30.f;
-
+const float MainSceneWidget::ProjectileSpeed = 250.f;
 const float MainSceneWidget::MinBubbleSpeed = 100.f;
 const float MainSceneWidget::MaxBubbleSpeed = 200.f;
 const float MainSceneWidget::BubbleLaunchScreenPrecision = 50.f;
@@ -27,10 +26,9 @@ void MainSceneWidget::Init()
 		std::make_shared<Wall>(_screenRect.xStart, _screenRect.yEnd, _screenRect.xStart, _screenRect.yStart) // left
 	};
 	
-	_cannon = Cannon::create();
-	_cannon->SetPosition(_startPosition);
+	_cannon.reset(new Cannon(_startPosition, 90.f));
 	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
-	_cannon->SetRotationAngle(90.f);
+	_cannon->SetScale(2.f);
 	
 	LaunchBubbles();
 }
@@ -229,8 +227,6 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 	const FPoint mousePosition(position);
 	
 	const float angle = (math::atan(mousePosition.y - _startPosition.y, mousePosition.x - _startPosition.x) * 180) / math::PI;
-
-	ProjectilePtr projectilePtr = Projectile::Create(ProjectileSpeed * 10.f);
 	
 	const FPoint startPosition(CalculateProjectileStartPosition());
 	
@@ -239,14 +235,12 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 	math::Vector3 velocity = end - start;
 	velocity.Normalize();
 
-	projectilePtr->SetPosition(startPosition);
-	projectilePtr->SetRotationAngle(angle);
-	projectilePtr->SetVelocity(velocity);
-
-	const auto& obb = projectilePtr->GetOBB();
+	ProjectilePtr projectilePtr = std::make_shared<Projectile>(startPosition, angle, velocity, ProjectileSpeed);
+	projectilePtr->SetScale(0.5f);
 	
-	if (obb.Overlaps(_walls[0]->GetOBB()))
+	if (projectilePtr->GetOBB().Overlaps(_walls[0]->GetOBB()))
 	{
+		projectilePtr.reset();
 		projectilePtr = nullptr;
 		return;
 	}
@@ -257,7 +251,7 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 FPoint MainSceneWidget::CalculateProjectileStartPosition() const
 {
 	const float angle = (math::PI * _cannon->GetRotationAngle()) / 180.f;
-	const float cannonTextHeight = _cannon->GetTextureRect().Height();
+	const float cannonTextHeight = _cannon->GetScaledTextureRect().Width();
 
 	FPoint position(
 		_startPosition.x + cannonTextHeight * math::cos(angle), 
@@ -291,21 +285,20 @@ void MainSceneWidget::LaunchBubbles()
 	
 	for (int i = 0; i < BubblesCount; ++i)
 	{
-		BubblePtr bubblePtr = Bubble::Create(math::random(MinBubbleSpeed, MaxBubbleSpeed));
+		const FPoint position(math::random(BubbleLaunchScreenPrecision, width), math::random(BubbleLaunchScreenPrecision, height));
+		const FPoint destination(math::random(BubbleLaunchScreenPrecision, width), math::random(BubbleLaunchScreenPrecision, height));
+		const float speed = math::random(MinBubbleSpeed, MaxBubbleSpeed);
 		
-		const FPoint position1(math::random(BubbleLaunchScreenPrecision, width), math::random(BubbleLaunchScreenPrecision, height));
-		const FPoint position2(math::random(BubbleLaunchScreenPrecision, width), math::random(BubbleLaunchScreenPrecision, height));
+		const float angle = (math::atan(destination.y - position.y, destination.x - position.x) * 180) / math::PI;
 		
-		const float angle = (math::atan(position2.y - position1.y, position2.x - position1.x) * 180) / math::PI;
+		const math::Vector3 start(position.x, position.y, 0.f);
+		const math::Vector3 end(destination.x, destination.y, 0.f);
 		
-		const math::Vector3 start(position1.x, position1.y, 0);
-		const math::Vector3 end(position2.x, position2.y, 0);
 		math::Vector3 v = end - start;
 		v.Normalize();
 		
-		bubblePtr->SetPosition(position1);
-		bubblePtr->SetRotationAngle(angle);
-		bubblePtr->SetVelocity(v);
+		BubblePtr bubblePtr = std::make_shared<Bubble>(position, angle, v, speed);
+		bubblePtr->SetScale(0.5f);
 		
 		_bubbles.push_back(bubblePtr);
 	}

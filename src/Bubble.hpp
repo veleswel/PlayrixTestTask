@@ -7,9 +7,7 @@ typedef std::shared_ptr<Bubble> BubblePtr;
 class Bubble: public MovableObject
 {
 public:
-	static BubblePtr Create(float speed);
-
-	Bubble();
+	Bubble(const FPoint& position, float rotation, const math::Vector3& velocity, float speed);
 	virtual ~Bubble();
 
 public:

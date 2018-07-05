@@ -3,21 +3,14 @@
 
 const std::string Bubble::BubbleTextureName = "bubble";
 
-BubblePtr Bubble::Create(float speed)
+Bubble::Bubble(const FPoint& position, float rotation, const math::Vector3& velocity, float speed)
 {
-	auto bubble = std::make_shared<Bubble>();
-	bubble->Init(BubbleTextureName, speed);
-	return bubble;
-}
-
-Bubble::Bubble()
-{
-
+	Init(BubbleTextureName, position, rotation, velocity, speed);
 }
 
 Bubble::~Bubble()
 {
-	Log::Debug("Bubble died!");
+	
 }
 
 EColliderType Bubble::GetColliderType() const

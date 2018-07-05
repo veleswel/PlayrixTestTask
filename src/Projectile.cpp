@@ -3,21 +3,14 @@
 
 const std::string Projectile::ProjectileTextureName = "projectile";
 
-ProjectilePtr Projectile::Create(float speed)
+Projectile::Projectile(const FPoint& position, float rotation, const math::Vector3& velocity, float speed)
 {
-	auto projectile = std::make_shared<Projectile>();
-	projectile->Init(ProjectileTextureName, speed);
-	return projectile;
-}
-
-Projectile::Projectile()
-{
-
+	Init(ProjectileTextureName, position, rotation, velocity, speed);
 }
 
 Projectile::~Projectile()
 {
-	Log::Debug("Projectile died!");
+	
 }
 
 EColliderType Projectile::GetColliderType() const

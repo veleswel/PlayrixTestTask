@@ -7,9 +7,7 @@ typedef std::shared_ptr<Projectile> ProjectilePtr;
 class Projectile: public MovableObject
 {
 public:
-	static ProjectilePtr Create(float speed);
-
-	Projectile();
+	Projectile(const FPoint& position, float rotation, const math::Vector3& velocity, float speed);
 	virtual ~Projectile();
 
 protected:

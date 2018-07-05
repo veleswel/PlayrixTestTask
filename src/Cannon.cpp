@@ -3,16 +3,9 @@
 
 const std::string Cannon::CannonTextureName = "cannon_2";
 
-CannonPtr Cannon::create()
+Cannon::Cannon(const FPoint& position, float rotation)
 {
-	auto cannon = std::make_unique<Cannon>();
-	cannon->Init(CannonTextureName);
-	return cannon;
-}
-
-Cannon::Cannon()
-{
-	
+	Init(CannonTextureName, position, rotation);
 }
 
 Cannon::~Cannon()

@@ -1,37 +1,9 @@
 #pragma once
-#include "OBB.hpp"
-#include <bitset>
+#include "ColliderDelegate.hpp"
 
-enum class EColliderType: int
-{
-	EWall = 1 << 0, 
-	EProjectile = 1 << 1, 
-	EBubble = 1 << 2
-};
-
-inline EColliderType operator | (EColliderType lhs, EColliderType rhs)
-{
-	return static_cast<EColliderType>(static_cast<int>(lhs) | static_cast<int>(rhs));
-}
-
-inline EColliderType operator & (EColliderType lhs, EColliderType rhs)
-{
-	return static_cast<EColliderType>(static_cast<int>(lhs) & static_cast<int>(rhs));
-}
-
-class CollideableDelegate
-{
-public:
-	virtual ~CollideableDelegate() { }
-
-	virtual const FRect GetAABB() const = 0;
-	virtual const OBB2D GetOBB() const = 0;
-
-	virtual EColliderType GetColliderType() const = 0;
-};
-
-typedef std::shared_ptr<CollideableDelegate> CollideableDelegatePtr;
-
+class QuadTree;
+typedef std::unique_ptr<QuadTree> QuadTreePtr;
+	
 class QuadTree
 {
 public:
@@ -56,12 +28,8 @@ protected:
 
 protected:
 	int _level;
-	
 	std::list<CollideableDelegatePtr> _objects;
-	
 	FRect _bounds;
-	
-	std::array<std::unique_ptr<QuadTree>, 4> _nodes;
-
+	std::array<QuadTreePtr, 4> _nodes;
 	bool _hasChildren;
 };

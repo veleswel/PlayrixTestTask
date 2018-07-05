@@ -7,9 +7,7 @@ typedef std::unique_ptr<Cannon> CannonPtr;
 class Cannon: public GameObject
 {
 public:
-	static CannonPtr create();
-	
-	Cannon();
+	Cannon(const FPoint& position, float rotation);
 	virtual ~Cannon();
 
 public:

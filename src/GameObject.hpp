@@ -1,10 +1,3 @@
-//
-//  GameObject.hpp
-//  Test
-//
-//  Created by Alexey Vlasenko on 6/30/18.
-//
-
 #pragma once
 
 class GameObject
@@ -34,10 +27,11 @@ public:
 	void SetScale(float scale);
 	float GetScale() const;
 	
-	const FRect GetTextureRect() const;
+	const FRect GetOriginalTextureRect() const;
+	const FRect GetScaledTextureRect() const;
 
 protected:
-	void Init(const std::string& textureName);
+	void Init(const std::string& textureName, const FPoint& position, float rotation);
 	
 protected:
 	Render::Texture* _texture;

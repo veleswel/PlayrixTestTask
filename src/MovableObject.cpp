@@ -12,9 +12,11 @@ MovableObject::~MovableObject()
 
 }
 
-void MovableObject::Init(const std::string& textureName, float speed)
+void MovableObject::Init(const std::string& textureName, const FPoint& position, float rotation, const math::Vector3& velocity, float speed)
 {
-	GameObject::Init(textureName);
+	GameObject::Init(textureName, position, rotation);
+	
+	_velocity = velocity;
 	_speed = speed;
 }
 
@@ -67,47 +69,35 @@ const math::Vector3& MovableObject::GetVelocity() const
 	return _velocity;
 }
 
-const OBB2D MovableObject::GetOBB() const
+const OBB2D& MovableObject::GetOBB() const
 {
+	return _obb;
+}
+
+void MovableObject::UpdateOBB()
+{
+	if (math::IsEqualFloat(_position.x, 0.f) ||
+		math::IsEqualFloat(_position.y, 0.f) ||
+		_velocity == math::Vector3::Zero)
+	{
+		return;
+	}
+	
 	const math::Vector3 position(_position.x, _position.y, 0);
-	const FRect texture = GetTextureRect();
+	const FRect texture = GetScaledTextureRect();
 	const float angle = (_angle * math::PI) / 180.f;
 	
-	return OBB2D(position, texture.Width(), texture.Height(), angle);
+	_obb = OBB2D(position, texture.Width(), texture.Height(), angle);
 }
 
 const FRect MovableObject::GetAABB() const
 {
-	FRect textureRect = GetTextureRect();
-	const math::Vector3 center(_position.x, _position.y, 0);
-
-	const FRect texture = GetTextureRect();
-
-	const math::Matrix4 matrixScale = math::Matrix4::Scaling(_scale, _scale, 1.f);
-	const math::Matrix4 matrixRotation = math::Matrix4::RotationZ((_angle * math::PI) / 180.f);
-	const math::Matrix4 matrixTranslate = math::Matrix4::Translation(_position.x, _position.y, 0.f);
-	const math::Matrix4 resultTransform(matrixScale * matrixRotation * matrixTranslate);
-	const math::Matrix4 matrixTranslateAnchor = math::Matrix4::Translation(_anchorPointTransform.x, _anchorPointTransform.y, 0.f);
-
-	return GetAABB(textureRect, matrixTranslateAnchor * resultTransform);
-}
-
-const FRect MovableObject::GetAABB(const FRect& rect, const math::Matrix4& transform) const
-{
-	math::Vector4 leftTop(rect.xStart, rect.yEnd, 0, 1);
-	math::Vector4 rightTop(rect.xEnd, rect.yEnd, 0, 1);
-	math::Vector4 leftBottom(rect.xStart, rect.yStart, 0, 1);
-	math::Vector4 rightBottom(rect.xEnd, rect.yStart, 0, 1);
+	const auto& corner = _obb.GetCorners();
 	
-	leftTop = leftTop.Transform(transform);
-	rightTop = rightTop.Transform(transform);
-	leftBottom = leftBottom.Transform(transform);
-	rightBottom = rightBottom.Transform(transform);
-	
-	const float minX = fmin(fmin(leftTop.x, rightTop.x), fmin(leftBottom.x, rightBottom.x));
-	const float maxX = fmax(fmax(leftTop.x, rightTop.x), fmax(leftBottom.x, rightBottom.x));
-	const float minY = fmin(fmin(leftTop.y, rightTop.y), fmin(leftBottom.y, rightBottom.y));
-	const float maxY = fmax(fmax(leftTop.y, rightTop.y), fmax(leftBottom.y, rightBottom.y));
+	const float minX = fmin(fmin(corner[3].x, corner[2].x), fmin(corner[0].x, corner[1].x));
+	const float maxX = fmax(fmax(corner[3].x, corner[2].x), fmax(corner[0].x, corner[1].x));
+	const float minY = fmin(fmin(corner[3].y, corner[2].y), fmin(corner[0].y, corner[1].y));
+	const float maxY = fmax(fmax(corner[3].y, corner[2].y), fmax(corner[0].y, corner[1].y));
 	
 	return FRect(minX, maxX, minY, maxY);
 }
@@ -118,4 +108,6 @@ void MovableObject::UpdatePosition(float dt)
 	float dy = _position.y + _velocity.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
+	
+	UpdateOBB();
 }

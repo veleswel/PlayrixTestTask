@@ -40,10 +40,10 @@ void QuadTree::Split()
 	const float x = _bounds.xStart;
 	const float y = _bounds.yStart;
 
-	_nodes[0] = std::make_unique<QuadTree>(_level + 1, FRect(x + subWidth, y, subWidth, subHeight));
-	_nodes[1] = std::make_unique<QuadTree>(_level + 1, FRect(x, y, subWidth, subHeight));
-	_nodes[2] = std::make_unique<QuadTree>(_level + 1, FRect(x, y + subHeight, subWidth, subHeight));
-	_nodes[3] = std::make_unique<QuadTree>(_level + 1, FRect(x + subWidth, y + subHeight, subWidth, subHeight));
+	_nodes[0].reset(new QuadTree(_level + 1, FRect(x + subWidth, y, subWidth, subHeight)));
+	_nodes[1].reset(new QuadTree(_level + 1, FRect(x, y, subWidth, subHeight)));
+	_nodes[2].reset(new QuadTree(_level + 1, FRect(x, y + subHeight, subWidth, subHeight)));
+	_nodes[3].reset(new QuadTree(_level + 1, FRect(x + subWidth, y + subHeight, subWidth, subHeight)));
 
 	_hasChildren = true;
 }

@@ -1,10 +1,3 @@
-//
-//  GameObject.cpp
-//  Test
-//
-//  Created by Alexey Vlasenko on 6/30/18.
-//
-
 #include "stdafx.h"
 #include "GameObject.hpp"
 
@@ -24,14 +17,16 @@ GameObject::~GameObject()
 	_texture = nullptr;
 }
 
-void GameObject::Init(const std::string& textureName)
+void GameObject::Init(const std::string& textureName, const FPoint& position, float rotation)
 {
 	_texture = Core::resourceManager.Get<Render::Texture>(textureName);
 
 	IRect textureRect = _texture->getBitmapRect();
-
 	_anchorPointTransform.x = -textureRect.Width() * _anchorPoint.x;
 	_anchorPointTransform.y = -textureRect.Height() * _anchorPoint.y;
+	
+	_position = position;
+	_angle = rotation;
 }
 
 void GameObject::Draw()
@@ -40,8 +35,9 @@ void GameObject::Draw()
 
 	Render::device.MatrixTranslate(_position);
 	Render::device.MatrixRotate(math::Vector3(0, 0, 1), _angle);
-	Render::device.MatrixTranslate(_anchorPointTransform);
 	Render::device.MatrixScale(_scale);
+	Render::device.MatrixTranslate(_anchorPointTransform);
+	
 	_texture->Draw();
 
 	Render::device.PopMatrix();
@@ -79,8 +75,8 @@ void GameObject::SetAnchorPoint(const FPoint& point)
 	if (_anchorPoint != point)
 	{
 		_anchorPoint = point;
-		IRect textureRect = _texture->getBitmapRect();
 		
+		IRect textureRect = _texture->getBitmapRect();
 		_anchorPointTransform.x = -textureRect.Width() * _anchorPoint.x;
 		_anchorPointTransform.y = -textureRect.Height() * _anchorPoint.y;
 	}
@@ -109,6 +105,10 @@ void GameObject::SetScale(float scale)
 	if (_scale != scale)
 	{
 		_scale = scale;
+		
+		IRect textureRect = _texture->getBitmapRect();
+		_anchorPointTransform.x = -textureRect.Width() * _anchorPoint.x;
+		_anchorPointTransform.y = -textureRect.Height() * _anchorPoint.y;
 	}
 }
 
@@ -117,7 +117,12 @@ float GameObject::GetScale() const
 	return _scale;
 }
 
-const FRect GameObject::GetTextureRect() const
+const FRect GameObject::GetOriginalTextureRect() const
+{
+	return FRect(_texture->getBitmapRect());
+}
+
+const FRect GameObject::GetScaledTextureRect() const
 {
 	return FRect(_texture->getBitmapRect()).Scaled(_scale);
 }

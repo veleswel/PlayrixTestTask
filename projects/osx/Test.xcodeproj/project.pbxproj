@@ -32,6 +32,8 @@
 		E32AF6A720E7DF1C00E73913 /* stdafx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF6A120E7DF1C00E73913 /* stdafx.cpp */; };
 		E32AF6AB20EA1A1100E73913 /* MovableObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF6A920EA1A1100E73913 /* MovableObject.cpp */; };
 		E36CF9B420ECDE7D00171498 /* QuadTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B220ECDE7D00171498 /* QuadTree.cpp */; };
+		E36CF9B720EE0D4B00171498 /* OBB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B620EE0D4B00171498 /* OBB.cpp */; };
+		E36CF9BA20EE0D7300171498 /* ColliderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B820EE0D7300171498 /* ColliderDelegate.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -85,6 +87,10 @@
 		E32AF6AA20EA1A1100E73913 /* MovableObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MovableObject.hpp; path = ../../src/MovableObject.hpp; sourceTree = "<group>"; };
 		E36CF9B220ECDE7D00171498 /* QuadTree.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = QuadTree.cpp; path = ../../src/QuadTree.cpp; sourceTree = "<group>"; };
 		E36CF9B320ECDE7D00171498 /* QuadTree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = QuadTree.hpp; path = ../../src/QuadTree.hpp; sourceTree = "<group>"; };
+		E36CF9B520EE0D4B00171498 /* OBB.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = OBB.hpp; path = ../../src/OBB.hpp; sourceTree = "<group>"; };
+		E36CF9B620EE0D4B00171498 /* OBB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OBB.cpp; path = ../../src/OBB.cpp; sourceTree = "<group>"; };
+		E36CF9B820EE0D7300171498 /* ColliderDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ColliderDelegate.cpp; path = ../../src/ColliderDelegate.cpp; sourceTree = "<group>"; };
+		E36CF9B920EE0D7300171498 /* ColliderDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ColliderDelegate.hpp; path = ../../src/ColliderDelegate.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,8 +211,12 @@
 		E36CF9B120ECDE6400171498 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				E36CF9B620EE0D4B00171498 /* OBB.cpp */,
+				E36CF9B520EE0D4B00171498 /* OBB.hpp */,
 				E36CF9B220ECDE7D00171498 /* QuadTree.cpp */,
 				E36CF9B320ECDE7D00171498 /* QuadTree.hpp */,
+				E36CF9B820EE0D7300171498 /* ColliderDelegate.cpp */,
+				E36CF9B920EE0D7300171498 /* ColliderDelegate.hpp */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -302,11 +312,13 @@
 				E32AF6A720E7DF1C00E73913 /* stdafx.cpp in Sources */,
 				E32AF6A620E7DF1C00E73913 /* GameObject.cpp in Sources */,
 				A6869E101D229EF600C1D1B1 /* TestAppDelegate.cpp in Sources */,
+				E36CF9B720EE0D4B00171498 /* OBB.cpp in Sources */,
 				E32AF6AB20EA1A1100E73913 /* MovableObject.cpp in Sources */,
 				A6869E111D229EF600C1D1B1 /* TestWidget.cpp in Sources */,
 				E32AF6A420E7DF1C00E73913 /* Projectile.cpp in Sources */,
 				E36CF9B420ECDE7D00171498 /* QuadTree.cpp in Sources */,
 				E32AF6A520E7DF1C00E73913 /* Bubble.cpp in Sources */,
+				E36CF9BA20EE0D7300171498 /* ColliderDelegate.cpp in Sources */,
 				E32AF6A320E7DF1C00E73913 /* Cannon.cpp in Sources */,
 				A6869E0F1D229EF600C1D1B1 /* Main.cpp in Sources */,
 				E32AF6A220E7DF1C00E73913 /* MainSceneWidget.cpp in Sources */,
