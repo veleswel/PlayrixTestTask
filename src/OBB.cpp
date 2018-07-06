@@ -24,16 +24,7 @@ OBB2D::OBB2D(const math::Vector3& center, float width, float height, float angle
 
 OBB2D::OBB2D(const OBB2D& other)
 {
-	_corner[0] = other._corner[0];
-	_corner[1] = other._corner[1];
-	_corner[2] = other._corner[2];
-	_corner[3] = other._corner[3];
-
-	_axis[0] = other._axis[0];
-	_axis[1] = other._axis[1];
-
-	_origin[0] = other._origin[0];
-	_origin[1] = other._origin[1];
+	operator=(other);
 }
 
 OBB2D& OBB2D::operator = (const OBB2D& other)

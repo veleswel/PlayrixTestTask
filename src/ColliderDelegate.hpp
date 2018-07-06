@@ -1,26 +1,17 @@
 #pragma once
 #include "OBB.hpp"
 
-enum class EColliderType: int
+enum class EColliderType
 {
-	EWall = 1 << 0,
-	EProjectile = 1 << 1,
-	EBubble = 1 << 2
+	EWall,
+	EProjectile,
+	EBubble
 };
-	
-inline EColliderType operator | (EColliderType lhs, EColliderType rhs)
-{
-	return static_cast<EColliderType>(static_cast<int>(lhs) | static_cast<int>(rhs));
-}
-
-inline EColliderType operator & (EColliderType lhs, EColliderType rhs)
-{
-	return static_cast<EColliderType>(static_cast<int>(lhs) & static_cast<int>(rhs));
-}
-	
+		
 class CollideableDelegate
 {
 public:
+	CollideableDelegate() : _isCollided(false) { }
 	virtual ~CollideableDelegate() { }
 	
 	virtual const FRect GetAABB() const = 0;
@@ -28,6 +19,12 @@ public:
 	virtual const OBB2D& GetOBB() const = 0;
 	
 	virtual EColliderType GetColliderType() const = 0;
+
+	void SetCollided(bool isCollided) { _isCollided = isCollided;  }
+	bool isCollided() const { return _isCollided;  }
+
+protected:
+	bool _isCollided;
 };
 	
 typedef std::shared_ptr<CollideableDelegate> CollideableDelegatePtr;

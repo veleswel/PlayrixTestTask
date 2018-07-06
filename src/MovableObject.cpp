@@ -18,6 +18,8 @@ void MovableObject::Init(const std::string& textureName, const FPoint& position,
 	
 	_velocity = velocity;
 	_speed = speed;
+
+	UpdateOBB();
 }
 
 void MovableObject::Draw()
@@ -69,6 +71,11 @@ const math::Vector3& MovableObject::GetVelocity() const
 	return _velocity;
 }
 
+math::Vector3& MovableObject::GetVelocity()
+{
+	return _velocity;
+}
+
 const OBB2D& MovableObject::GetOBB() const
 {
 	return _obb;
@@ -108,6 +115,9 @@ void MovableObject::UpdatePosition(float dt)
 	float dy = _position.y + _velocity.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
-	
+
+	/*_position.x += _velocity.x * _speed * dt;
+	_position.y += _velocity.y * _speed * dt;*/
+
 	UpdateOBB();
 }

@@ -32,6 +32,99 @@ void QuadTree::Clear()
 	}
 }
 
+void QuadTree::Insert(const CollideableDelegatePtr& object)
+{
+	if (_hasChildren && InsertInChild(object))
+	{
+		return;
+	}
+
+	_objects.push_back(object);
+
+	if (_hasChildren)
+	{
+		return;
+	}
+
+	if (_level == MaxLevels)
+	{
+		return;
+	}
+
+	if (_objects.size() < MaxObjects)
+	{
+		return;
+	}
+
+	Split();
+
+	const auto predicate = [this](const CollideableDelegatePtr& object)
+	{
+		return InsertInChild(object);
+	};
+
+	_objects.erase(std::remove_if(_objects.begin(), _objects.end(), predicate), _objects.end());
+}
+
+void QuadTree::Remove(const CollideableDelegatePtr& object)
+{
+	if (_hasChildren)
+	{
+		const int index = GetIndex(object->GetAABB());
+
+		if (index != IndexNotFound)
+		{
+			_nodes[index]->Remove(object);
+		}
+	}
+
+	const auto iter = std::find(_objects.begin(), _objects.end(), object);
+	if (iter != _objects.end())
+	{
+		_objects.erase(iter);
+	}
+}
+
+void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const CollideableDelegatePtr& object)
+{
+	if (_hasChildren)
+	{
+		const int index = GetIndex(object->GetAABB());
+
+		if (index != IndexNotFound)
+		{
+			_nodes[index]->Retrieve(returnObjects, object);
+		}
+	}
+
+	const auto predicate = [object](const CollideableDelegatePtr& objectToCheck)
+	{
+		return object != objectToCheck;
+	};
+
+	std::copy_if(_objects.begin(), _objects.end(), std::back_inserter(returnObjects), predicate);
+}
+
+void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const CollideableDelegatePtr& object, EColliderType type)
+{
+	if (_hasChildren)
+	{
+		const int index = GetIndex(object->GetAABB());
+
+		if (index != IndexNotFound)
+		{
+			_nodes[index]->Retrieve(returnObjects, object, type);
+		}
+	}
+
+	const auto predicate = [type, object](const CollideableDelegatePtr& objectToCheck)
+	{
+		return objectToCheck->GetColliderType() == type && object != objectToCheck;
+	};
+
+	std::copy_if(_objects.begin(), _objects.end(), std::back_inserter(returnObjects), predicate);
+}
+
 void QuadTree::Split()
 {
 	const float subWidth = _bounds.Width() / 2.f + 0.f;
@@ -78,74 +171,4 @@ bool QuadTree::InsertInChild(const CollideableDelegatePtr& object)
 
 	_nodes[index]->Insert(object);
 	return true;
-}
-
-void QuadTree::Insert(const CollideableDelegatePtr& object)
-{
-	if (_hasChildren && InsertInChild(object))
-	{ 
-		return;
-	}
-
-	_objects.push_back(object);
-
-	if (_hasChildren)
-	{
-		return;
-	}
-
-	if (_level == MaxLevels)
-	{
-		return;
-	}
-		
-	if (_objects.size() < MaxObjects)
-	{
-		return;
-	}
-
-	Split();
-
-	const auto predicate = [this](const CollideableDelegatePtr& object)
-	{
-		return InsertInChild(object);
-	};
-
-	_objects.erase(std::remove_if(_objects.begin(), _objects.end(), predicate), _objects.end());
-}
-
-void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const FRect& rect)
-{
-	if (_hasChildren)
-	{
-		const int index = GetIndex(rect);
-
-		if (index != IndexNotFound) 
-		{
-			_nodes[index]->Retrieve(returnObjects, rect);
-		}
-	}
-
-	std::copy(_objects.begin(), _objects.end(), std::back_inserter(returnObjects));
-}
-
-void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const FRect& rect, EColliderType mask)
-{
-	if (_hasChildren)
-	{
-		const int index = GetIndex(rect);
-
-		if (index != IndexNotFound)
-		{
-			_nodes[index]->Retrieve(returnObjects, rect);
-		}
-	}
-
-	const auto predicate = [mask](const CollideableDelegatePtr& object)
-	{
-		EColliderType type = object->GetColliderType();
-		return (mask & type) == type;
-	};
-
-	std::copy_if(_objects.begin(), _objects.end(), std::back_inserter(returnObjects), predicate);
 }

@@ -11,15 +11,18 @@ public:
 	~QuadTree();
 
 	void Insert(const CollideableDelegatePtr& object);
+	void Remove(const CollideableDelegatePtr& object);
 
-	void Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const FRect& rect);
-	void Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const FRect& rect, EColliderType mask);
+	void Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const CollideableDelegatePtr& object);
+	void Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const CollideableDelegatePtr& object, EColliderType mask);
 
 	void Clear();
 	
 protected:
 	void Split();
+
 	int GetIndex(const FRect& rect);
+
 	bool InsertInChild(const CollideableDelegatePtr& object);
 
 protected:

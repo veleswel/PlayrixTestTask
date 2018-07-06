@@ -207,13 +207,13 @@ protected:
 	void LaunchProjectile(const IPoint& position);
 	FPoint CalculateProjectileStartPosition() const;
 
-	void DestroyProjectile(const ProjectilePtr& projectile);
+	void RemoveProjectile(const ProjectilePtr& projectile);
 	
 	void DrawBubbles();
 	
 	void LaunchBubbles();
 
-	void DestroyBubble(const BubblePtr& projectile);
+	void RemoveBubble(const BubblePtr& projectile);
 
 	void UpdateObjectsAndFillQuadTree(float dt, QuadTree& quad);
 

@@ -19,6 +19,8 @@ public:
 
 	void SetVelocity(const math::Vector3& velocity);
 	const math::Vector3& GetVelocity() const;
+	
+	math::Vector3& GetVelocity();
 
 	virtual const OBB2D& GetOBB() const override;
 	virtual const FRect GetAABB() const override;
