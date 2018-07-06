@@ -34,6 +34,7 @@
 		E36CF9B420ECDE7D00171498 /* QuadTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B220ECDE7D00171498 /* QuadTree.cpp */; };
 		E36CF9B720EE0D4B00171498 /* OBB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B620EE0D4B00171498 /* OBB.cpp */; };
 		E36CF9BA20EE0D7300171498 /* ColliderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B820EE0D7300171498 /* ColliderDelegate.cpp */; };
+		E36CF9C320EF5BCB00171498 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9C120EF5BCA00171498 /* Utils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,6 +92,8 @@
 		E36CF9B620EE0D4B00171498 /* OBB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OBB.cpp; path = ../../src/OBB.cpp; sourceTree = "<group>"; };
 		E36CF9B820EE0D7300171498 /* ColliderDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ColliderDelegate.cpp; path = ../../src/ColliderDelegate.cpp; sourceTree = "<group>"; };
 		E36CF9B920EE0D7300171498 /* ColliderDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ColliderDelegate.hpp; path = ../../src/ColliderDelegate.hpp; sourceTree = "<group>"; };
+		E36CF9C120EF5BCA00171498 /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utils.cpp; path = ../../src/Utils.cpp; sourceTree = "<group>"; };
+		E36CF9C220EF5BCA00171498 /* Utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Utils.hpp; path = ../../src/Utils.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +214,8 @@
 		E36CF9B120ECDE6400171498 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				E36CF9C120EF5BCA00171498 /* Utils.cpp */,
+				E36CF9C220EF5BCA00171498 /* Utils.hpp */,
 				E36CF9B620EE0D4B00171498 /* OBB.cpp */,
 				E36CF9B520EE0D4B00171498 /* OBB.hpp */,
 				E36CF9B220ECDE7D00171498 /* QuadTree.cpp */,
@@ -318,6 +323,7 @@
 				E32AF6A420E7DF1C00E73913 /* Projectile.cpp in Sources */,
 				E36CF9B420ECDE7D00171498 /* QuadTree.cpp in Sources */,
 				E32AF6A520E7DF1C00E73913 /* Bubble.cpp in Sources */,
+				E36CF9C320EF5BCB00171498 /* Utils.cpp in Sources */,
 				E36CF9BA20EE0D7300171498 /* ColliderDelegate.cpp in Sources */,
 				E32AF6A320E7DF1C00E73913 /* Cannon.cpp in Sources */,
 				A6869E0F1D229EF600C1D1B1 /* Main.cpp in Sources */,

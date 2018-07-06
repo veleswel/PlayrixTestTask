@@ -17,3 +17,9 @@ EColliderType Bubble::GetColliderType() const
 {
 	return EColliderType::EBubble;
 }
+
+float Bubble::GetRadius() const
+{
+	auto corners = _obb.GetCorners();
+	return (corners[0] - corners[3]).Length() / 2;
+}

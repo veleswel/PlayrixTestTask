@@ -13,6 +13,8 @@ public:
 public:
 	virtual EColliderType GetColliderType() const override;
 
+	float GetRadius() const;
+	
 protected:
 	static const std::string BubbleTextureName;
 };

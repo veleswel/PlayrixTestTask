@@ -3,11 +3,11 @@
 #include "Utils.hpp"
 #include <boost/polymorphic_pointer_cast.hpp>
 
-const float MainSceneWidget::ProjectileSpeed = 250.f;
-const float MainSceneWidget::MinBubbleSpeed = 100.f;
-const float MainSceneWidget::MaxBubbleSpeed = 200.f;
-const float MainSceneWidget::BubbleLaunchScreenPrecision = 50.f;
-const int MainSceneWidget::BubblesCount = 10;
+const float MainSceneWidget::ProjectileSpeed = 20.f;
+const float MainSceneWidget::MinBubbleSpeed = 50.f;
+const float MainSceneWidget::MaxBubbleSpeed = 100.f;
+const float MainSceneWidget::BubbleLaunchScreenPrecision = 100.f;
+const int MainSceneWidget::BubblesCount = 20;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
@@ -97,14 +97,7 @@ void MainSceneWidget::Update(float dt)
 				break;
 			}
 
-			// Collision
-			const math::Vector3& n = wallPtr->GetNormal();
-			const math::Vector3 u = v.DotProduct(n) * n;
-			const math::Vector3 w = v - u;
-			const math::Vector3 v1 = w - u;
-
-			projPtr->SetVelocity(v1);
-			projPtr->UpdatePosition(dt);
+			Utils::ResolveFixedCollision(projPtr, Utils::NormalVector(wallPtr->GetVector()));
 		}
 
 		if (isProjectileToDestroy)
@@ -124,8 +117,7 @@ void MainSceneWidget::Update(float dt)
 				continue;
 			}
 
-			const EColliderType type = object->GetColliderType();
-			if (type == EColliderType::EBubble)
+			if (object->GetColliderType() == EColliderType::EBubble)
 			{
 				const BubblePtr bubblePtr = boost::polymorphic_pointer_downcast<Bubble>(object);
 				if (!bubblePtr)
@@ -144,8 +136,9 @@ void MainSceneWidget::Update(float dt)
 		{
 			quad.Remove(projPtr);
 			projectilesToDestroy.push_back(projPtr);
+			continue;
 		}
-
+		
 		projPtr->Update(dt);
 	}
 
@@ -156,37 +149,22 @@ void MainSceneWidget::Update(float dt)
 		projPtr = nullptr;
 	}
 
-	for (const BubblePtr& bubblePtr : _bubbles)
+	/*for (const BubblePtr& bubblePtr : _bubbles)
 	{
 		const math::Vector3& velocity = bubblePtr->GetVelocity();
+		
 		const OBB2D& obb = bubblePtr->GetOBB();
 		const FRect aabb = bubblePtr->GetAABB();
-
-		for (const WallPtr& wallPtr : _walls)
-		{
-			if (!obb.Overlaps(wallPtr->GetOBB()))
-			{
-				continue;
-			}
-
-			// Collision
-			const math::Vector3& n = wallPtr->GetNormal();
-			const math::Vector3 u = velocity.DotProduct(n) * n;
-			const math::Vector3 w = velocity - u;
-			const math::Vector3 v1 = w - u;
-
-			bubblePtr->SetVelocity(v1);
-			bubblePtr->UpdatePosition(dt);
-		}
-
-		if (bubblePtr->isCollided())
-		{
-			continue;
-		}
-
+		
+//		if (bubblePtr->isCollided())
+//		{
+//			bubblePtr->Update(dt);
+//			continue;
+//		}
+		
 		returnObjects.clear();
 		quad.Retrieve(returnObjects, bubblePtr, EColliderType::EBubble);
-
+		
 		for (const CollideableDelegatePtr& objectPtr : returnObjects)
 		{
 			const OBB2D& otherOBB = objectPtr->GetOBB();
@@ -202,12 +180,63 @@ void MainSceneWidget::Update(float dt)
 				continue;
 			}
 
-			otherBubblePtr->SetCollided(true);
-			bubblePtr->SetCollided(true);
+			float r1 = bubblePtr->GetRadius();
+			float r2 = otherBubblePtr->GetRadius();
+			
+			float x1 = bubblePtr->GetPosition().x;
+			float y1 = bubblePtr->GetPosition().y;
+			
+			float x2 = otherBubblePtr->GetPosition().x;
+			float y2 = otherBubblePtr->GetPosition().y;
+			
+			float vx1 = bubblePtr->GetVelocity().x;
+			float vy1 = bubblePtr->GetVelocity().y;
+			
+			float vx2 = otherBubblePtr->GetVelocity().x;
+			float vy2 = otherBubblePtr->GetVelocity().y;
+			
+			int error = 0;
+			
+			collision2D(r1, r2, x1, y1, x2, y2, vx1, vy1, vx2, vy2, error);
+			
+			if (error == 0)
+			{
+				otherBubblePtr->SetCollided(true);
+				bubblePtr->SetCollided(true);
+				
+				bubblePtr->GetVelocity().x = vx1;
+				bubblePtr->GetVelocity().y = vy1;
+				bubblePtr->GetVelocity().Normalize();
+//				bubblePtr->UpdatePosition(dt);
+				
+				otherBubblePtr->GetVelocity().x = vx2;
+				otherBubblePtr->GetVelocity().x = vy2;
+				otherBubblePtr->GetVelocity().Normalize();
+//				otherBubblePtr->UpdatePosition(dt);
+			}
+			
 		}
-
+		
+		for (const WallPtr& wallPtr : _walls)
+		{
+			if (!obb.Overlaps(wallPtr->GetOBB()))
+			{
+				continue;
+			}
+			
+			const math::Vector3& n = wallPtr->GetNormal();
+			const math::Vector3 u = velocity.DotProduct(n) * n;
+			const math::Vector3 w = velocity - u;
+			const math::Vector3 v1 = w - u;
+			
+			bubblePtr->SetVelocity(v1);
+			bubblePtr->UpdatePosition(dt);
+			
+			// Utils::ResolveFixedCollision(bubblePtr, wallPtr->GetNormal());
+		}
+		
 		bubblePtr->Update(dt);
-	}
+	}*/
 
 	_effCont.Update(dt);
 }
@@ -258,7 +287,6 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 	const float angleRad = Utils::DegreeToRadian(angle);
 	const FPoint startPosition(CalculateProjectileStartPosition());
 	math::Vector3 velocity(ProjectileSpeed * math::cos(angleRad), ProjectileSpeed * math::sin(angleRad), 0.f);
-	velocity.Normalize();
 
 	if (velocity.y < 0.f)
 	{
@@ -316,12 +344,11 @@ void MainSceneWidget::LaunchBubbles()
 	{
 		const FPoint position(math::random(BubbleLaunchScreenPrecision, width), math::random(BubbleLaunchScreenPrecision, height));
 		const float speed = math::random(MinBubbleSpeed, MaxBubbleSpeed);
-		const float angle = math::random(0.f, 2 * math::PI);
+		const float angle = math::random(1.f + 0.f, 2 * math::PI - 1.f);
 		
-		math::Vector3 velocity(speed * math::cos(angle), speed * math::sin(angle), 0.f);
-		velocity.Normalize();
+		const math::Vector3 velocity(speed * math::cos(angle), speed * math::sin(angle), 0.f);
 
-		BubblePtr bubblePtr = std::make_shared<Bubble>(position, Utils::RadianToDegree(angle), velocity, speed);
+		BubblePtr bubblePtr = std::make_shared<Bubble>(position, Utils::RadianToDegree(angle), velocity.Normalized(), speed);
 		_bubbles.push_back(bubblePtr);
 	}
 }
@@ -339,14 +366,12 @@ void MainSceneWidget::UpdateObjectsAndFillQuadTree(float dt, QuadTree& quad)
 {
 	for (const auto& projPtr: _launchedProjectiles)
 	{
-		//projPtr->Update(dt);
 		projPtr->SetCollided(false);
 		quad.Insert(projPtr);
 	}
 
 	for (const auto& bubblePtr: _bubbles)
 	{
-		//bubblePtr->Update(dt);
 		bubblePtr->SetCollided(false);
 		quad.Insert(bubblePtr);
 	}
