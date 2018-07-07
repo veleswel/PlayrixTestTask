@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "MovableObject.hpp"
 #include "Utils.hpp"
+#include "MainSceneWidget.hpp"
 
 MovableObject::MovableObject()
 	: _speed(0.f)
+	, _acceleration(0.f)
 {
 
 }
@@ -27,27 +29,35 @@ void MovableObject::Draw()
 {
 	GameObject::Draw();
 
-	Render::device.SetTexturing(false);
+	if (MainSceneWidget::IsDebugDraw())
+	{
+		Render::device.SetTexturing(false);
 
-	const auto& corner = GetOBB().GetCorners();
-	
-	Render::BeginColor(Color(0, 255, 255, 255));
-	Render::DrawLine(corner[0], corner[1]);
-	Render::DrawLine(corner[1], corner[2]);
-	Render::DrawLine(corner[2], corner[3]);
-	Render::DrawLine(corner[3], corner[0]);
-	Render::EndColor();
-	
-	const FRect aabb = GetAABB();
+		const auto& corner = GetOBB().GetCorners();
 
-	Render::BeginColor(Color(255, 0, 0, 255));
-	Render::DrawLine(aabb.LeftBottom(), aabb.LeftTop());
-	Render::DrawLine(aabb.LeftTop(), aabb.RightTop());
-	Render::DrawLine(aabb.RightTop(), aabb.RightBottom());
-	Render::DrawLine(aabb.RightBottom(), aabb.LeftBottom());
-	Render::EndColor();
+		Render::BeginColor(Color(0, 255, 255, 255));
+		Render::DrawLine(corner[0], corner[1]);
+		Render::DrawLine(corner[1], corner[2]);
+		Render::DrawLine(corner[2], corner[3]);
+		Render::DrawLine(corner[3], corner[0]);
+		Render::EndColor();
 
-	Render::device.SetTexturing(true);
+		const FRect aabb = GetAABB();
+
+		Render::BeginColor(Color(255, 0, 0, 255));
+		Render::DrawLine(aabb.LeftBottom(), aabb.LeftTop());
+		Render::DrawLine(aabb.LeftTop(), aabb.RightTop());
+		Render::DrawLine(aabb.RightTop(), aabb.RightBottom());
+		Render::DrawLine(aabb.RightBottom(), aabb.LeftBottom());
+		Render::EndColor();
+
+
+		Render::BeginColor(Color(0, 255, 0, 255));
+		Render::DrawLine(_position, FPoint(_position.x + GetOriginalTextureRect().Width(), _position.y + GetOriginalTextureRect().Height()));
+		Render::EndColor();
+
+		Render::device.SetTexturing(true);
+	}
 }
 
 void MovableObject::Update(float dt)
@@ -63,6 +73,10 @@ void MovableObject::SetVelocity(const math::Vector3& velocity)
 	{
 		const float angle = Utils::RadianToDegree(math::GetXYVectorAngle(_velocity, velocity));
 		_angle += angle;
+		while (_angle > 360.f)
+		{
+			_angle -= 360.f;
+		}
 	}
 	
 	_velocity = velocity;
@@ -73,9 +87,14 @@ const math::Vector3& MovableObject::GetVelocity() const
 	return _velocity;
 }
 
-math::Vector3& MovableObject::GetVelocity()
+float MovableObject::GetAcceleration() const
 {
-	return _velocity;
+	return _acceleration;
+}
+
+void MovableObject::SetAcceleration(float acc)
+{
+	_acceleration = acc;
 }
 
 const OBB2D& MovableObject::GetOBB() const
@@ -94,7 +113,7 @@ void MovableObject::UpdateOBB()
 	
 	const math::Vector3 position(_position.x, _position.y, 0);
 	const FRect texture = GetScaledTextureRect();
-	const float angle = (_angle * math::PI) / 180.f;
+	const float angle = Utils::DegreeToRadian(_angle);
 	
 	_obb = OBB2D(position, texture.Width(), texture.Height(), angle);
 }
@@ -117,6 +136,5 @@ void MovableObject::UpdatePosition(float dt)
 	float dy = _position.y + _velocity.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
-
 	UpdateOBB();
 }

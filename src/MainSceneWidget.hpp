@@ -4,7 +4,7 @@
 #include "Bubble.hpp"
 #include "QuadTree.hpp"
 
-static const float Width = 10.f;
+static const float Width = 2.f;
 
 class Wall: public CollideableDelegate
 {
@@ -197,6 +197,8 @@ public:
 	
 	void KeyPressed(int keyCode) override;
 	
+	static bool IsDebugDraw() { return false; }
+
 protected:
 	void Init();
 	

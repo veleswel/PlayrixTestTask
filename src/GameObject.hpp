@@ -17,6 +17,7 @@ public:
 	void SetPosition(const FPoint& position);
 	void SetPosition(float x, float y);
 	const FPoint& GetPosition() const;
+	const FPoint GetPositionTransformed() const;
 	
 	void SetAnchorPoint(const FPoint& point);
 	const FPoint& GetAnchorPoint() const;

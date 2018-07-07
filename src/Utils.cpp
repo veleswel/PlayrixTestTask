@@ -20,14 +20,15 @@ namespace Utils
 		const math::Vector3 w = velocity - u;
 		const math::Vector3 v1 = w - u;
 		objectPtr->SetVelocity(v1.Normalized());
+		objectPtr->SetAcceleration(100.f);
 	}
 
 	bool Collision2D(
 		float r1, float r2,
 		const FPoint& p1,
 		const FPoint& p2,
-		float& vx1, float& vy1,
-		float& vx2, float& vy2,
+		math::Vector3& v1,
+		math::Vector3& v2,
 		float& time)
 	{
 		float  r12, d, gammav, gammaxy, dgamma, dr, dc, sqs, dvx2, a, x21, y21, vx21, vy21, pi2;
@@ -38,8 +39,8 @@ namespace Utils
 	
 		x21 = p2.x - p1.x;
 		y21 = p2.y - p1.y;
-		vx21 = vx2 - vx1;
-		vy21 = vy2 - vy1;
+		vx21 = v2.x - v1.x;
+		vy21 = v2.y - v1.y;
 	
 		//     ****  return old positions and velocities if relative velocity =0 ****
 		if (vx21==0 && vy21==0)
@@ -101,10 +102,10 @@ namespace Utils
 	
 		dvx2 = -2 * (vx21 + a * vy21) / ((1 + a * a) * 2);
 	
-		vx2 = vx2 + dvx2;
-		vy2 = vy2 + a * dvx2;
-		vx1 = vx1 - dvx2;
-		vy1 = vy1 - a * dvx2;
+		v2.x = v2.x + dvx2;
+		v2.y = v2.y + a * dvx2;
+		v1.x = v1.x - dvx2;
+		v1.y = v1.y - a * dvx2;
 	
 		return true;
 	}
@@ -177,5 +178,116 @@ namespace Utils
 			time = entryTime;
 			return true;
 		}
+	}
+
+	std::pair<bool, math::Vector3> some(math::Vector3 A, float rA, math::Vector3 B, float rB, math::Vector3 movevec)
+	{
+		// Early Escape test: if the length of the movevec is less
+		// than distance between the centers of these circles minus 
+		// their radii, there's no way they can hit. 
+
+		std::pair<bool, math::Vector3> res;
+		res.first = false;
+
+		double dist = B.Distance(A);
+		double sumRadii = (rA + rB);
+		dist -= sumRadii;
+		if (movevec.Length() < dist) 
+		{
+			return res;
+		}
+
+		// Normalize the movevec
+		math::Vector3 N = movevec.Normalized();
+
+		// Find C, the vector from the center of the moving 
+		// circle A to the center of B
+		math::Vector3 C = B - A;
+
+		// D = N . C = ||C|| * cos(angle between N and C)
+		double D = N.DotProduct(C);
+
+		// Another early escape: Make sure that A is moving 
+		// towards B! If the dot product between the movevec and 
+		// B.center - A.center is less that or equal to 0, 
+		// A isn't isn't moving towards B
+		if (D <= 0) 
+		{
+			return res;
+		}
+
+		// Find the length of the vector C
+		double lengthC = C.Length();
+
+		double F = (lengthC * lengthC) - (D * D);
+
+		// Escape test: if the closest that A will get to B 
+		// is more than the sum of their radii, there's no 
+		// way they are going collide
+		double sumRadiiSquared = sumRadii * sumRadii;
+		if (F >= sumRadiiSquared) 
+		{
+			return res;
+		}
+
+		// We now have F and sumRadii, two sides of a right triangle. 
+		// Use these to find the third side, sqrt(T)
+		double T = sumRadiiSquared - F;
+
+		// If there is no such right triangle with sides length of 
+		// sumRadii and sqrt(f), T will probably be less than 0. 
+		// Better to check now than perform a square root of a 
+		// negative number. 
+		if (T < 0) 
+		{
+			return res;
+		}
+
+		// Therefore the distance the circle has to travel along 
+		// movevec is D - sqrt(T)
+		double distance = D - sqrt(T);
+
+		// Get the magnitude of the movement vector
+		double mag = movevec.Length();
+
+		// Finally, make sure that the distance A has to move 
+		// to touch B is not greater than the magnitude of the 
+		// movement vector. 
+		if (mag < distance) 
+		{
+			return res;
+		}
+
+		// Set the length of the movevec so that the circles will just touch
+		movevec.Normalize();
+		movevec *= distance;
+		res.first = true;
+		res.second = movevec;
+		return res; 
+	}
+
+	std::pair<bool, float> some1(math::Vector3 A, float rA, math::Vector3 B, float rB, math::Vector3 movevec1, math::Vector3 movevec2)
+	{
+		math::Vector3 V1 = movevec1 - movevec2;
+		auto res = some(A, rA, B, rB, V1);
+		std::pair<bool, float> ret;
+		ret.first = false;
+
+		if (!res.first)
+		{
+			return ret;
+		}
+
+		float value = V1.Length() / res.second.Length();
+
+		if (value < 0.f || value > 1.f)
+		{
+			return ret;
+		}
+
+		Log::Debug(std::to_string(value));
+		ret.first = true;
+		ret.second = value;
+		return ret;
 	}
 }

@@ -70,6 +70,11 @@ const FPoint& GameObject::GetPosition() const
 	return _position;
 }
 
+const FPoint GameObject::GetPositionTransformed() const
+{
+	return _position + _anchorPointTransform;
+}
+
 void GameObject::SetAnchorPoint(const FPoint& point)
 {
 	if (_anchorPoint != point)
