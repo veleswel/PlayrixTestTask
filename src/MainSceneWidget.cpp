@@ -245,7 +245,7 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 	const float angle = _cannon->GetRotationAngle();
 	const float angleRad = Utils::DegreeToRadian(angle);
 	const FPoint startPosition(CalculateProjectileStartPosition());
-	const FPoint direction(ProjectileSpeed * math::cos(angleRad), ProjectileSpeed * math::sin(angleRad));
+	const FPoint direction(math::cos(angleRad), math::sin(angleRad));
 
 	if (direction.y < 0.f)
 	{
@@ -305,7 +305,7 @@ void MainSceneWidget::LaunchBubbles()
 		const float speed = math::random(MinBubbleSpeed, MaxBubbleSpeed);
 		const float angle = math::random(1.f + 0.f, 2 * math::PI - 1.f);
 		
-		const FPoint direction(speed * math::cos(angle), speed * math::sin(angle));
+		const FPoint direction(math::cos(angle), math::sin(angle));
 
 		BubblePtr bubblePtr(new Bubble(position, Utils::RadianToDegree(angle), direction.Normalized(), speed));
 		_bubbles.push_back(bubblePtr);

@@ -17,7 +17,7 @@ public:
 	
 	const FPoint GetVelocity(float dt) const;
 
-	void SetDirection(const FPoint& velocity);
+	virtual void SetDirection(const FPoint& direction);
 	const FPoint& GetDirection() const;
 
 	const OBB2D& GetOBB() const;

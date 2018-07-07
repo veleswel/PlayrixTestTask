@@ -7,7 +7,8 @@ public:
 	Projectile(const FPoint& position, float rotation, const FPoint& direction, float speed);
 	virtual ~Projectile();
 
-protected:
+public:
+	virtual void SetDirection(const FPoint& direction) override;
 	virtual CollisionUtils::EColliderType GetColliderType() const override;
 
 protected:

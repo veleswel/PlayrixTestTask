@@ -74,17 +74,6 @@ const FPoint MovableObject::GetVelocity(float dt) const
 
 void MovableObject::SetDirection(const FPoint& direction)
 {
-
-	if (!math::IsEqualFloat(_velocity.x, 0.f) && !math::IsEqualFloat(_velocity.y, 0.f))
-	{
-		const float angle = Utils::RadianToDegree(_velocity.GetDirectedAngle(direction));
-		_angle += angle;
-		while (_angle > 360.f)
-		{
-			_angle -= 360.f;
-		}
-	}
-
 	_direction = direction;
 }
 
