@@ -17,5 +17,5 @@ namespace Utils
 		float& vx2, float& vy2,
 		float& time);
 
-	float SweptAABB(const FRect& b1, const FRect& b2, const math::Vector3& v1, math::Vector3& normal);
+	bool SweptAABB(const FRect& b1, const FRect& b2, const math::Vector3& v1, float& time);
 }

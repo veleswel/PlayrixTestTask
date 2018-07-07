@@ -19,7 +19,7 @@ namespace Utils
 		const math::Vector3 u = velocity.DotProduct(normal) * normal;
 		const math::Vector3 w = velocity - u;
 		const math::Vector3 v1 = w - u;
-		objectPtr->SetVelocity(v1);
+		objectPtr->SetVelocity(v1.Normalized());
 	}
 
 	bool Collision2D(
@@ -109,7 +109,7 @@ namespace Utils
 		return true;
 	}
 
-	float SweptAABB(const FRect& b1, const FRect& b2, const math::Vector3& v1, math::Vector3& normal)
+	bool SweptAABB(const FRect& b1, const FRect& b2, const math::Vector3& v1, float& time)
 	{
 		float xInvEntry, yInvEntry;
 		float xInvExit, yInvExit;
@@ -140,7 +140,7 @@ namespace Utils
 		// find time of collision and time of leaving for each axis (if statement is to prevent divide by zero)
 		float xEntry, yEntry;
 		float xExit, yExit;
-		if (math::IsEqualFloat(v1.x, 0.f))
+		if (v1.x == 0.f)
 		{
 			xEntry = -std::numeric_limits<float>::infinity();
 			xExit = std::numeric_limits<float>::infinity();
@@ -150,7 +150,8 @@ namespace Utils
 			xEntry = xInvEntry / v1.x;
 			xExit = xInvExit / v1.x;
 		}
-		if (math::IsEqualFloat(v1.y, 0.f))
+
+		if (v1.y == 0.f)
 		{
 			yEntry = -std::numeric_limits<float>::infinity();
 			yExit = std::numeric_limits<float>::infinity();
@@ -168,42 +169,13 @@ namespace Utils
 		// if there was no collision
 		if (entryTime > exitTime || xEntry < 0.f && yEntry < 0.f || xEntry > 1.f || yEntry > 1.f)
 		{
-			normal.x = 0.f;
-			normal.y = 0.f;
-			return 1.f;
+			time = 1.f;
+			return false;
 		}
-
 		else // if there was a collision
 		{
-			// calculate normal of collided surface
-			if (xEntry > yEntry)
-			{
-				if (xInvEntry < 0.0f)
-				{
-					normal.x = 1.0f;
-					normal.y = 0.0f;
-				}
-				else
-				{
-					normal.x = -1.0f;
-					normal.y = 0.0f;
-				}
-			}
-			else
-			{
-				if (yInvEntry < 0.0f)
-				{
-					normal.x = 0.0f;
-					normal.y = 1.0f;
-				}
-				else
-				{
-					normal.x = 0.0f;
-					normal.y = -1.0f;
-				}
-			}
-			// return the time of collision
-			return entryTime;
+			time = entryTime;
+			return true;
 		}
 	}
 }

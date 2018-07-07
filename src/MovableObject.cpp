@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MovableObject.hpp"
+#include "Utils.hpp"
 
 MovableObject::MovableObject()
 	: _speed(0.f)
@@ -52,6 +53,7 @@ void MovableObject::Draw()
 void MovableObject::Update(float dt)
 {
 	GameObject::Update(dt);
+
 	UpdatePosition(dt);
 }
 
@@ -59,7 +61,7 @@ void MovableObject::SetVelocity(const math::Vector3& velocity)
 {
 	if (_velocity != math::Vector3::Zero)
 	{
-		const float angle = (180 * math::GetXYVectorAngle(_velocity, velocity)) / math::PI;
+		const float angle = Utils::RadianToDegree(math::GetXYVectorAngle(_velocity, velocity));
 		_angle += angle;
 	}
 	
@@ -115,9 +117,6 @@ void MovableObject::UpdatePosition(float dt)
 	float dy = _position.y + _velocity.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
-
-	/*_position.x += _velocity.x * _speed * dt;
-	_position.y += _velocity.y * _speed * dt;*/
 
 	UpdateOBB();
 }
