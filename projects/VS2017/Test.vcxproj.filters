@@ -22,6 +22,9 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{8c11add7-4e7b-414f-b2c9-f910a3083e24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SceneObjects">
+      <UniqueIdentifier>{7b9567ae-0c29-4e2a-807f-23b8e927dd7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Main.cpp">
@@ -36,22 +39,7 @@
     <ClCompile Include="..\..\src\TestAppDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Bubble.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Cannon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\MainSceneWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Projectile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\MovableObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\QuadTree.cpp">
@@ -60,10 +48,28 @@
     <ClCompile Include="..\..\src\OBB.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ColliderDelegate.cpp">
+    <ClCompile Include="..\..\src\Utils.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Utils.cpp">
+    <ClCompile Include="..\..\src\MovableObject.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Projectile.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameObject.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Cannon.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Bubble.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Wall.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CollisionUtils.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,34 +83,37 @@
     <ClInclude Include="..\..\src\TestAppDelegate.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Bubble.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Cannon.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GameObject.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\MainSceneWidget.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Projectile.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\MovableObject.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\QuadTree.hpp">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\OBB.hpp">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\ColliderDelegate.hpp">
+    <ClInclude Include="..\..\src\Utils.hpp">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Utils.hpp">
+    <ClInclude Include="..\..\src\Projectile.hpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MovableObject.hpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameObject.hpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Cannon.hpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Bubble.hpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MainSceneWidget.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Wall.hpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CollisionUtils.hpp">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>

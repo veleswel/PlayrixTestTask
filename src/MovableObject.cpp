@@ -5,7 +5,8 @@
 
 MovableObject::MovableObject()
 	: _speed(0.f)
-	, _acceleration(0.f)
+	, _direction(0.f, 0.f)
+	, _velocity(0.f, 0.f)
 {
 
 }
@@ -15,11 +16,11 @@ MovableObject::~MovableObject()
 
 }
 
-void MovableObject::Init(const std::string& textureName, const FPoint& position, float rotation, const math::Vector3& velocity, float speed)
+void MovableObject::Init(const std::string& textureName, const FPoint& position, float rotation, const FPoint& direction, float speed)
 {
 	GameObject::Init(textureName, position, rotation);
 	
-	_velocity = velocity;
+	_direction = direction;
 	_speed = speed;
 
 	UpdateOBB();
@@ -63,38 +64,33 @@ void MovableObject::Draw()
 void MovableObject::Update(float dt)
 {
 	GameObject::Update(dt);
-
 	UpdatePosition(dt);
 }
 
-void MovableObject::SetVelocity(const math::Vector3& velocity)
+const FPoint MovableObject::GetVelocity(float dt) const
 {
-	if (_velocity != math::Vector3::Zero)
+	return _direction * _speed * dt;
+}
+
+void MovableObject::SetDirection(const FPoint& direction)
+{
+
+	if (!math::IsEqualFloat(_velocity.x, 0.f) && !math::IsEqualFloat(_velocity.y, 0.f))
 	{
-		const float angle = Utils::RadianToDegree(math::GetXYVectorAngle(_velocity, velocity));
+		const float angle = Utils::RadianToDegree(_velocity.GetDirectedAngle(direction));
 		_angle += angle;
 		while (_angle > 360.f)
 		{
 			_angle -= 360.f;
 		}
 	}
-	
-	_velocity = velocity;
+
+	_direction = direction;
 }
 
-const math::Vector3& MovableObject::GetVelocity() const
+const FPoint& MovableObject::GetDirection() const
 {
-	return _velocity;
-}
-
-float MovableObject::GetAcceleration() const
-{
-	return _acceleration;
-}
-
-void MovableObject::SetAcceleration(float acc)
-{
-	_acceleration = acc;
+	return _direction;
 }
 
 const OBB2D& MovableObject::GetOBB() const
@@ -105,17 +101,13 @@ const OBB2D& MovableObject::GetOBB() const
 void MovableObject::UpdateOBB()
 {
 	if (math::IsEqualFloat(_position.x, 0.f) ||
-		math::IsEqualFloat(_position.y, 0.f) ||
-		_velocity == math::Vector3::Zero)
+		math::IsEqualFloat(_position.y, 0.f))
 	{
 		return;
 	}
 	
-	const math::Vector3 position(_position.x, _position.y, 0);
 	const FRect texture = GetScaledTextureRect();
-	const float angle = Utils::DegreeToRadian(_angle);
-	
-	_obb = OBB2D(position, texture.Width(), texture.Height(), angle);
+	_obb = OBB2D(_position, texture.Width(), texture.Height(), Utils::DegreeToRadian(_angle));
 }
 
 const FRect MovableObject::GetAABB() const
@@ -130,11 +122,26 @@ const FRect MovableObject::GetAABB() const
 	return FRect(minX, maxX, minY, maxY);
 }
 
+float MovableObject::GetSpeed() const
+{
+	return _speed;
+}
+
 void MovableObject::UpdatePosition(float dt)
 {
-	float dx = _position.x + _velocity.x * _speed;
-	float dy = _position.y + _velocity.y * _speed;
+	float dx = _position.x + _direction.x * _speed;
+	float dy = _position.y + _direction.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
 	UpdateOBB();
+}
+
+void MovableObject::SetCollided(bool isCollided)
+{
+	_isCollided = isCollided;
+}
+
+bool MovableObject::IsCollided() const
+{
+	return _isCollided;
 }

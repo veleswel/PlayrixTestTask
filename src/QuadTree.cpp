@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "QuadTree.hpp"
+#include "MovableObject.hpp"
 
 const int QuadTree::MaxObjects = 10;
 const int QuadTree::MaxLevels = 5;
 
-static const int IndexNotFound = -1;
+const int QuadTree::IndexNotFound = -1;
 
 QuadTree::QuadTree(int level, const FRect& bounds)
 	: _level(level)
@@ -32,7 +33,7 @@ void QuadTree::Clear()
 	}
 }
 
-void QuadTree::Insert(const CollideableDelegatePtr& object)
+void QuadTree::Insert(const MovableObjectPtr& object)
 {
 	if (_hasChildren && InsertInChild(object))
 	{
@@ -58,7 +59,7 @@ void QuadTree::Insert(const CollideableDelegatePtr& object)
 
 	Split();
 
-	const auto predicate = [this](const CollideableDelegatePtr& object)
+	const auto predicate = [this](const MovableObjectPtr& object)
 	{
 		return InsertInChild(object);
 	};
@@ -66,7 +67,7 @@ void QuadTree::Insert(const CollideableDelegatePtr& object)
 	_objects.erase(std::remove_if(_objects.begin(), _objects.end(), predicate), _objects.end());
 }
 
-void QuadTree::Remove(const CollideableDelegatePtr& object)
+void QuadTree::Remove(const MovableObjectPtr& object)
 {
 	if (_hasChildren)
 	{
@@ -85,7 +86,7 @@ void QuadTree::Remove(const CollideableDelegatePtr& object)
 	}
 }
 
-void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const CollideableDelegatePtr& object)
+void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const MovableObjectPtr& object)
 {
 	if (_hasChildren)
 	{
@@ -97,7 +98,7 @@ void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const 
 		}
 	}
 
-	const auto predicate = [object](const CollideableDelegatePtr& objectToCheck)
+	const auto predicate = [object](const MovableObjectPtr& objectToCheck)
 	{
 		return object != objectToCheck;
 	};
@@ -105,7 +106,7 @@ void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const 
 	std::copy_if(_objects.begin(), _objects.end(), std::back_inserter(returnObjects), predicate);
 }
 
-void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const CollideableDelegatePtr& object, EColliderType type)
+void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const MovableObjectPtr& object, CollisionUtils::EColliderType type)
 {
 	if (_hasChildren)
 	{
@@ -117,7 +118,7 @@ void QuadTree::Retrieve(std::list<CollideableDelegatePtr>& returnObjects, const 
 		}
 	}
 
-	const auto predicate = [type, object](const CollideableDelegatePtr& objectToCheck)
+	const auto predicate = [type, object](const MovableObjectPtr& objectToCheck)
 	{
 		return objectToCheck->GetColliderType() == type && object != objectToCheck;
 	};
@@ -160,7 +161,7 @@ int QuadTree::GetIndex(const FRect& rect)
 	return IndexNotFound;
 }
 
-bool QuadTree::InsertInChild(const CollideableDelegatePtr& object)
+bool QuadTree::InsertInChild(const MovableObjectPtr& object)
 {
 	auto index = GetIndex(object->GetAABB());
 

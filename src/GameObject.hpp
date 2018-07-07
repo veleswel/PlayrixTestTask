@@ -1,6 +1,6 @@
 #pragma once
 
-class GameObject
+class GameObject: public RefCounter
 {
 public:
 	virtual ~GameObject();

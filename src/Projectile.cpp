@@ -3,9 +3,9 @@
 
 const std::string Projectile::ProjectileTextureName = "projectile";
 
-Projectile::Projectile(const FPoint& position, float rotation, const math::Vector3& velocity, float speed)
+Projectile::Projectile(const FPoint& position, float rotation, const FPoint& direction, float speed)
 {
-	Init(ProjectileTextureName, position, rotation, velocity, speed);
+	Init(ProjectileTextureName, position, rotation, direction, speed);
 }
 
 Projectile::~Projectile()
@@ -13,7 +13,7 @@ Projectile::~Projectile()
 	
 }
 
-EColliderType Projectile::GetColliderType() const
+CollisionUtils::EColliderType Projectile::GetColliderType() const
 {
-	return EColliderType::EProjectile;
+	return CollisionUtils::EColliderType::EProjectile;
 }

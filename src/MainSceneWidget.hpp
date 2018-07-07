@@ -1,185 +1,17 @@
 #pragma once
-#include "Cannon.hpp"
-#include "Projectile.hpp"
-#include "Bubble.hpp"
-#include "QuadTree.hpp"
+class QuadTree;
 
-static const float Width = 2.f;
+class Wall;
+typedef std::unique_ptr<Wall> WallPtr;
 
-class Wall: public CollideableDelegate
-{
-protected:
-	FPoint _start;
-	FPoint _end;
-	
-	math::Vector3 _vector;
-	math::Vector3 _normal;
-	
-	OBB2D _obb;
+class Projectile;
+typedef boost::intrusive_ptr<Projectile> ProjectilePtr;
 
-public:
-	Wall()
-		: _start(0, 0)
-		, _end(0, 0)
-		, _normal(0, 0, 0)
-		, _vector(0, 0, 0)
-		, _obb()
-	{
-		
-	}
-	
-	Wall(const Wall& wall)
-		: _start(wall._start)
-		, _end(wall._end)
-		, _normal(wall._normal)
-		, _vector(wall._vector)
-		, _obb(wall._obb)
-	{
-		
-	}
-	
-	Wall(const FPoint& start, const FPoint& end)
-		: _start(start)
-		, _end(end)
-		, _normal(0, 0, 0)
-		, _vector(0, 0, 0)
-		, _obb()
-	{
-		Init();
-	}
-	
-	Wall(float xStart, float yStart, float xEnd, float yEnd)
-		: _start(FPoint(xStart, yStart))
-		, _end(FPoint(xEnd, yEnd))
-		, _normal(0, 0, 0)
-		, _obb()
-	{
-		Init();
-	}
-	
-	virtual ~Wall() { }
+class Cannon;
+typedef std::unique_ptr<Cannon> CannonPtr;
 
-	Wall& operator = (const Wall& wall)
-	{
-		if (this == &wall)
-		{
-			return *this;
-		}
-		
-		_start = wall._start;
-		_end = wall._end;
-		_normal = wall._normal;
-		_vector = wall._vector;
-		_obb = wall._obb;
-		
-		return *this;
-	}
-	
-	friend bool operator == (const Wall& left, const Wall& right)
-	{
-		return (left._start == right._start) && (left._end == right._end);
-	}
-	
-	void Init()
-	{
-		CalculateVector();
-		CalculateNormal();
-		CalculateOBB();
-	}
-	
-	void CalculateVector()
-	{
-		const math::Vector3 start(_start.x, _start.y, 0.f);
-		const math::Vector3 end(_end.x, _end.y, 0.f);
-		
-		_vector = end - start;
-	}
-	
-	void CalculateNormal()
-	{
-		auto v = _vector.Normalized();
-		
-		_normal.x = -v.y + 0.f;
-		_normal.y = v.x + 0.f;
-		_normal.z = 0.f;
-	}
-	
-	void CalculateOBB()
-	{
-		float xStart = _start.x;
-		float xEnd = _end.x + _normal.x * Width;
-		
-		float yStart = _start.y;
-		float yEnd = _end.y + _normal.y * Width;
-		
-		const float minX = math::min(xStart, xEnd);
-		const float maxX = math::max(xStart, xEnd);
-		
-		const float width = maxX - minX;
-		
-		const float minY = math::min(yStart, yEnd);
-		const float maxY = math::max(yStart, yEnd);
-		
-		const float height = maxY - minY;
-		
-		const math::Vector3 center(minX + width / 2, minY + height / 2, 0);
-		
-		_obb = OBB2D(center, width, height, 0.f);
-	}
-	
-	const math::Vector3& GetVector() const
-	{
-		return _vector;
-	}
-	
-	const math::Vector3& GetNormal() const
-	{
-		return _normal;
-	}
-	
-	void Draw()
-	{
-		Render::device.SetTexturing(false);
-		
-		const auto& corner = _obb.GetCorners();
-
-		Render::BeginColor(Color(0, 255, 255, 255));
-		Render::DrawLine(corner[0], corner[1]);
-		Render::DrawLine(corner[1], corner[2]);
-		Render::DrawLine(corner[2], corner[3]);
-		Render::DrawLine(corner[3], corner[0]);
-		Render::EndColor();
-
-		const FRect aabb = GetAABB();
-
-		Render::BeginColor(Color(255, 0, 0, 255));
-		Render::DrawLine(aabb.LeftBottom(), aabb.LeftTop());
-		Render::DrawLine(aabb.LeftTop(), aabb.RightTop());
-		Render::DrawLine(aabb.RightTop(), aabb.RightBottom());
-		Render::DrawLine(aabb.RightBottom(), aabb.LeftBottom());
-		Render::EndColor();
-
-		Render::device.SetTexturing(true);
-	}
-
-	virtual const OBB2D& GetOBB() const override
-	{
-		return _obb;
-	}
-
-	virtual const FRect GetAABB() const override
-	{
-		const auto& corner = _obb.GetCorners();
-		return FRect(corner[0].x, corner[1].x, corner[0].y, corner[2].y);
-	}
-
-	virtual EColliderType GetColliderType() const override
-	{
-		return EColliderType::EWall;
-	}
-};
-
-typedef std::shared_ptr<Wall> WallPtr;
+class Bubble;
+typedef boost::intrusive_ptr<Bubble> BubblePtr;
 
 class MainSceneWidget: public GUI::Widget
 {
@@ -203,21 +35,20 @@ protected:
 	void Init();
 	
 	void UpdateCannon(float dt);
-	
+
+	void CheckAndResolveProjectilesCollisions(float dt, QuadTree& quadTree);
+	void CheckAndResolveBubblesCollisions(float dt, QuadTree& quadTree);
+
 	void DrawProjectiles();
-	
 	void LaunchProjectile(const IPoint& position);
 	FPoint CalculateProjectileStartPosition() const;
-
 	void RemoveProjectile(const ProjectilePtr& projectile);
 	
 	void DrawBubbles();
-	
 	void LaunchBubbles();
-
 	void RemoveBubble(const BubblePtr& projectile);
 
-	void FillQuadTree(float dt, QuadTree& quad);
+	void FillQuadTree(QuadTree& quad);
 
 protected:
 	static const float ProjectileSpeed;

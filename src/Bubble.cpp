@@ -3,9 +3,9 @@
 
 const std::string Bubble::BubbleTextureName = "bubble";
 
-Bubble::Bubble(const FPoint& position, float rotation, const math::Vector3& velocity, float speed)
+Bubble::Bubble(const FPoint& position, float rotation, const FPoint& direction, float speed)
 {
-	Init(BubbleTextureName, position, rotation, velocity, speed);
+	Init(BubbleTextureName, position, rotation, direction, speed);
 }
 
 Bubble::~Bubble()
@@ -13,13 +13,13 @@ Bubble::~Bubble()
 	
 }
 
-EColliderType Bubble::GetColliderType() const
+CollisionUtils::EColliderType Bubble::GetColliderType() const
 {
-	return EColliderType::EBubble;
+	return CollisionUtils::EColliderType::EBubble;
 }
 
 float Bubble::GetRadius() const
 {
 	auto corners = _obb.GetCorners();
-	return (corners[0] - corners[3]).Length() / 2;
+	return (corners[0] - corners[1]).Length() / 2;
 }

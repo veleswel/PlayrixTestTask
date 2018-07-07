@@ -6,10 +6,10 @@ OBB2D::OBB2D()
 	
 }
 
-OBB2D::OBB2D(const math::Vector3& center, float width, float height, float angle)
+OBB2D::OBB2D(const FPoint& center, float width, float height, float angle)
 {
-	math::Vector3 X(math::cos(angle), math::sin(angle), 0);
-	math::Vector3 Y(-math::sin(angle), math::cos(angle), 0);
+	FPoint X(math::cos(angle), math::sin(angle));
+	FPoint Y(-math::sin(angle), math::cos(angle));
 
 	X *= width / 2;
 	Y *= height / 2;
@@ -48,7 +48,7 @@ bool OBB2D::Overlaps(const OBB2D& other) const
 	return Overlaps1Way(other) && other.Overlaps1Way(*this);
 }
 
-const std::array<math::Vector3, 4>& OBB2D::GetCorners() const
+const std::array<FPoint, 4>& OBB2D::GetCorners() const
 {
 	return _corner;
 }
@@ -57,14 +57,14 @@ bool OBB2D::Overlaps1Way(const OBB2D& other) const
 {
 	for (int a = 0; a < 2; ++a)
 	{
-		float t = other._corner[0].DotProduct(_axis[a]);
+		float t = other._corner[0].GetDotProduct(_axis[a]);
 
 		float tMin = t;
 		float tMax = t;
 
 		for (int c = 1; c < 4; ++c)
 		{
-			t = other._corner[c].DotProduct(_axis[a]);
+			t = other._corner[c].GetDotProduct(_axis[a]);
 
 			if (t < tMin)
 			{
@@ -92,7 +92,7 @@ void  OBB2D::ComputeAxes()
 
 	for (int a = 0; a < 2; ++a)
 	{
-		_axis[a] /= _axis[a].LengthSq();
-		_origin[a] = _corner[0].DotProduct(_axis[a]);
+		_axis[a] /= math::sqr(_axis[a].Length());
+		_origin[a] = _corner[0].GetDotProduct(_axis[a]);
 	}
 }

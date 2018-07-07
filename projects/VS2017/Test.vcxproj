@@ -120,7 +120,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Bubble.cpp" />
     <ClCompile Include="..\..\src\Cannon.cpp" />
-    <ClCompile Include="..\..\src\ColliderDelegate.cpp" />
+    <ClCompile Include="..\..\src\CollisionUtils.cpp" />
     <ClCompile Include="..\..\src\GameObject.cpp" />
     <ClCompile Include="..\..\src\Main.cpp" />
     <ClCompile Include="..\..\src\MainSceneWidget.cpp" />
@@ -135,11 +135,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\src\Utils.cpp" />
+    <ClCompile Include="..\..\src\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Bubble.hpp" />
     <ClInclude Include="..\..\src\Cannon.hpp" />
-    <ClInclude Include="..\..\src\ColliderDelegate.hpp" />
+    <ClInclude Include="..\..\src\CollisionUtils.hpp" />
     <ClInclude Include="..\..\src\GameObject.hpp" />
     <ClInclude Include="..\..\src\MainSceneWidget.hpp" />
     <ClInclude Include="..\..\src\MovableObject.hpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="..\..\src\TestWidget.h" />
     <ClInclude Include="..\..\src\stdafx.h" />
     <ClInclude Include="..\..\src\Utils.hpp" />
+    <ClInclude Include="..\..\src\Wall.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\bin\base_p\Layers.xml">
