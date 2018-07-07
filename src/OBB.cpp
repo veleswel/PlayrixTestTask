@@ -55,11 +55,9 @@ const std::array<math::Vector3, 4>& OBB2D::GetCorners() const
 
 bool OBB2D::Overlaps1Way(const OBB2D& other) const
 {
-	float t = 0.f;
-	
 	for (int a = 0; a < 2; ++a)
 	{
-		t = other._corner[0].DotProduct(_axis[a]);
+		float t = other._corner[0].DotProduct(_axis[a]);
 
 		float tMin = t;
 		float tMax = t;

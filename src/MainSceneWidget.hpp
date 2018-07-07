@@ -215,7 +215,7 @@ protected:
 
 	void RemoveBubble(const BubblePtr& projectile);
 
-	void UpdateObjectsAndFillQuadTree(float dt, QuadTree& quad);
+	void FillQuadTree(float dt, QuadTree& quad);
 
 protected:
 	static const float ProjectileSpeed;
