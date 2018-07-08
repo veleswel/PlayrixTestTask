@@ -27,13 +27,15 @@ public:
 	void MouseMove(const IPoint& mouse_pos) override;
 	void MouseUp(const IPoint& mouse_pos) override;
 	
-	void KeyPressed(int keyCode) override;
+	virtual void KeyPressed(int keyCode) override;
 	
-	static bool IsDebugDraw() { return false; }
+	static bool IsDebugDraw() { return true; }
 
 protected:
 	void Init();
 	
+	void StartNewGame();
+
 	void UpdateCannon(float dt);
 
 	void CheckAndResolveProjectilesCollisions(float dt, QuadTree& quadTree);
@@ -56,7 +58,7 @@ protected:
 	static const float MinBubbleSpeed;
 	static const float MaxBubbleSpeed;
 	
-	static const float BubbleLaunchScreenPrecision;
+	static const float BubbleLaunchScreenOffset;
 	
 	static const int BubblesCount;
 	

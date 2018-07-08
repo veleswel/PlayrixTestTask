@@ -129,7 +129,7 @@
     <ClCompile Include="..\..\src\Projectile.cpp" />
     <ClCompile Include="..\..\src\QuadTree.cpp" />
     <ClCompile Include="..\..\src\TestAppDelegate.cpp" />
-    <ClCompile Include="..\..\src\TestWidget.cpp" />
+    <ClCompile Include="..\..\src\MenuWidget.cpp" />
     <ClCompile Include="..\..\src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -148,7 +148,7 @@
     <ClInclude Include="..\..\src\Projectile.hpp" />
     <ClInclude Include="..\..\src\QuadTree.hpp" />
     <ClInclude Include="..\..\src\TestAppDelegate.h" />
-    <ClInclude Include="..\..\src\TestWidget.h" />
+    <ClInclude Include="..\..\src\MenuWidget.hpp" />
     <ClInclude Include="..\..\src\stdafx.h" />
     <ClInclude Include="..\..\src\Utils.hpp" />
     <ClInclude Include="..\..\src\Wall.hpp" />

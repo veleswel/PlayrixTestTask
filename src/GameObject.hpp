@@ -14,8 +14,9 @@ public:
 	virtual void Draw();
 	virtual void Update(float dt);
 	
-	void SetPosition(const FPoint& position);
-	void SetPosition(float x, float y);
+	virtual void SetPosition(const FPoint& position);
+	virtual void SetPosition(float x, float y);
+
 	const FPoint& GetPosition() const;
 	const FPoint GetPositionTransformed() const;
 	

@@ -8,7 +8,7 @@
 	<Textures>
 		<texture id="Star" path="textures/star.png" group="TestGroup" upload="false"/>
 		<texture id="Circle" path="textures/circle.png" group="TestGroup" upload="false"/>
-		<texture id="btnStart_Text" path="textures/Local/Buttons/Start_text.png" group="MainMenu" upload="true"/>
+		<texture id="btnStart_Text" path="textures/Local/Buttons/Start_text.png" group="TestGroup" upload="false"/>
 		<texture id="cancel_normal" path="textures/cancel_normal" />
 		<texture id="cancel_active" path="textures/cancel_active" />
 		<texture id="cancel_pressed" path="textures/cancel_pressed" />

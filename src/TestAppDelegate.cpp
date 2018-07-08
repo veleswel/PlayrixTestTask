@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TestAppDelegate.h"
 #include "MainSceneWidget.hpp"
-#include "TestWidget.h"
+#include "MenuWidget.hpp"
 
 enum {
 	WINDOW_WIDTH = 1024,
@@ -35,7 +35,7 @@ void TestAppDelegate::RegisterTypes()
 	// Чтобы можно было декларативно использовать виджет в xml по имени,
 	// его необходимо зарегистрировать таким образом.
 	//
-//	REGISTER_WIDGET_XML(TestWidget, "TestWidget");
+	REGISTER_WIDGET_XML(MenuWidget, "MenuWidget");
 	REGISTER_WIDGET_XML(MainSceneWidget, "MainSceneWidget");
 }
 
@@ -45,6 +45,7 @@ void TestAppDelegate::LoadResources()
 	// Обычно в этом методе выполняется скрипт, в котором определяется,
 	// какие ресурсы нужно загрузить и какой игровой слой положить на экран.
 	//
+
 	Core::LuaExecuteStartupScript("start.lua");
 }
 

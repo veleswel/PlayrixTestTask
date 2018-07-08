@@ -9,10 +9,10 @@
 #include "CollisionUtils.hpp"
 #include <boost/polymorphic_pointer_cast.hpp>
 
-const float MainSceneWidget::ProjectileSpeed = 300.f;
-const float MainSceneWidget::MinBubbleSpeed = 100.f;
-const float MainSceneWidget::MaxBubbleSpeed = 150.f;
-const float MainSceneWidget::BubbleLaunchScreenPrecision = 100.f;
+const float MainSceneWidget::ProjectileSpeed = 250.f;
+const float MainSceneWidget::MinBubbleSpeed = 50.f;
+const float MainSceneWidget::MaxBubbleSpeed = 100.f;
+const float MainSceneWidget::BubbleLaunchScreenOffset = 100.f;
 const int MainSceneWidget::BubblesCount = 30;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
@@ -35,12 +35,12 @@ void MainSceneWidget::Init()
 
 	_cannon.reset(new Cannon(_startPosition, 90.f));
 	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
-	
-	LaunchBubbles();
 }
 
 void MainSceneWidget::Draw()
 {
+	GUI::Widget::Draw();
+
 	const IPoint mouse_pos = Core::mainInput.GetMousePos();
 	
 	Render::device.SetTexturing(false);
@@ -59,20 +59,13 @@ void MainSceneWidget::Draw()
 		wall->Draw();
 	}
 	
-	Render::device.SetTexturing(false);
-	Render::BeginColor(Color(255, 128, 0, 255));
-	Render::DrawRect(924, 0, 100, 100);
-	Render::EndColor();
-	Render::device.SetTexturing(true);
-	
 	_effCont.Draw();
-	
-	Render::BindFont("arial");
-	Render::PrintString(924 + 100 / 2, 25, utils::lexical_cast(mouse_pos.x) + ", " + utils::lexical_cast(mouse_pos.y), 1.f, CenterAlign);
 }
 
 void MainSceneWidget::Update(float dt)
 {
+	GUI::Widget::Update(dt);
+
 	UpdateCannon(dt);
 
 	QuadTree quad(0, _screenRect);
@@ -93,6 +86,12 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 
 	for (const ProjectilePtr& projPtr : _launchedProjectiles)
 	{
+		if (!projPtr->IsNeedToCheckCollision())
+		{
+			projPtr->Update(dt);
+			continue;
+		}
+
 		bool isProjectileToDestroy = false;
 		const OBB2D& obb = projPtr->GetOBB();
 
@@ -151,11 +150,10 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 		projPtr->Update(dt);
 	}
 
-	for (auto& projPtr : projectilesToDestroy)
+	for (auto& projPtr: projectilesToDestroy)
 	{
 		RemoveProjectile(projPtr);
 		projPtr.reset();
-		projPtr = nullptr;
 	}
 }
 
@@ -220,11 +218,28 @@ void MainSceneWidget::AcceptMessage(const Message& message)
 {
 	const std::string& publisher = message.getPublisher();
 	const std::string& data = message.getData();
+
+	if (publisher == "MenuWidget" && data == "startNewGame")
+	{
+		StartNewGame();
+	}
 }
 
 void MainSceneWidget::KeyPressed(int keyCode)
 {
+	if (keyCode == VK_ESCAPE)
+	{
+		Core::mainScreen.popLayer();
+		Core::mainScreen.pushLayer("MenuLayer");
+	}
+}
 
+void MainSceneWidget::StartNewGame()
+{
+	_launchedProjectiles.clear();
+	_bubbles.clear();
+
+	LaunchBubbles();
 }
 
 void MainSceneWidget::UpdateCannon(float dt)
@@ -252,22 +267,22 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 		return;
 	}
 
-	ProjectilePtr projectilePtr(new Projectile(startPosition, angle, direction.Normalized(), ProjectileSpeed));
+	ProjectilePtr projectile(new Projectile(startPosition, angle, direction.Normalized(), ProjectileSpeed));
 	
-	if (projectilePtr->GetOBB().Overlaps(_walls[0]->GetOBB()))
+	if (projectile->GetOBB().Overlaps(_walls[0]->GetOBB()))
 	{
-		projectilePtr.reset();
-		projectilePtr = nullptr;
+		projectile.reset();
+		projectile = nullptr;
 		return;
 	}
 	
-	_launchedProjectiles.push_back(projectilePtr);
+	_launchedProjectiles.push_back(projectile);
 }
 
 FPoint MainSceneWidget::CalculateProjectileStartPosition() const
 {
-	const float angle = (math::PI * _cannon->GetRotationAngle()) / 180.f;
-	const float cannonTextHeight = _cannon->GetScaledTextureRect().Width();
+	const float angle = Utils::DegreeToRadian(_cannon->GetRotationAngle());
+	const float cannonTextHeight = _cannon->GetScaledTextureRect().Width() + 20.f;
 
 	FPoint position(
 		_startPosition.x + cannonTextHeight * math::cos(angle), 
@@ -296,12 +311,12 @@ void MainSceneWidget::DrawBubbles()
 
 void MainSceneWidget::LaunchBubbles()
 {
-	const float width = _screenRect.Width() - BubbleLaunchScreenPrecision;
-	const float height = _screenRect.Height() - BubbleLaunchScreenPrecision;
+	const float width = _screenRect.Width() - BubbleLaunchScreenOffset;
+	const float height = _screenRect.Height() - BubbleLaunchScreenOffset;
 	
 	for (int i = 0; i < BubblesCount; ++i)
 	{
-		const FPoint position(math::random(BubbleLaunchScreenPrecision, width), math::random(BubbleLaunchScreenPrecision, height));
+		const FPoint position(math::random(BubbleLaunchScreenOffset, width), math::random(BubbleLaunchScreenOffset, height));
 		const float speed = math::random(MinBubbleSpeed, MaxBubbleSpeed);
 		const float angle = math::random(1.f + 0.f, 2 * math::PI - 1.f);
 		

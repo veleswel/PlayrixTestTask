@@ -32,8 +32,10 @@ public:
 	void SetCollided(bool isCollided);
 	bool IsCollided() const;
 
+	virtual float GetOBBRotationAngle() const = 0;
+
 protected:
-	void Init(const std::string& textureName, const FPoint& position, float rotation, const FPoint& direction, float speed);
+	virtual void Init(const std::string& textureName, const FPoint& position, float rotation, const FPoint& direction, float speed);
 	
 	void UpdateOBB();
 	
@@ -41,7 +43,6 @@ protected:
 	float _speed;
 
 	FPoint _direction;
-	FPoint _velocity;
 
 	OBB2D _obb;
 

@@ -1,8 +1,24 @@
 <?xml version="1.0"?>
 <GUI>
+	<include>gui.lua</include>
+	<Layer name="MenuLayer">
+		<Controls>
+			<MenuWidget name="MenuWidget"/>
+			<Button name="start">
+				<position x="467" y="414"/>
+				<state normal="cancel_normal" active="cancel_active" pressed="cancel_pressed"/>
+			</Button>
+			<Button name="continue">
+				<position x="467" y="320"/>
+				<state normal="cancel_normal" active="cancel_active" pressed="cancel_pressed"/>
+			</Button>
+		</Controls>
+		<Script>MenuLayerFunc</Script>
+	</Layer>	
 	<Layer name="MainLayer">
 		<Controls>
 			<MainSceneWidget name="MainSceneWidget"/>
 		</Controls>
+		<Script>MainLayerFunc</Script>
 	</Layer>
 </GUI>

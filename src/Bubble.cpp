@@ -21,5 +21,5 @@ CollisionUtils::EColliderType Bubble::GetColliderType() const
 float Bubble::GetRadius() const
 {
 	auto corners = _obb.GetCorners();
-	return (corners[0] - corners[1]).Length() / 2;
+	return (corners[0] - corners[3]).Length() / 2.f;
 }

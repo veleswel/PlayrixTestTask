@@ -39,3 +39,4 @@ projects/VS2017/.vs/Test/v15/.suo
 obj/Debug/resource.res
 bin/Testd.pdb
 bin/write_directory/log.htm
+*.pdb
