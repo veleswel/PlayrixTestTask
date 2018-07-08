@@ -1,4 +1,6 @@
 #pragma once
+#include <boost/timer.hpp>
+
 class QuadTree;
 
 class Wall;
@@ -29,12 +31,13 @@ public:
 	
 	virtual void KeyPressed(int keyCode) override;
 	
-	static bool IsDebugDraw() { return true; }
+	static bool IsDebugDraw() { return false; }
 
 protected:
 	void Init();
 	
 	void StartNewGame();
+	void PlayWinnerEffects();
 
 	void UpdateCannon(float dt);
 
@@ -43,7 +46,7 @@ protected:
 
 	void DrawProjectiles();
 	void LaunchProjectile(const IPoint& position);
-	FPoint CalculateProjectileStartPosition() const;
+	const FPoint CalculateProjectileStartPosition() const;
 	void RemoveProjectile(const ProjectilePtr& projectile);
 	
 	void DrawBubbles();
@@ -62,6 +65,8 @@ protected:
 	
 	static const int BubblesCount;
 	
+	static const int PlayTime;
+
 protected:
 	const FPoint _startPosition;
 	const FRect _screenRect;
@@ -74,4 +79,10 @@ protected:
 	EffectsContainer _effCont;
 	
 	std::array<WallPtr, 4> _walls;
+
+	float _timer;
+
+	size_t _projectilesTotalLaunch;
+
+	boost::timer _timerB;
 };

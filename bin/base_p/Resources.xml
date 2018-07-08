@@ -6,7 +6,7 @@
 		</font>
 	</FreeTypeFonts>
 	<Textures>
-		<texture id="Star" path="textures/star.png" group="TestGroup" upload="false"/>
+		<texture id="star" path="textures/star.png" group="TestGroup" upload="false"/>
 		<texture id="Circle" path="textures/circle.png" group="TestGroup" upload="false"/>
 		<texture id="btnStart_Text" path="textures/Local/Buttons/Start_text.png" group="TestGroup" upload="false"/>
 		<texture id="cancel_normal" path="textures/cancel_normal" />
@@ -14,6 +14,6 @@
 		<texture id="cancel_pressed" path="textures/cancel_pressed" />
 		<texture id="cannon_2" path="textures/cannon2.png" group="TestGroup" upload="false"/>
 		<texture id="projectile" path="textures/projectile.png" group="TestGroup" upload="false"/>
-		<texture id="bubble" path="textures/bubble1.png" group="TestGroup" upload="false"/>
+		<texture id="bubble" path="textures/bubble.png" group="TestGroup" upload="false"/>
 	</Textures>
 </Resources>

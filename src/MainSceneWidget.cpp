@@ -13,13 +13,16 @@ const float MainSceneWidget::ProjectileSpeed = 250.f;
 const float MainSceneWidget::MinBubbleSpeed = 50.f;
 const float MainSceneWidget::MaxBubbleSpeed = 100.f;
 const float MainSceneWidget::BubbleLaunchScreenOffset = 100.f;
-const int MainSceneWidget::BubblesCount = 30;
+const int MainSceneWidget::BubblesCount = 2;
+const int MainSceneWidget::PlayTime = 2;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
 	, _cannon(nullptr)
 	, _screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height())
-	, _startPosition(FPoint(Render::device.Width() / 2.f, 0.f))
+	, _startPosition(Render::device.Width() / 2.f, 0.f)
+	, _timer(0.f)
+	, _projectilesTotalLaunch(0)
 {
 	Init();
 }
@@ -35,6 +38,9 @@ void MainSceneWidget::Init()
 
 	_cannon.reset(new Cannon(_startPosition, 90.f));
 	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
+
+	Core::Timer timer;
+	_timerB.restart();
 }
 
 void MainSceneWidget::Draw()
@@ -59,6 +65,11 @@ void MainSceneWidget::Draw()
 		wall->Draw();
 	}
 	
+	Render::BindFont("arial");
+	Render::PrintString(10.f, _screenRect.Height() - 15.f, "Projectiles: " + utils::lexical_cast(_projectilesTotalLaunch), 1.5f, LeftAlign);
+	Render::PrintString(10.f, _screenRect.Height() - 30.f, "Bubbles left: " + utils::lexical_cast(_bubbles.size()), 1.5f, LeftAlign);
+	Render::PrintString(10.f, _screenRect.Height() - 45.f, "Timer: " + utils::lexical_cast(_timerB.elapsed()), 1.5f, LeftAlign);
+
 	_effCont.Draw();
 }
 
@@ -77,6 +88,9 @@ void MainSceneWidget::Update(float dt)
 	CheckAndResolveBubblesCollisions(dt, quad);
 
 	_effCont.Update(dt);
+
+	float ndt = _timer + dt;
+	_timer = math::lerp(_timer, ndt, dt);
 }
 
 void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& quadTree)
@@ -242,6 +256,11 @@ void MainSceneWidget::StartNewGame()
 	LaunchBubbles();
 }
 
+void MainSceneWidget::PlayWinnerEffects()
+{
+	
+}
+
 void MainSceneWidget::UpdateCannon(float dt)
 {
 	_cannon->Update(dt);
@@ -249,9 +268,9 @@ void MainSceneWidget::UpdateCannon(float dt)
 
 void MainSceneWidget::DrawProjectiles()
 {
-	for (const auto& projectilePtr : _launchedProjectiles)
+	for (const ProjectilePtr& projectile : _launchedProjectiles)
 	{
-		projectilePtr->Draw();
+		projectile->Draw();
 	}
 }
 
@@ -277,19 +296,18 @@ void MainSceneWidget::LaunchProjectile(const IPoint& position)
 	}
 	
 	_launchedProjectiles.push_back(projectile);
+	_projectilesTotalLaunch++;
 }
 
-FPoint MainSceneWidget::CalculateProjectileStartPosition() const
+const FPoint MainSceneWidget::CalculateProjectileStartPosition() const
 {
 	const float angle = Utils::DegreeToRadian(_cannon->GetRotationAngle());
 	const float cannonTextHeight = _cannon->GetScaledTextureRect().Width() + 20.f;
 
-	FPoint position(
+	return FPoint(
 		_startPosition.x + cannonTextHeight * math::cos(angle), 
 		_startPosition.y + cannonTextHeight * math::sin(angle)
 	);
-
-	return position;
 }
 
 void MainSceneWidget::RemoveProjectile(const ProjectilePtr& projectile)
@@ -303,9 +321,9 @@ void MainSceneWidget::RemoveProjectile(const ProjectilePtr& projectile)
 
 void MainSceneWidget::DrawBubbles()
 {
-	for (const auto& bubblePtr : _bubbles)
+	for (const BubblePtr& bubble : _bubbles)
 	{
-		bubblePtr->Draw();
+		bubble->Draw();
 	}
 }
 
@@ -322,7 +340,7 @@ void MainSceneWidget::LaunchBubbles()
 		
 		const FPoint direction(math::cos(angle), math::sin(angle));
 
-		BubblePtr bubblePtr(new Bubble(position, Utils::RadianToDegree(angle), direction.Normalized(), speed));
+		BubblePtr bubblePtr(new Bubble(position, 0.f, direction.Normalized(), speed));
 		_bubbles.push_back(bubblePtr);
 	}
 }

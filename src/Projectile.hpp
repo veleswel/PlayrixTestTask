@@ -31,8 +31,6 @@ protected:
 	EffectsContainer _effectContainer;
 	ParticleEffectPtr _effect;
 
-	Render::AnimationPtr _animation;
-
 	bool _isDrawn;
 };
 
