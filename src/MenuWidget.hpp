@@ -1,55 +1,7 @@
 #pragma once
-#include "Utils.hpp"
-#include "Core/ControllerManager.h"
+#include "Fadeable.hpp"
 
-class FadeTransitionController: public IController
-{
-//	IController();
-//	IController(const std::string& name);
-//
-//	float local_time;
-//	bool finished;
-//	bool paused;
-//
-//	const std::string& getName() const;
-//
-
-public:
-	FadeTransitionController()
-	{
-		
-	}
-	
-	FadeTransitionController(const std::string& name)
-		: IController(name)
-	{
-		
-	}
-	
-	virtual ~FadeTransitionController()
-	{
-		
-	}
-	
-public:
-	virtual void Update(float dt) override
-	{
-		
-	};
-	
-	virtual bool isFinish() override
-	{
-		return _isFinished
-	};
-	
-protected:
-	float _start;
-	float _finish;
-	
-	bool _isFinished;
-};
-
-class MenuWidget : public GUI::Widget
+class MenuWidget : public GUI::Widget, public Fadeable
 {
 public:
 	MenuWidget(const std::string& name, rapidxml::xml_node<>* elem);
@@ -60,7 +12,6 @@ public:
 	virtual void AcceptMessage(const Message& message) override;
 
 protected:
-	Utils::EGameState _state;
+	Utils::EGameWidgetState _state;
 	Render::Texture* _background;
-	float _mult;
 };

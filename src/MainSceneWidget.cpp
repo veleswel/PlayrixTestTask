@@ -13,8 +13,8 @@ const float MainSceneWidget::ProjectileSpeed = 250.f;
 const float MainSceneWidget::MinBubbleSpeed = 50.f;
 const float MainSceneWidget::MaxBubbleSpeed = 100.f;
 const float MainSceneWidget::BubbleLaunchScreenOffset = 100.f;
-const int MainSceneWidget::BubblesCount = 2;
-const int MainSceneWidget::PlayTime = 2;
+const int MainSceneWidget::BubblesCount = 10;
+const int MainSceneWidget::PlayTime = 10;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
@@ -22,8 +22,10 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 	, _screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height())
 	, _startPosition(Render::device.Width() / 2.f, 0.f)
 	, _projectilesTotalLaunch(0)
-	, _shading(0.f)
+	, _timeLeft(PlayTime)
+	, _state(Utils::EGameWidgetState::EPause)
 {
+	Core::Timer::Sync();
 	Init();
 }
 
@@ -37,23 +39,20 @@ void MainSceneWidget::Init()
 	};
 
 	_background = Core::resourceManager.Get<Render::Texture>("background");
-	
+
 	_cannon.reset(new Cannon(_startPosition, 90.f));
 	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
+
+	_fading = 1.f;
+	_fadingBound = 1.f;
 }
 
 void MainSceneWidget::Draw()
 {
 	GUI::Widget::Draw();
 
-	GUI::Widget::Draw();
-	Render::ShaderProgram* myshader = Core::resourceManager.Get<Render::ShaderProgram>("myshader");
-	
-	myshader->Bind();
-	myshader->SetUniform("u_modelview", math::Matrix4::Identity);
-	myshader->SetUniform("sampler", 0);
-	myshader->SetUniform("multiplier", _shading);
-	
+	BeginDrawingFading();
+
 	_background->Draw();
 	
 	DrawBubbles();
@@ -66,37 +65,36 @@ void MainSceneWidget::Draw()
 		wall->Draw();
 	}
 	
-	Render::BindFont("arial");
-	Render::PrintString(10.f, _screenRect.Height() - 15.f, "Projectiles: " + utils::lexical_cast(_projectilesTotalLaunch), 1.5f, LeftAlign);
-	Render::PrintString(10.f, _screenRect.Height() - 30.f, "Bubbles left: " + utils::lexical_cast(_bubbles.size()), 1.5f, LeftAlign);
-	Render::PrintString(10.f, _screenRect.Height() - 45.f, "Timer: " + utils::lexical_cast(_timer_b.elapsed()), 1.5f, LeftAlign);
-
 	_effCont.Draw();
-	
-	myshader->Unbind();
+
+	EndDrawingFading();
+
+	Render::BindFont("arial");
+	Render::PrintString(10.f, _screenRect.Height() - 10.f, "Projectiles launched: " + utils::lexical_cast(_projectilesTotalLaunch), 1.5f, LeftAlign);
+	Render::PrintString(10.f, _screenRect.Height() - 30.f, "Bubbles left: " + utils::lexical_cast(_bubbles.size()), 1.5f, LeftAlign);
+	Render::PrintString(10.f, _screenRect.Height() - 50.f, "Time left: " + utils::lexical_cast(_timeLeft), 1.5f, LeftAlign);
 }
 
 void MainSceneWidget::Update(float dt)
 {
 	GUI::Widget::Update(dt);
-
-	_shading += dt;
-	if (_shading >= 1.f)
-	{
-		_shading = 1.f;
-	}
 	
 	UpdateCannon(dt);
-
-	QuadTree quad(0, _screenRect);
-	quad.Clear();
-
-	FillQuadTree(quad);
-
-	CheckAndResolveProjectilesCollisions(dt, quad);
-	CheckAndResolveBubblesCollisions(dt, quad);
+	UpdateGameItems(dt);
 
 	_effCont.Update(dt);
+
+	UpdateFading(dt);
+
+	if (_state != Utils::EGameWidgetState::EFinish && _state != Utils::EGameWidgetState::EPause)
+	{
+		_timeLeft = math::ceil(PlayTime - _timer.getElapsedTime()) + 0.f;
+		if (_timeLeft <= 0.f)
+		{
+			_timeLeft = 0.f;
+			Loose();
+		}
+	}
 }
 
 void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& quadTree)
@@ -179,6 +177,11 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 
 void MainSceneWidget::CheckAndResolveBubblesCollisions(float dt, QuadTree& quadTree)
 {
+	if (_bubbles.empty() && _state != Utils::EGameWidgetState::EFinish)
+	{
+		Win();
+	}
+
 	std::list<MovableObjectPtr> returnObjects;
 
 	for (const BubblePtr& bubble : _bubbles)
@@ -220,7 +223,7 @@ void MainSceneWidget::CheckAndResolveBubblesCollisions(float dt, QuadTree& quadT
 
 bool MainSceneWidget::MouseDown(const IPoint &mouse_pos)
 {
-	LaunchProjectile(mouse_pos);	
+	LaunchProjectile();	
 	return false;
 }
 
@@ -245,11 +248,13 @@ void MainSceneWidget::AcceptMessage(const Message& message)
 	}
 	else if (publisher == "MenuWidget" && data == "continueGame")
 	{
-		Log::Debug("MenuWidget continueGame");
+		if (_state != Utils::EGameWidgetState::EFinish)
+		{
+			ResumeGame();
+		}
 	}
 	else if (publisher == "Layer" && data == "LayerInit")
 	{
-		_shading = 0.f;
 		Log::Debug("Layer Init");
 	}
 	else if (publisher == "Layer" && data == "LayerDeinit")
@@ -262,10 +267,7 @@ void MainSceneWidget::KeyPressed(int keyCode)
 {
 	if (keyCode == VK_ESCAPE)
 	{
-		_shading = 0.f;
-		
-		Core::mainScreen.popLayer();
-		Core::mainScreen.pushLayer("MenuLayer");
+		PauseGame();
 	}
 }
 
@@ -276,17 +278,61 @@ void MainSceneWidget::StartNewGame()
 
 	LaunchBubbles();
 	
-	_timer_b.restart();
+	_timeLeft = PlayTime;
+	_timer.Start();
+
+	_state = Utils::EGameWidgetState::EPlaying;
+
+	_fadingBound = 1.f;
 }
 
-void MainSceneWidget::PlayWinnerEffects()
+void MainSceneWidget::PauseGame()
 {
+	_timer.Pause();
+
+	_state = Utils::EGameWidgetState::EPause;
+
+	Core::mainScreen.popLayer();
+	Core::mainScreen.pushLayer("MenuLayer");
+}
+
+void MainSceneWidget::ResumeGame()
+{
+	if (_state != Utils::EGameWidgetState::EFinish && _state != Utils::EGameWidgetState::EPause)
+	{
+		_timer.Resume();
+		_state = Utils::EGameWidgetState::EPlaying;
+	}
+}
+
+void MainSceneWidget::Win()
+{
+	_timer.Pause();
+	_state = Utils::EGameWidgetState::EFinish;
+}
+
+void MainSceneWidget::Loose()
+{
+	_timer.Pause();
+	_state = Utils::EGameWidgetState::EFinish;
 	
+	_fadingBound = .25f;
 }
 
 void MainSceneWidget::UpdateCannon(float dt)
 {
 	_cannon->Update(dt);
+}
+
+void MainSceneWidget::UpdateGameItems(float dt)
+{
+	QuadTree quad(0, _screenRect);
+	quad.Clear();
+
+	FillQuadTree(quad);
+
+	CheckAndResolveProjectilesCollisions(dt, quad);
+	CheckAndResolveBubblesCollisions(dt, quad);
 }
 
 void MainSceneWidget::DrawProjectiles()
@@ -297,8 +343,13 @@ void MainSceneWidget::DrawProjectiles()
 	}
 }
 
-void MainSceneWidget::LaunchProjectile(const IPoint& position)
+void MainSceneWidget::LaunchProjectile()
 {
+	if (_state == Utils::EGameWidgetState::EFinish || _state == Utils::EGameWidgetState::EPause)
+	{
+		return;
+	}
+
 	const float angle = _cannon->GetRotationAngle();
 	const float angleRad = Utils::DegreeToRadian(angle);
 	const FPoint startPosition(CalculateProjectileStartPosition());

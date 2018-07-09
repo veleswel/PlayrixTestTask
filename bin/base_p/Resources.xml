@@ -21,6 +21,6 @@
         <texture id="background" path="textures/back.png" group="TestGroup" upload="false"/>
 	</Textures>
     <Shaders group="TestGroup">
-        <Shader id="myshader" vs="myshader" ps="myshader" />
+        <Shader id="fade" vs="shaders/fade" ps="shaders/fade" />
     </Shaders>
 </Resources>

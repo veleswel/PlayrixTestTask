@@ -4,7 +4,7 @@
 
 namespace Utils
 {
-	enum class EGameState
+	enum class EGameWidgetState
 	{
 		EMenu, EPlaying, EPause, EFinish
 	};

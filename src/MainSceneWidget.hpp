@@ -1,5 +1,6 @@
 #pragma once
-#include <boost/timer.hpp>
+#include "Utils.hpp"
+#include "Fadeable.hpp"
 
 class QuadTree;
 
@@ -15,7 +16,7 @@ typedef std::unique_ptr<Cannon> CannonPtr;
 class Bubble;
 typedef boost::intrusive_ptr<Bubble> BubblePtr;
 
-class MainSceneWidget: public GUI::Widget
+class MainSceneWidget: public GUI::Widget, public Fadeable
 {
 public:
 	MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem);
@@ -37,15 +38,19 @@ protected:
 	void Init();
 	
 	void StartNewGame();
-	void PlayWinnerEffects();
+	void PauseGame();
+	void ResumeGame();
+	void Win();
+	void Loose();
 
 	void UpdateCannon(float dt);
+	void UpdateGameItems(float dt);
 
 	void CheckAndResolveProjectilesCollisions(float dt, QuadTree& quadTree);
 	void CheckAndResolveBubblesCollisions(float dt, QuadTree& quadTree);
 
 	void DrawProjectiles();
-	void LaunchProjectile(const IPoint& position);
+	void LaunchProjectile();
 	const FPoint CalculateProjectileStartPosition() const;
 	void RemoveProjectile(const ProjectilePtr& projectile);
 	
@@ -82,9 +87,10 @@ protected:
 
 	size_t _projectilesTotalLaunch;
 
-	boost::timer _timer_b;
-	
-	float _shading;
-	
+	Core::Timer _timer;
+	float _timeLeft;
+
 	Render::Texture* _background;
+
+	Utils::EGameWidgetState _state;
 };
