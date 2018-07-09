@@ -5,18 +5,35 @@
 MenuWidget::MenuWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
 	, _state(Utils::EGameState::EMenu)
+	, _background(nullptr)
+	, _mult(0.f)
 {
-	
+	_background = Core::resourceManager.Get<Render::Texture>("background");
 }
 
 void MenuWidget::Draw()
 {
 	GUI::Widget::Draw();
+	Render::ShaderProgram* myshader = Core::resourceManager.Get<Render::ShaderProgram>("myshader");
+	
+	myshader->Bind();
+	myshader->SetUniform("u_modelview", math::Matrix4::Identity);
+	myshader->SetUniform("sampler", 0);
+	myshader->SetUniform("multiplier", _mult);
+	
+	_background->Draw();
+	myshader->Unbind();
 }
 
 void MenuWidget::Update(float dt)
 {
 	GUI::Widget::Update(dt);
+	_mult += dt * .5f;
+	
+	if (_mult >= 1.f)
+	{
+		_mult = 1.f;
+	}
 }
 
 void MenuWidget::AcceptMessage(const Message& message)
@@ -33,6 +50,8 @@ void MenuWidget::AcceptMessage(const Message& message)
 
 	if (publisher == "Layer" && data == "Init")
 	{
+		_mult = 0.f;
+		
 		if (_state == Utils::EGameState::EMenu)
 		{
 			continueBtn->setVisible(false);
@@ -50,11 +69,11 @@ void MenuWidget::AcceptMessage(const Message& message)
 	}
 	else if (publisher == "start" && data == "press")
 	{
-		const Message startNewGame(getName(), "startNewGame");
-		Core::guiManager.getLayer("MainLayer")->getWidget("MainSceneWidget")->AcceptMessage(startNewGame);
-		
 		Core::mainScreen.popLayer();
 		Core::mainScreen.pushLayer("MainLayer");
+		
+		const Message startNewGame(getName(), "startNewGame");
+		Core::guiManager.getLayer("MainLayer")->getWidget("MainSceneWidget")->AcceptMessage(startNewGame);
 
 		_state = Utils::EGameState::EPlaying;
 	}
@@ -63,6 +82,9 @@ void MenuWidget::AcceptMessage(const Message& message)
 		Core::mainScreen.popLayer();
 		Core::mainScreen.pushLayer("MainLayer");
 
+		const Message continueGame(getName(), "continueGame");
+		Core::guiManager.getLayer("MainLayer")->getWidget("MainSceneWidget")->AcceptMessage(continueGame);
+		
 		_state = Utils::EGameState::EPlaying;
 	}
 }

@@ -80,9 +80,11 @@ protected:
 	
 	std::array<WallPtr, 4> _walls;
 
-	float _timer;
-
 	size_t _projectilesTotalLaunch;
 
-	boost::timer _timerB;
+	boost::timer _timer_b;
+	
+	float _shading;
+	
+	Render::Texture* _background;
 };

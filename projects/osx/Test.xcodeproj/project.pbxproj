@@ -10,7 +10,6 @@
 		A6869E011D229E5D00C1D1B1 /* base_p in Resources */ = {isa = PBXBuildFile; fileRef = A6869E001D229E5D00C1D1B1 /* base_p */; };
 		A6869E0F1D229EF600C1D1B1 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6869E0A1D229EF600C1D1B1 /* Main.cpp */; };
 		A6869E101D229EF600C1D1B1 /* TestAppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6869E0B1D229EF600C1D1B1 /* TestAppDelegate.cpp */; };
-		A6869E111D229EF600C1D1B1 /* TestWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6869E0D1D229EF600C1D1B1 /* TestWidget.cpp */; };
 		C637A4CF1A82376D003061B9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C637A4CD1A82371B003061B9 /* MainMenu.xib */; };
 		C653DB821AC1835E006AF2E9 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C653DB811AC1835E006AF2E9 /* StoreKit.framework */; };
 		C6B8C3521AD501E200AF7B11 /* mac.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = C6B8C3511AD501E200AF7B11 /* mac.entitlements */; };
@@ -33,8 +32,11 @@
 		E32AF6AB20EA1A1100E73913 /* MovableObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF6A920EA1A1100E73913 /* MovableObject.cpp */; };
 		E36CF9B420ECDE7D00171498 /* QuadTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B220ECDE7D00171498 /* QuadTree.cpp */; };
 		E36CF9B720EE0D4B00171498 /* OBB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B620EE0D4B00171498 /* OBB.cpp */; };
-		E36CF9BA20EE0D7300171498 /* ColliderDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9B820EE0D7300171498 /* ColliderDelegate.cpp */; };
 		E36CF9C320EF5BCB00171498 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9C120EF5BCA00171498 /* Utils.cpp */; };
+		E36CF9C620F3461200171498 /* CollisionUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9C520F3461200171498 /* CollisionUtils.cpp */; };
+		E36CF9CA20F3464700171498 /* MenuWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9C920F3464700171498 /* MenuWidget.cpp */; };
+		E36CF9CD20F3466500171498 /* Wall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9CB20F3466500171498 /* Wall.cpp */; };
+		E36CF9CF20F35DF500171498 /* include in Resources */ = {isa = PBXBuildFile; fileRef = E36CF9CE20F35DF500171498 /* include */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,11 +53,9 @@
 
 /* Begin PBXFileReference section */
 		A6869E001D229E5D00C1D1B1 /* base_p */ = {isa = PBXFileReference; lastKnownFileType = folder; name = base_p; path = ../../bin/base_p; sourceTree = "<group>"; };
-		A6869E0A1D229EF600C1D1B1 /* Main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Main.cpp; path = ../../src/Main.cpp; sourceTree = "<group>"; };
-		A6869E0B1D229EF600C1D1B1 /* TestAppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestAppDelegate.cpp; path = ../../src/TestAppDelegate.cpp; sourceTree = "<group>"; };
-		A6869E0C1D229EF600C1D1B1 /* TestAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestAppDelegate.h; path = ../../src/TestAppDelegate.h; sourceTree = "<group>"; };
-		A6869E0D1D229EF600C1D1B1 /* TestWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestWidget.cpp; path = ../../src/TestWidget.cpp; sourceTree = "<group>"; };
-		A6869E0E1D229EF600C1D1B1 /* TestWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestWidget.h; path = ../../src/TestWidget.h; sourceTree = "<group>"; };
+		A6869E0A1D229EF600C1D1B1 /* Main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Main.cpp; sourceTree = "<group>"; };
+		A6869E0B1D229EF600C1D1B1 /* TestAppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestAppDelegate.cpp; sourceTree = "<group>"; };
+		A6869E0C1D229EF600C1D1B1 /* TestAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestAppDelegate.h; sourceTree = "<group>"; };
 		C62A7DCA1B5D306700147E52 /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash.png; sourceTree = "<group>"; };
 		C637A4CD1A82371B003061B9 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		C653DB811AC1835E006AF2E9 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -90,10 +90,15 @@
 		E36CF9B320ECDE7D00171498 /* QuadTree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = QuadTree.hpp; path = ../../src/QuadTree.hpp; sourceTree = "<group>"; };
 		E36CF9B520EE0D4B00171498 /* OBB.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = OBB.hpp; path = ../../src/OBB.hpp; sourceTree = "<group>"; };
 		E36CF9B620EE0D4B00171498 /* OBB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OBB.cpp; path = ../../src/OBB.cpp; sourceTree = "<group>"; };
-		E36CF9B820EE0D7300171498 /* ColliderDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ColliderDelegate.cpp; path = ../../src/ColliderDelegate.cpp; sourceTree = "<group>"; };
-		E36CF9B920EE0D7300171498 /* ColliderDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ColliderDelegate.hpp; path = ../../src/ColliderDelegate.hpp; sourceTree = "<group>"; };
 		E36CF9C120EF5BCA00171498 /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utils.cpp; path = ../../src/Utils.cpp; sourceTree = "<group>"; };
 		E36CF9C220EF5BCA00171498 /* Utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Utils.hpp; path = ../../src/Utils.hpp; sourceTree = "<group>"; };
+		E36CF9C420F3461200171498 /* CollisionUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = CollisionUtils.hpp; path = ../../src/CollisionUtils.hpp; sourceTree = "<group>"; };
+		E36CF9C520F3461200171498 /* CollisionUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CollisionUtils.cpp; path = ../../src/CollisionUtils.cpp; sourceTree = "<group>"; };
+		E36CF9C820F3464700171498 /* MenuWidget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MenuWidget.hpp; path = ../../src/MenuWidget.hpp; sourceTree = "<group>"; };
+		E36CF9C920F3464700171498 /* MenuWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MenuWidget.cpp; path = ../../src/MenuWidget.cpp; sourceTree = "<group>"; };
+		E36CF9CB20F3466500171498 /* Wall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Wall.cpp; path = ../../src/Wall.cpp; sourceTree = "<group>"; };
+		E36CF9CC20F3466500171498 /* Wall.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Wall.hpp; path = ../../src/Wall.hpp; sourceTree = "<group>"; };
+		E36CF9CE20F35DF500171498 /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; name = include; path = ../../../engine/include; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,19 +125,12 @@
 		C6B8C3531AD502F700AF7B11 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E36CF9C720F3461900171498 /*  SceneObjects */,
 				E36CF9B120ECDE6400171498 /* Utils */,
-				E32AF6A920EA1A1100E73913 /* MovableObject.cpp */,
-				E32AF6AA20EA1A1100E73913 /* MovableObject.hpp */,
-				E32AF69A20E7DF1C00E73913 /* Bubble.cpp */,
-				E32AF69B20E7DF1C00E73913 /* Bubble.hpp */,
-				E32AF69820E7DF1C00E73913 /* Cannon.cpp */,
-				E32AF69620E7DF1C00E73913 /* Cannon.hpp */,
-				E32AF69D20E7DF1C00E73913 /* GameObject.cpp */,
-				E32AF69E20E7DF1C00E73913 /* GameObject.hpp */,
 				E32AF69720E7DF1C00E73913 /* MainSceneWidget.cpp */,
 				E32AF69C20E7DF1C00E73913 /* MainSceneWidget.hpp */,
-				E32AF69920E7DF1C00E73913 /* Projectile.cpp */,
-				E32AF69F20E7DF1C00E73913 /* Projectile.hpp */,
+				E36CF9C920F3464700171498 /* MenuWidget.cpp */,
+				E36CF9C820F3464700171498 /* MenuWidget.hpp */,
 				E32AF6A120E7DF1C00E73913 /* stdafx.cpp */,
 				E32AF6A020E7DF1C00E73913 /* stdafx.h */,
 			);
@@ -142,6 +140,7 @@
 		C6C0D9D41A710B6400F125C2 = {
 			isa = PBXGroup;
 			children = (
+				E36CF9CE20F35DF500171498 /* include */,
 				A6869E001D229E5D00C1D1B1 /* base_p */,
 				C6C0DA031A71106C00F125C2 /* Dependencies */,
 				C6C0DA021A71106500F125C2 /* Frameworks */,
@@ -180,11 +179,9 @@
 				A6869E0A1D229EF600C1D1B1 /* Main.cpp */,
 				A6869E0B1D229EF600C1D1B1 /* TestAppDelegate.cpp */,
 				A6869E0C1D229EF600C1D1B1 /* TestAppDelegate.h */,
-				A6869E0D1D229EF600C1D1B1 /* TestWidget.cpp */,
-				A6869E0E1D229EF600C1D1B1 /* TestWidget.h */,
 			);
 			name = src;
-			path = ../../test/src;
+			path = ../../src;
 			sourceTree = "<group>";
 		};
 		C6C0DA021A71106500F125C2 /* Frameworks */ = {
@@ -214,16 +211,35 @@
 		E36CF9B120ECDE6400171498 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				E36CF9C520F3461200171498 /* CollisionUtils.cpp */,
+				E36CF9C420F3461200171498 /* CollisionUtils.hpp */,
 				E36CF9C120EF5BCA00171498 /* Utils.cpp */,
 				E36CF9C220EF5BCA00171498 /* Utils.hpp */,
 				E36CF9B620EE0D4B00171498 /* OBB.cpp */,
 				E36CF9B520EE0D4B00171498 /* OBB.hpp */,
 				E36CF9B220ECDE7D00171498 /* QuadTree.cpp */,
 				E36CF9B320ECDE7D00171498 /* QuadTree.hpp */,
-				E36CF9B820EE0D7300171498 /* ColliderDelegate.cpp */,
-				E36CF9B920EE0D7300171498 /* ColliderDelegate.hpp */,
 			);
 			name = Utils;
+			sourceTree = "<group>";
+		};
+		E36CF9C720F3461900171498 /*  SceneObjects */ = {
+			isa = PBXGroup;
+			children = (
+				E36CF9CB20F3466500171498 /* Wall.cpp */,
+				E36CF9CC20F3466500171498 /* Wall.hpp */,
+				E32AF6A920EA1A1100E73913 /* MovableObject.cpp */,
+				E32AF6AA20EA1A1100E73913 /* MovableObject.hpp */,
+				E32AF69A20E7DF1C00E73913 /* Bubble.cpp */,
+				E32AF69B20E7DF1C00E73913 /* Bubble.hpp */,
+				E32AF69820E7DF1C00E73913 /* Cannon.cpp */,
+				E32AF69620E7DF1C00E73913 /* Cannon.hpp */,
+				E32AF69D20E7DF1C00E73913 /* GameObject.cpp */,
+				E32AF69E20E7DF1C00E73913 /* GameObject.hpp */,
+				E32AF69920E7DF1C00E73913 /* Projectile.cpp */,
+				E32AF69F20E7DF1C00E73913 /* Projectile.hpp */,
+			);
+			name = " SceneObjects";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -287,6 +303,7 @@
 				A6869E011D229E5D00C1D1B1 /* base_p in Resources */,
 				C637A4CF1A82376D003061B9 /* MainMenu.xib in Resources */,
 				C6DF33721A8114BA00716306 /* Images.xcassets in Resources */,
+				E36CF9CF20F35DF500171498 /* include in Resources */,
 				C6B8C3521AD501E200AF7B11 /* mac.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -319,12 +336,13 @@
 				A6869E101D229EF600C1D1B1 /* TestAppDelegate.cpp in Sources */,
 				E36CF9B720EE0D4B00171498 /* OBB.cpp in Sources */,
 				E32AF6AB20EA1A1100E73913 /* MovableObject.cpp in Sources */,
-				A6869E111D229EF600C1D1B1 /* TestWidget.cpp in Sources */,
 				E32AF6A420E7DF1C00E73913 /* Projectile.cpp in Sources */,
+				E36CF9CA20F3464700171498 /* MenuWidget.cpp in Sources */,
 				E36CF9B420ECDE7D00171498 /* QuadTree.cpp in Sources */,
 				E32AF6A520E7DF1C00E73913 /* Bubble.cpp in Sources */,
+				E36CF9CD20F3466500171498 /* Wall.cpp in Sources */,
 				E36CF9C320EF5BCB00171498 /* Utils.cpp in Sources */,
-				E36CF9BA20EE0D7300171498 /* ColliderDelegate.cpp in Sources */,
+				E36CF9C620F3461200171498 /* CollisionUtils.cpp in Sources */,
 				E32AF6A320E7DF1C00E73913 /* Cannon.cpp in Sources */,
 				A6869E0F1D229EF600C1D1B1 /* Main.cpp in Sources */,
 				E32AF6A220E7DF1C00E73913 /* MainSceneWidget.cpp in Sources */,

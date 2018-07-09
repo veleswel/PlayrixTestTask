@@ -21,8 +21,8 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 	, _cannon(nullptr)
 	, _screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height())
 	, _startPosition(Render::device.Width() / 2.f, 0.f)
-	, _timer(0.f)
 	, _projectilesTotalLaunch(0)
+	, _shading(0.f)
 {
 	Init();
 }
@@ -36,24 +36,25 @@ void MainSceneWidget::Init()
 		WallPtr(new Wall(_screenRect.xStart, _screenRect.yEnd, _screenRect.xStart, _screenRect.yStart)) // left
 	};
 
+	_background = Core::resourceManager.Get<Render::Texture>("background");
+	
 	_cannon.reset(new Cannon(_startPosition, 90.f));
 	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
-
-	Core::Timer timer;
-	_timerB.restart();
 }
 
 void MainSceneWidget::Draw()
 {
 	GUI::Widget::Draw();
 
-	const IPoint mouse_pos = Core::mainInput.GetMousePos();
+	GUI::Widget::Draw();
+	Render::ShaderProgram* myshader = Core::resourceManager.Get<Render::ShaderProgram>("myshader");
 	
-	Render::device.SetTexturing(false);
-	Render::BeginColor(Color(106, 126, 160, 255));
-	Render::DrawRect(_screenRect.xStart, _screenRect.yStart, _screenRect.Width(), _screenRect.Height());
-	Render::EndColor();
-	Render::device.SetTexturing(true);
+	myshader->Bind();
+	myshader->SetUniform("u_modelview", math::Matrix4::Identity);
+	myshader->SetUniform("sampler", 0);
+	myshader->SetUniform("multiplier", _shading);
+	
+	_background->Draw();
 	
 	DrawBubbles();
 	DrawProjectiles();
@@ -68,15 +69,23 @@ void MainSceneWidget::Draw()
 	Render::BindFont("arial");
 	Render::PrintString(10.f, _screenRect.Height() - 15.f, "Projectiles: " + utils::lexical_cast(_projectilesTotalLaunch), 1.5f, LeftAlign);
 	Render::PrintString(10.f, _screenRect.Height() - 30.f, "Bubbles left: " + utils::lexical_cast(_bubbles.size()), 1.5f, LeftAlign);
-	Render::PrintString(10.f, _screenRect.Height() - 45.f, "Timer: " + utils::lexical_cast(_timerB.elapsed()), 1.5f, LeftAlign);
+	Render::PrintString(10.f, _screenRect.Height() - 45.f, "Timer: " + utils::lexical_cast(_timer_b.elapsed()), 1.5f, LeftAlign);
 
 	_effCont.Draw();
+	
+	myshader->Unbind();
 }
 
 void MainSceneWidget::Update(float dt)
 {
 	GUI::Widget::Update(dt);
 
+	_shading += dt;
+	if (_shading >= 1.f)
+	{
+		_shading = 1.f;
+	}
+	
 	UpdateCannon(dt);
 
 	QuadTree quad(0, _screenRect);
@@ -88,9 +97,6 @@ void MainSceneWidget::Update(float dt)
 	CheckAndResolveBubblesCollisions(dt, quad);
 
 	_effCont.Update(dt);
-
-	float ndt = _timer + dt;
-	_timer = math::lerp(_timer, ndt, dt);
 }
 
 void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& quadTree)
@@ -237,12 +243,27 @@ void MainSceneWidget::AcceptMessage(const Message& message)
 	{
 		StartNewGame();
 	}
+	else if (publisher == "MenuWidget" && data == "continueGame")
+	{
+		Log::Debug("MenuWidget continueGame");
+	}
+	else if (publisher == "Layer" && data == "LayerInit")
+	{
+		_shading = 0.f;
+		Log::Debug("Layer Init");
+	}
+	else if (publisher == "Layer" && data == "LayerDeinit")
+	{
+		Log::Debug("Layer Deinit");
+	}
 }
 
 void MainSceneWidget::KeyPressed(int keyCode)
 {
 	if (keyCode == VK_ESCAPE)
 	{
+		_shading = 0.f;
+		
 		Core::mainScreen.popLayer();
 		Core::mainScreen.pushLayer("MenuLayer");
 	}
@@ -254,6 +275,8 @@ void MainSceneWidget::StartNewGame()
 	_bubbles.clear();
 
 	LaunchBubbles();
+	
+	_timer_b.restart();
 }
 
 void MainSceneWidget::PlayWinnerEffects()

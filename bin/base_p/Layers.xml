@@ -2,7 +2,7 @@
 <GUI>
 	<include>gui.lua</include>
 	<Layer name="MenuLayer">
-		<Controls>
+        <Controls>
 			<MenuWidget name="MenuWidget"/>
 			<Button name="start">
 				<position x="467" y="414"/>

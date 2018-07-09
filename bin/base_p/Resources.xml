@@ -15,5 +15,12 @@
 		<texture id="cannon_2" path="textures/cannon2.png" group="TestGroup" upload="false"/>
 		<texture id="projectile" path="textures/projectile.png" group="TestGroup" upload="false"/>
 		<texture id="bubble" path="textures/bubble.png" group="TestGroup" upload="false"/>
+        <texture id="cur_normal" path="textures/cur_normal.png" />
+        <texture id="cur_active" path="textures/cur_active.png" />
+        <texture id="cur_press" path="textures/cur_press.png" />
+        <texture id="background" path="textures/back.png" group="TestGroup" upload="false"/>
 	</Textures>
+    <Shaders group="TestGroup">
+        <Shader id="myshader" vs="myshader" ps="myshader" />
+    </Shaders>
 </Resources>
