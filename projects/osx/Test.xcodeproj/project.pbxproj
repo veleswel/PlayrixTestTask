@@ -23,6 +23,7 @@
 		C6D17C8A1A7BA55500A1C3FE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6D17C891A7BA55500A1C3FE /* SystemConfiguration.framework */; };
 		C6D17ECE1A7BD48200A1C3FE /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6D17ECD1A7BD48200A1C3FE /* AudioToolbox.framework */; };
 		C6DF33721A8114BA00716306 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6C0DA0D1A711C7D00F125C2 /* Images.xcassets */; };
+		E321067620F4EB6D00E5E522 /* GameStateHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E321067420F4EB6D00E5E522 /* GameStateHandler.cpp */; };
 		E32AF6A220E7DF1C00E73913 /* MainSceneWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF69720E7DF1C00E73913 /* MainSceneWidget.cpp */; };
 		E32AF6A320E7DF1C00E73913 /* Cannon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF69820E7DF1C00E73913 /* Cannon.cpp */; };
 		E32AF6A420E7DF1C00E73913 /* Projectile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32AF69920E7DF1C00E73913 /* Projectile.cpp */; };
@@ -72,6 +73,8 @@
 		C6D17C871A7BA52600A1C3FE /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		C6D17C891A7BA55500A1C3FE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		C6D17ECD1A7BD48200A1C3FE /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		E321067420F4EB6D00E5E522 /* GameStateHandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GameStateHandler.cpp; path = ../../src/GameStateHandler.cpp; sourceTree = "<group>"; };
+		E321067520F4EB6D00E5E522 /* GameStateHandler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = GameStateHandler.hpp; path = ../../src/GameStateHandler.hpp; sourceTree = "<group>"; };
 		E32AF69620E7DF1C00E73913 /* Cannon.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Cannon.hpp; path = ../../src/Cannon.hpp; sourceTree = "<group>"; };
 		E32AF69720E7DF1C00E73913 /* MainSceneWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MainSceneWidget.cpp; path = ../../src/MainSceneWidget.cpp; sourceTree = "<group>"; };
 		E32AF69820E7DF1C00E73913 /* Cannon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cannon.cpp; path = ../../src/Cannon.cpp; sourceTree = "<group>"; };
@@ -219,6 +222,8 @@
 				E36CF9B520EE0D4B00171498 /* OBB.hpp */,
 				E36CF9B220ECDE7D00171498 /* QuadTree.cpp */,
 				E36CF9B320ECDE7D00171498 /* QuadTree.hpp */,
+				E321067420F4EB6D00E5E522 /* GameStateHandler.cpp */,
+				E321067520F4EB6D00E5E522 /* GameStateHandler.hpp */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -345,6 +350,7 @@
 				E36CF9C620F3461200171498 /* CollisionUtils.cpp in Sources */,
 				E32AF6A320E7DF1C00E73913 /* Cannon.cpp in Sources */,
 				A6869E0F1D229EF600C1D1B1 /* Main.cpp in Sources */,
+				E321067620F4EB6D00E5E522 /* GameStateHandler.cpp in Sources */,
 				E32AF6A220E7DF1C00E73913 /* MainSceneWidget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

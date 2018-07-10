@@ -1,10 +1,17 @@
 #pragma once
 #include "MovableObject.hpp"
 
+typedef std::unique_ptr<EffectsContainer> EffectsContainerPtr;
+
 class Projectile: public MovableObject
 {
 public:
-	Projectile(const FPoint& position, float rotation, const FPoint& direction, float speed);
+	Projectile(const FPoint& position,
+			   float rotation,
+			   const FPoint& direction,
+			   float speed,
+			   const EffectsContainerPtr& container);
+	
 	virtual ~Projectile();
 
 public:
@@ -22,15 +29,18 @@ public:
 	bool IsNeedToCheckCollision() const { return _isDrawn;  }
 
 protected:
-	virtual void Init(const std::string& textureName, const FPoint& position, float rotation, const FPoint& direction, float speed) override;
+	void Init(const std::string& textureName,
+			  const FPoint& position,
+			  float rotation,
+			  const FPoint& direction,
+			  float speed,
+			  const EffectsContainerPtr& container);
 
 protected:
 	static const std::string ProjectileTextureName;
 
 protected:
-	EffectsContainer _effectContainer;
 	ParticleEffectPtr _effect;
-
 	bool _isDrawn;
 };
 

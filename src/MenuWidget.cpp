@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "MenuWidget.hpp"
-#include "GUI/SmoothButton.h"
+#include "GameStateHandler.hpp"
 
 MenuWidget::MenuWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
-	, _state(Utils::EGameWidgetState::EMenu)
 	, _background(nullptr)
 {
 	_background = Core::resourceManager.Get<Render::Texture>("background");
@@ -49,17 +48,17 @@ void MenuWidget::AcceptMessage(const Message& message)
 	auto startBtn = topLayer->getWidget("start");
 	auto continueBtn = topLayer->getWidget("continue");
 
+	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	
 	if (publisher == "Layer" && data == "Init")
 	{
-		if (_state == Utils::EGameWidgetState::EMenu)
+		if (currentState == EGameState::EMenu || currentState == EGameState::EFinish)
 		{
 			continueBtn->setVisible(false);
 			startBtn->setPosition(IPoint(screenW / 2 - 45, screenH / 2 - 34));
 		}
-		else if (_state == Utils::EGameWidgetState::EPlaying)
+		else if (currentState == EGameState::EPause)
 		{
-			_state = Utils::EGameWidgetState::EPause;
-
 			startBtn->setPosition(IPoint(screenW / 2 - 45, screenH / 2 + 30));
 			
 			continueBtn->setPosition(IPoint(screenW / 2 - 45, screenH / 2 - 30 - 34));
@@ -73,8 +72,6 @@ void MenuWidget::AcceptMessage(const Message& message)
 		
 		const Message startNewGame(getName(), "startNewGame");
 		Core::guiManager.getLayer("MainLayer")->getWidget("MainSceneWidget")->AcceptMessage(startNewGame);
-
-		_state = Utils::EGameWidgetState::EPlaying;
 	}
 	else if (publisher == "continue" && data == "press")
 	{
@@ -83,7 +80,5 @@ void MenuWidget::AcceptMessage(const Message& message)
 
 		const Message continueGame(getName(), "continueGame");
 		Core::guiManager.getLayer("MainLayer")->getWidget("MainSceneWidget")->AcceptMessage(continueGame);
-		
-		_state = Utils::EGameWidgetState::EPlaying;
 	}
 }

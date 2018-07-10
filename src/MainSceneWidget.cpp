@@ -7,6 +7,7 @@
 #include "Cannon.hpp"
 #include "Utils.hpp"
 #include "CollisionUtils.hpp"
+#include "GameStateHandler.hpp"
 #include <boost/polymorphic_pointer_cast.hpp>
 
 const float MainSceneWidget::MinBubbleSpeed = 50.f;
@@ -21,7 +22,7 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 	, _projectilesTotalLaunch(0)
 	, _timeLeft(0.f)
 	, _playTime(0.f)
-	, _state(Utils::EGameWidgetState::EPause)
+	, _effectContainer(nullptr)
 {
 	Core::Timer::Sync();
 	Init();
@@ -29,6 +30,8 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 
 void MainSceneWidget::Init()
 {
+	_effectContainer.reset(new EffectsContainer);
+	
 	_walls = {
 		WallPtr(new Wall(_screenRect.xStart, _screenRect.yStart, _screenRect.xEnd, _screenRect.yStart)), // bottom
 		WallPtr(new Wall(_screenRect.xEnd, _screenRect.yStart, _screenRect.xEnd, _screenRect.yEnd)), // right
@@ -74,7 +77,7 @@ void MainSceneWidget::Draw()
 		wall->Draw();
 	}
 	
-	_effCont.Draw();
+	_effectContainer->Draw();
 	
 	Render::BindFont("arial");
 	Render::PrintString(10.f, _screenRect.Height() - 10.f, "Projectiles launched: " + utils::lexical_cast(_projectilesTotalLaunch), 1.5f, LeftAlign);
@@ -89,9 +92,11 @@ void MainSceneWidget::Update(float dt)
 	UpdateCannon(dt);
 	UpdateGameItems(dt);
 
-	_effCont.Update(dt);
+	_effectContainer->Update(dt);
 
-	if (_state != Utils::EGameWidgetState::EFinish && _state != Utils::EGameWidgetState::EPause)
+	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	
+	if (currentState != EGameState::EFinish && currentState != EGameState::EPause)
 	{
 		_timeLeft = math::ceil(_playTime - _timer.getElapsedTime()) + 0.f;
 		if (_timeLeft <= 0.f)
@@ -182,7 +187,8 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 
 void MainSceneWidget::CheckAndResolveBubblesCollisions(float dt, QuadTree& quadTree)
 {
-	if (_bubbles.empty() && _state != Utils::EGameWidgetState::EFinish)
+	
+	if (_bubbles.empty() && GameStateHandler::GetInstance().GetGameState() != EGameState::EFinish)
 	{
 		Win();
 	}
@@ -247,16 +253,15 @@ void MainSceneWidget::AcceptMessage(const Message& message)
 	const std::string& publisher = message.getPublisher();
 	const std::string& data = message.getData();
 
+	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	
 	if (publisher == "MenuWidget" && data == "startNewGame")
 	{
 		StartNewGame();
 	}
 	else if (publisher == "MenuWidget" && data == "continueGame")
 	{
-		if (_state != Utils::EGameWidgetState::EFinish)
-		{
-			ResumeGame();
-		}
+		ResumeGame();
 	}
 	else if (publisher == "Layer" && data == "LayerInit")
 	{
@@ -286,39 +291,40 @@ void MainSceneWidget::StartNewGame()
 	_timeLeft = _playTime;
 	_timer.Start();
 
-	_state = Utils::EGameWidgetState::EPlaying;
+	GameStateHandler::GetInstance().SetGameState(EGameState::EPlaying);
 }
 
 void MainSceneWidget::PauseGame()
 {
 	_timer.Pause();
 
-	_state = Utils::EGameWidgetState::EPause;
-
+	GameStateHandler::GetInstance().SetGameState(EGameState::EPause);
+	
 	Core::mainScreen.popLayer();
 	Core::mainScreen.pushLayer("MenuLayer");
 }
 
 void MainSceneWidget::ResumeGame()
 {
-	if (_state != Utils::EGameWidgetState::EFinish && _state != Utils::EGameWidgetState::EPause)
+	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	
+	if (currentState != EGameState::EFinish)
 	{
 		_timer.Resume();
-		_state = Utils::EGameWidgetState::EPlaying;
+		GameStateHandler::GetInstance().SetGameState(EGameState::EPlaying);
 	}
 }
 
 void MainSceneWidget::Win()
 {
 	_timer.Pause();
-	_state = Utils::EGameWidgetState::EFinish;
+	GameStateHandler::GetInstance().SetGameState(EGameState::EFinish);
 }
 
 void MainSceneWidget::Loose()
 {
 	_timer.Pause();
-	_state = Utils::EGameWidgetState::EFinish;
-//	_color = {129.f / 255.f, 139.f / 255.f, 155.f / 255.f, 1.f};
+	GameStateHandler::GetInstance().SetGameState(EGameState::EFinish);
 }
 
 void MainSceneWidget::UpdateCannon(float dt)
@@ -347,7 +353,9 @@ void MainSceneWidget::DrawProjectiles()
 
 void MainSceneWidget::LaunchProjectile()
 {
-	if (_state == Utils::EGameWidgetState::EFinish || _state == Utils::EGameWidgetState::EPause)
+	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	
+	if (currentState == EGameState::EFinish || currentState == EGameState::EPause)
 	{
 		return;
 	}
@@ -362,7 +370,7 @@ void MainSceneWidget::LaunchProjectile()
 		return;
 	}
 
-	ProjectilePtr projectile(new Projectile(startPosition, angle, direction.Normalized(), _projectileSpeed));
+	ProjectilePtr projectile(new Projectile(startPosition, angle, direction.Normalized(), _projectileSpeed, _effectContainer));
 	
 	if (projectile->GetOBB().Overlaps(_walls[0]->GetOBB()))
 	{

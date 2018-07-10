@@ -4,11 +4,15 @@
 
 const std::string Projectile::ProjectileTextureName = "projectile";
 
-Projectile::Projectile(const FPoint& position, float rotation, const FPoint& direction, float speed)
+Projectile::Projectile(const FPoint& position,
+					   float rotation,
+					   const FPoint& direction,
+					   float speed,
+					   const EffectsContainerPtr& container)
 	: _effect(nullptr)
 	, _isDrawn(false)
 {
-	Init(ProjectileTextureName, position, rotation, direction, speed);
+	Init(ProjectileTextureName, position, rotation, direction, speed, container);
 }
 
 Projectile::~Projectile()
@@ -20,11 +24,16 @@ Projectile::~Projectile()
 	}
 }
 
-void Projectile::Init(const std::string& textureName, const FPoint& position, float rotation, const FPoint& direction, float speed)
+void Projectile::Init(const std::string& textureName,
+					  const FPoint& position,
+					  float rotation,
+					  const FPoint& direction,
+					  float speed,
+					  const EffectsContainerPtr& container)
 {
 	MovableObject::Init(textureName, position, rotation, direction, speed);
 
-	_effect = _effectContainer.AddEffect("Iskra");
+	_effect = container->AddEffect("Iskra");
 	_effect->posX = _position.x + 0.f;
 	_effect->posY = _position.y + 0.f;
 	_effect->Reset();
@@ -32,16 +41,13 @@ void Projectile::Init(const std::string& textureName, const FPoint& position, fl
 
 void Projectile::Draw()
 {
-	_effectContainer.Draw();
 	MovableObject::Draw();
-
 	_isDrawn = true;
 }
 
 void Projectile::Update(float dt)
 {
 	MovableObject::Update(dt);
-	_effectContainer.Update(dt);
 }
 
 void Projectile::SetPosition(const FPoint& position)

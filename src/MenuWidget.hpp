@@ -1,5 +1,4 @@
 #pragma once
-#include "Utils.hpp"
 
 class MenuWidget : public GUI::Widget
 {
@@ -12,7 +11,6 @@ public:
 	virtual void AcceptMessage(const Message& message) override;
 
 protected:
-	Utils::EGameWidgetState _state;
 	Render::Texture* _background;
 	Render::ShaderProgramPtr _fade;
 	float _fading;

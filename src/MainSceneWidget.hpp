@@ -15,6 +15,8 @@ typedef std::unique_ptr<Cannon> CannonPtr;
 class Bubble;
 typedef boost::intrusive_ptr<Bubble> BubblePtr;
 
+typedef std::unique_ptr<EffectsContainer> EffectsContainerPtr;
+
 class MainSceneWidget: public GUI::Widget
 {
 public:
@@ -95,7 +97,7 @@ protected:
 	std::list<ProjectilePtr> _launchedProjectiles;
 	std::list<BubblePtr> _bubbles;
 
-	EffectsContainer _effCont;
+	EffectsContainerPtr _effectContainer;
 	
 	std::array<WallPtr, 4> _walls;
 
@@ -105,8 +107,6 @@ protected:
 	float _timeLeft;
 
 	Render::Texture* _background;
-
-	Utils::EGameWidgetState _state;
 	
 	float _projectileSpeed;
 	int _startBubblesCount;
