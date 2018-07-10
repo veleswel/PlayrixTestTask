@@ -1,6 +1,5 @@
 #pragma once
 #include "Utils.hpp"
-#include "Fadeable.hpp"
 
 class QuadTree;
 
@@ -16,7 +15,7 @@ typedef std::unique_ptr<Cannon> CannonPtr;
 class Bubble;
 typedef boost::intrusive_ptr<Bubble> BubblePtr;
 
-class MainSceneWidget: public GUI::Widget, public Fadeable
+class MainSceneWidget: public GUI::Widget
 {
 public:
 	MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem);
@@ -36,6 +35,27 @@ public:
 
 protected:
 	void Init();
+	void ReadInitialData();
+	
+	template<typename T>
+	T ReadValue(IO::TextReader* reader, const std::string& valueName)
+	{
+		std::string out, name, value;
+		T result;
+		
+		out = reader->ReadAsciiLine();
+		if (utils::ReadNvp(out, name, value) && name == valueName)
+		{
+			result = utils::lexical_cast<T>(value);
+		}
+		else
+		{
+			Log::Error("Failed to read initial data from file");
+			assert(false);
+		}
+		
+		return result;
+	}
 	
 	void StartNewGame();
 	void PauseGame();
@@ -61,16 +81,10 @@ protected:
 	void FillQuadTree(QuadTree& quad);
 
 protected:
-	static const float ProjectileSpeed;
-	
 	static const float MinBubbleSpeed;
 	static const float MaxBubbleSpeed;
 	
 	static const float BubbleLaunchScreenOffset;
-	
-	static const int BubblesCount;
-	
-	static const int PlayTime;
 
 protected:
 	const FPoint _startPosition;
@@ -93,4 +107,8 @@ protected:
 	Render::Texture* _background;
 
 	Utils::EGameWidgetState _state;
+	
+	float _projectileSpeed;
+	int _startBubblesCount;
+	float _playTime;
 };

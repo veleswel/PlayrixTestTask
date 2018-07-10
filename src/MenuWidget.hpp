@@ -1,7 +1,7 @@
 #pragma once
-#include "Fadeable.hpp"
+#include "Utils.hpp"
 
-class MenuWidget : public GUI::Widget, public Fadeable
+class MenuWidget : public GUI::Widget
 {
 public:
 	MenuWidget(const std::string& name, rapidxml::xml_node<>* elem);
@@ -14,4 +14,6 @@ public:
 protected:
 	Utils::EGameWidgetState _state;
 	Render::Texture* _background;
+	Render::ShaderProgramPtr _fade;
+	float _fading;
 };

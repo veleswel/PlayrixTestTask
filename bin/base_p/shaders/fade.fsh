@@ -10,5 +10,9 @@ varying vec2 v_texcoord;
 
 void main()
 {
-    gl_FragColor = v_color * texture2D(sampler, v_texcoord) * multiplier;
+    vec4 color = v_color * texture2D(sampler, v_texcoord);
+    color.r *= multiplier;
+    color.g *= multiplier;
+    color.b *= multiplier;
+    gl_FragColor = color;
 }

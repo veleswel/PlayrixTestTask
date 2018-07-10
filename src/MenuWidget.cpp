@@ -8,21 +8,33 @@ MenuWidget::MenuWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	, _background(nullptr)
 {
 	_background = Core::resourceManager.Get<Render::Texture>("background");
+	_fade = Core::resourceManager.Get<Render::ShaderProgram>("fade");
 	_fading = 0.f;
 }
 
 void MenuWidget::Draw()
 {
 	GUI::Widget::Draw();
-	BeginDrawingFading();
+	
+	_fade->Bind();
+	_fade->SetUniform("u_modelview", math::Matrix4::Identity);
+	_fade->SetUniform("sampler", 0);
+	_fade->SetUniform("multiplier", _fading);
 	_background->Draw();
-	EndDrawingFading();
+	_fade->Unbind();
 }
 
 void MenuWidget::Update(float dt)
 {
 	GUI::Widget::Update(dt);
-	UpdateFading(dt);
+	if (_fading < 1.f)
+	{
+		_fading += dt * .5f;
+	}
+	else
+	{
+		_fading = 1.f;
+	}
 }
 
 void MenuWidget::AcceptMessage(const Message& message)
@@ -39,7 +51,6 @@ void MenuWidget::AcceptMessage(const Message& message)
 
 	if (publisher == "Layer" && data == "Init")
 	{
-		_fadingBound = 1.f;
 		if (_state == Utils::EGameWidgetState::EMenu)
 		{
 			continueBtn->setVisible(false);

@@ -9,12 +9,9 @@
 #include "CollisionUtils.hpp"
 #include <boost/polymorphic_pointer_cast.hpp>
 
-const float MainSceneWidget::ProjectileSpeed = 250.f;
 const float MainSceneWidget::MinBubbleSpeed = 50.f;
 const float MainSceneWidget::MaxBubbleSpeed = 100.f;
 const float MainSceneWidget::BubbleLaunchScreenOffset = 100.f;
-const int MainSceneWidget::BubblesCount = 10;
-const int MainSceneWidget::PlayTime = 10;
 
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
@@ -22,7 +19,8 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 	, _screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height())
 	, _startPosition(Render::device.Width() / 2.f, 0.f)
 	, _projectilesTotalLaunch(0)
-	, _timeLeft(PlayTime)
+	, _timeLeft(0.f)
+	, _playTime(0.f)
 	, _state(Utils::EGameWidgetState::EPause)
 {
 	Core::Timer::Sync();
@@ -39,19 +37,30 @@ void MainSceneWidget::Init()
 	};
 
 	_background = Core::resourceManager.Get<Render::Texture>("background");
-
+	
 	_cannon.reset(new Cannon(_startPosition, 90.f));
 	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
+	
+	ReadInitialData();
+}
 
-	_fading = 1.f;
-	_fadingBound = 1.f;
+void MainSceneWidget::ReadInitialData()
+{
+	boost::system::error_code err;
+	auto stream = Core::fileSystem.OpenRead("start.txt", err);
+	
+	assert(err == 0);
+	
+	IO::TextReader reader(stream.get());
+	
+	_startBubblesCount = ReadValue<int>(&reader, "Targets");
+	_projectileSpeed = ReadValue<float>(&reader, "Speed");
+	_playTime = ReadValue<float>(&reader, "Time");
 }
 
 void MainSceneWidget::Draw()
 {
 	GUI::Widget::Draw();
-
-	BeginDrawingFading();
 
 	_background->Draw();
 	
@@ -66,9 +75,7 @@ void MainSceneWidget::Draw()
 	}
 	
 	_effCont.Draw();
-
-	EndDrawingFading();
-
+	
 	Render::BindFont("arial");
 	Render::PrintString(10.f, _screenRect.Height() - 10.f, "Projectiles launched: " + utils::lexical_cast(_projectilesTotalLaunch), 1.5f, LeftAlign);
 	Render::PrintString(10.f, _screenRect.Height() - 30.f, "Bubbles left: " + utils::lexical_cast(_bubbles.size()), 1.5f, LeftAlign);
@@ -84,11 +91,9 @@ void MainSceneWidget::Update(float dt)
 
 	_effCont.Update(dt);
 
-	UpdateFading(dt);
-
 	if (_state != Utils::EGameWidgetState::EFinish && _state != Utils::EGameWidgetState::EPause)
 	{
-		_timeLeft = math::ceil(PlayTime - _timer.getElapsedTime()) + 0.f;
+		_timeLeft = math::ceil(_playTime - _timer.getElapsedTime()) + 0.f;
 		if (_timeLeft <= 0.f)
 		{
 			_timeLeft = 0.f;
@@ -278,12 +283,10 @@ void MainSceneWidget::StartNewGame()
 
 	LaunchBubbles();
 	
-	_timeLeft = PlayTime;
+	_timeLeft = _playTime;
 	_timer.Start();
 
 	_state = Utils::EGameWidgetState::EPlaying;
-
-	_fadingBound = 1.f;
 }
 
 void MainSceneWidget::PauseGame()
@@ -315,8 +318,7 @@ void MainSceneWidget::Loose()
 {
 	_timer.Pause();
 	_state = Utils::EGameWidgetState::EFinish;
-	
-	_fadingBound = .25f;
+//	_color = {129.f / 255.f, 139.f / 255.f, 155.f / 255.f, 1.f};
 }
 
 void MainSceneWidget::UpdateCannon(float dt)
@@ -360,7 +362,7 @@ void MainSceneWidget::LaunchProjectile()
 		return;
 	}
 
-	ProjectilePtr projectile(new Projectile(startPosition, angle, direction.Normalized(), ProjectileSpeed));
+	ProjectilePtr projectile(new Projectile(startPosition, angle, direction.Normalized(), _projectileSpeed));
 	
 	if (projectile->GetOBB().Overlaps(_walls[0]->GetOBB()))
 	{
@@ -401,12 +403,31 @@ void MainSceneWidget::DrawBubbles()
 	}
 }
 
+void some(float max, float min)
+{
+	std::vector<FPoint> points;
+	float yMax = max;
+	float yMin = min;
+	float r = (max - min) / 2;
+	yMin += fmod(yMax - yMin, 1) / 2;
+	for (float y = yMin; y < yMax; y++)
+	{
+		float xMax = math::cos(asinf(y/r)) * r;
+		float xMin = -xMax;
+		xMin += fmod(xMax-xMin, 1)/2;
+		for (float x = xMin; x < xMax; x++)
+		{
+			points.push_back(FPoint(x + math::random(-r/4, r/4), y + math::random(-r/4, r/4)));
+		}
+	}
+}
+
 void MainSceneWidget::LaunchBubbles()
 {
 	const float width = _screenRect.Width() - BubbleLaunchScreenOffset;
 	const float height = _screenRect.Height() - BubbleLaunchScreenOffset;
 	
-	for (int i = 0; i < BubblesCount; ++i)
+	for (int i = 0; i < _startBubblesCount; ++i)
 	{
 		const FPoint position(math::random(BubbleLaunchScreenOffset, width), math::random(BubbleLaunchScreenOffset, height));
 		const float speed = math::random(MinBubbleSpeed, MaxBubbleSpeed);
