@@ -4,13 +4,13 @@
 	<Layer name="MenuLayer">
         <Controls>
 			<MenuWidget name="MenuWidget"/>
-			<Button name="start">
+			<Button name="new">
 				<position x="467" y="414"/>
-				<state normal="cancel_normal" active="cancel_active" pressed="cancel_pressed"/>
+				<state normal="new_normal" pressed="new_pressed"/>
 			</Button>
 			<Button name="continue">
 				<position x="467" y="320"/>
-				<state normal="cancel_normal" active="cancel_active" pressed="cancel_pressed"/>
+				<state normal="continue_normal" pressed="continue_pressed"/>
 			</Button>
 		</Controls>
 		<Script>MenuLayerFunc</Script>

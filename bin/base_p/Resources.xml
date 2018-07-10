@@ -6,19 +6,17 @@
 		</font>
 	</FreeTypeFonts>
 	<Textures>
-		<texture id="star" path="textures/star.png" group="TestGroup" upload="false"/>
-		<texture id="Circle" path="textures/circle.png" group="TestGroup" upload="false"/>
-		<texture id="btnStart_Text" path="textures/Local/Buttons/Start_text.png" group="TestGroup" upload="false"/>
-		<texture id="cancel_normal" path="textures/cancel_normal" />
-		<texture id="cancel_active" path="textures/cancel_active" />
-		<texture id="cancel_pressed" path="textures/cancel_pressed" />
-		<texture id="cannon_2" path="textures/cannon2.png" group="TestGroup" upload="false"/>
+		<texture id="new_normal" path="textures/new_normal"  group="TestGroup" upload="false"/>
+		<texture id="new_pressed" path="textures/new_pressed"  group="TestGroup" upload="false"/>
+		<texture id="continue_normal" path="textures/continue_normal" group="TestGroup" upload="false"/>
+		<texture id="continue_pressed" path="textures/continue_pressed" group="TestGroup" upload="false"/>
+		<texture id="lost" path="textures/lost" group="TestGroup" upload="false"/>
+		<texture id="won" path="textures/won" group="TestGroup" upload="false"/>
+		<texture id="play" path="textures/play" group="TestGroup" upload="false"/>
+		<texture id="cannon" path="textures/cannon.png" group="TestGroup" upload="false"/>
 		<texture id="projectile" path="textures/projectile.png" group="TestGroup" upload="false"/>
 		<texture id="bubble" path="textures/bubble.png" group="TestGroup" upload="false"/>
-        <texture id="cur_normal" path="textures/cur_normal.png" />
-        <texture id="cur_active" path="textures/cur_active.png" />
-        <texture id="cur_press" path="textures/cur_press.png" />
-        <texture id="background" path="textures/back.png" group="TestGroup" upload="false"/>
+        <texture id="background" path="textures/background.png" group="TestGroup" upload="false"/>
 	</Textures>
     <Shaders group="TestGroup">
         <Shader id="fade" vs="shaders/fade" ps="shaders/fade" />

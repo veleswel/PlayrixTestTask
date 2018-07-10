@@ -44,9 +44,9 @@ void MenuWidget::AcceptMessage(const Message& message)
 	const int screenW = Render::device.Width();
 	const int screenH = Render::device.Height();
 
-	Layer* topLayer = Core::guiManager.getLayer("MenuLayer");
-	auto startBtn = topLayer->getWidget("start");
-	auto continueBtn = topLayer->getWidget("continue");
+	LayerPtr topLayer = Core::guiManager.getLayer("MenuLayer");
+	GUI::WidgetPtr startBtn = topLayer->getWidget("new");
+	GUI::WidgetPtr continueBtn = topLayer->getWidget("continue");
 
 	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
 	
@@ -55,17 +55,17 @@ void MenuWidget::AcceptMessage(const Message& message)
 		if (currentState == EGameState::EMenu || currentState == EGameState::EFinish)
 		{
 			continueBtn->setVisible(false);
-			startBtn->setPosition(IPoint(screenW / 2 - 45, screenH / 2 - 34));
+			startBtn->setPosition(IPoint(screenW / 2 - startBtn->getWidth() / 2, screenH / 2 - startBtn->getHeight() / 2));
 		}
 		else if (currentState == EGameState::EPause)
 		{
-			startBtn->setPosition(IPoint(screenW / 2 - 45, screenH / 2 + 30));
+			startBtn->setPosition(IPoint(screenW / 2 - startBtn->getWidth() / 2, screenH / 2 - startBtn->getHeight() / 2 + 30));
 			
-			continueBtn->setPosition(IPoint(screenW / 2 - 45, screenH / 2 - 30 - 34));
+			continueBtn->setPosition(IPoint(screenW / 2 - continueBtn->getWidth() / 2, screenH / 2 - continueBtn->getHeight() - 30));
 			continueBtn->setVisible(true);
 		}
 	}
-	else if (publisher == "start" && data == "press")
+	else if (publisher == "new" && data == "press")
 	{
 		Core::mainScreen.popLayer();
 		Core::mainScreen.pushLayer("MainLayer");

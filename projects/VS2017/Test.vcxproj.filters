@@ -72,7 +72,7 @@
     <ClCompile Include="..\..\src\MenuWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Fadeable.cpp">
+    <ClCompile Include="..\..\src\GameStateHandler.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,7 +119,7 @@
     <ClInclude Include="..\..\src\MenuWidget.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Fadeable.hpp">
+    <ClInclude Include="..\..\src\GameStateHandler.hpp">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>

@@ -18,7 +18,7 @@ MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* 
 	: Widget(name)
 	, _cannon(nullptr)
 	, _screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height())
-	, _startPosition(Render::device.Width() / 2.f, 0.f)
+	, _startPosition(Render::device.Width() / 2.f, -30.f)
 	, _projectilesTotalLaunch(0)
 	, _timeLeft(0.f)
 	, _playTime(0.f)
@@ -285,6 +285,8 @@ void MainSceneWidget::StartNewGame()
 {
 	_launchedProjectiles.clear();
 	_bubbles.clear();
+	_effectContainer->KillAllEffects();
+	_projectilesTotalLaunch = 0;
 
 	LaunchBubbles();
 	
@@ -298,7 +300,11 @@ void MainSceneWidget::PauseGame()
 {
 	_timer.Pause();
 
-	GameStateHandler::GetInstance().SetGameState(EGameState::EPause);
+	auto& instance = GameStateHandler::GetInstance();
+	if (instance.GetGameState() != EGameState::EFinish)
+	{
+		instance.SetGameState(EGameState::EPause);
+	}
 	
 	Core::mainScreen.popLayer();
 	Core::mainScreen.pushLayer("MenuLayer");

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Cannon.hpp"
 
-const std::string Cannon::CannonTextureName = "cannon_2";
+const std::string Cannon::CannonTextureName = "cannon";
 
 Cannon::Cannon(const FPoint& position, float rotation)
 {

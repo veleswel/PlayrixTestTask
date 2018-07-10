@@ -121,8 +121,8 @@
     <ClCompile Include="..\..\src\Bubble.cpp" />
     <ClCompile Include="..\..\src\Cannon.cpp" />
     <ClCompile Include="..\..\src\CollisionUtils.cpp" />
-    <ClCompile Include="..\..\src\Fadeable.cpp" />
     <ClCompile Include="..\..\src\GameObject.cpp" />
+    <ClCompile Include="..\..\src\GameStateHandler.cpp" />
     <ClCompile Include="..\..\src\Main.cpp" />
     <ClCompile Include="..\..\src\MainSceneWidget.cpp" />
     <ClCompile Include="..\..\src\MovableObject.cpp" />
@@ -142,8 +142,8 @@
     <ClInclude Include="..\..\src\Bubble.hpp" />
     <ClInclude Include="..\..\src\Cannon.hpp" />
     <ClInclude Include="..\..\src\CollisionUtils.hpp" />
-    <ClInclude Include="..\..\src\Fadeable.hpp" />
     <ClInclude Include="..\..\src\GameObject.hpp" />
+    <ClInclude Include="..\..\src\GameStateHandler.hpp" />
     <ClInclude Include="..\..\src\MainSceneWidget.hpp" />
     <ClInclude Include="..\..\src\MovableObject.hpp" />
     <ClInclude Include="..\..\src\OBB.hpp" />
