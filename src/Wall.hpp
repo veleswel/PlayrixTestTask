@@ -18,7 +18,7 @@ public:
 
 public:
 	const FPoint& GetNormal() const;
-	const OBB2D& GetOBB() const;
+	const OBB& GetOBB() const;
 
 protected:
 	void Init();
@@ -35,7 +35,7 @@ protected:
 	FPoint _vector;
 	FPoint _normal;
 
-	OBB2D _obb;
+	OBB _obb;
 };
 
 typedef std::unique_ptr<Wall> WallPtr;

@@ -1,18 +1,23 @@
 #pragma once
-class OBB2D
+
+/* Класс, реализующий функционал oriented bounding box, который используется для 
+определения столкновений между объектами. Интерфейс представлен двумя методами. Первый 
+проверяет факт столкновения с другим OBB, второй возвращает 4 угловых точки.*/
+
+class OBB
 {
 public:
-	OBB2D();
-	OBB2D(const FPoint& center, float width, float height, float angle);
-	OBB2D(const OBB2D& other);
-	OBB2D& operator = (const OBB2D& other);
+	OBB();
+	OBB(const FPoint& center, float width, float height, float angle);
+	OBB(const OBB& other);
+	OBB& operator = (const OBB& other);
 
-	bool Overlaps(const OBB2D& other) const;
-
+public:
+	bool Overlaps(const OBB& other) const;
 	const std::array<FPoint, 4>& GetCorners() const;
 
 protected:
-	bool Overlaps1Way(const OBB2D& other) const;
+	bool OverlapsOneWay(const OBB& other) const;
 	void ComputeAxes();
 
 protected:

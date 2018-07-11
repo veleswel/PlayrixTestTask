@@ -23,3 +23,8 @@ float Bubble::GetRadius() const
 	auto corners = _obb.GetCorners();
 	return (corners[0] - corners[3]).Length() / 2.f;
 }
+
+float Bubble::GetOBBRotationAngle() const
+{ 
+	return 0.f; 
+}

@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "OBB.hpp"
 
-OBB2D::OBB2D()
+OBB::OBB()
 {
 	
 }
 
-OBB2D::OBB2D(const FPoint& center, float width, float height, float angle)
+OBB::OBB(const FPoint& center, float width, float height, float angle)
 {
 	FPoint X(math::cos(angle), math::sin(angle));
 	FPoint Y(-math::sin(angle), math::cos(angle));
@@ -22,12 +22,12 @@ OBB2D::OBB2D(const FPoint& center, float width, float height, float angle)
 	ComputeAxes();
 }
 
-OBB2D::OBB2D(const OBB2D& other)
+OBB::OBB(const OBB& other)
 {
 	operator=(other);
 }
 
-OBB2D& OBB2D::operator = (const OBB2D& other)
+OBB& OBB::operator = (const OBB& other)
 {
 	_corner[0] = other._corner[0];
 	_corner[1] = other._corner[1];
@@ -43,17 +43,17 @@ OBB2D& OBB2D::operator = (const OBB2D& other)
 	return *this;
 }
 
-bool OBB2D::Overlaps(const OBB2D& other) const
+bool OBB::Overlaps(const OBB& other) const
 {
-	return Overlaps1Way(other) && other.Overlaps1Way(*this);
+	return OverlapsOneWay(other) && other.OverlapsOneWay(*this);
 }
 
-const std::array<FPoint, 4>& OBB2D::GetCorners() const
+const std::array<FPoint, 4>& OBB::GetCorners() const
 {
 	return _corner;
 }
 
-bool OBB2D::Overlaps1Way(const OBB2D& other) const
+bool OBB::OverlapsOneWay(const OBB& other) const
 {
 	for (int a = 0; a < 2; ++a)
 	{
@@ -85,7 +85,7 @@ bool OBB2D::Overlaps1Way(const OBB2D& other) const
 	return true;
 }
 
-void  OBB2D::ComputeAxes()
+void  OBB::ComputeAxes()
 {
 	_axis[0] = _corner[1] - _corner[0];
 	_axis[1] = _corner[3] - _corner[0];

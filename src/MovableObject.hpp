@@ -3,6 +3,10 @@
 #include "OBB.hpp"
 #include "CollisionUtils.hpp"
 
+/* Базовый класс для всех постоянно движущихся объектов в игре (снаряды, пузыри).
+Имеет направление движения и постоянную скорость. 
+Так же участвует в столкновениях с другими объектами. */
+
 class MovableObject: public GameObject
 {
 public:
@@ -19,7 +23,7 @@ public:
 	virtual void SetDirection(const FPoint& direction);
 	const FPoint& GetDirection() const;
 
-	const OBB2D& GetOBB() const;
+	const OBB& GetOBB() const;
 	const FRect GetAABB() const;
 	
 	float GetSpeed() const;
@@ -43,7 +47,7 @@ protected:
 
 	FPoint _direction;
 
-	OBB2D _obb;
+	OBB _obb;
 
 	bool _isCollided;
 };

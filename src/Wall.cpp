@@ -94,7 +94,7 @@ void Wall::CalculateOBB()
 
 	const FPoint center(minX + width / 2, minY + height / 2);
 
-	_obb = OBB2D(center, width, height, 0.f);
+	_obb = OBB(center, width, height, 0.f);
 }
 
 const FPoint& Wall::GetNormal() const
@@ -102,7 +102,7 @@ const FPoint& Wall::GetNormal() const
 	return _normal;
 }
 
-const OBB2D& Wall::GetOBB() const
+const OBB& Wall::GetOBB() const
 {
 	return _obb;
 }

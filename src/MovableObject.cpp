@@ -25,11 +25,15 @@ void MovableObject::Init(const std::string& textureName, const FPoint& position,
 	UpdateOBB();
 }
 
+/* На каждой итерации игрового цикла обновляем позицию объекта. */
+
 void MovableObject::Update(float dt)
 {
-	GameObject::Update(dt);
 	UpdatePosition(dt);
 }
+
+/* Метод возвращает вектор скорости объекта в текущий момент времени, 
+т.е. какую дистанцию объект преодолеет за время dt. */
 
 const FPoint MovableObject::GetVelocity(float dt) const
 {
@@ -46,22 +50,13 @@ const FPoint& MovableObject::GetDirection() const
 	return _direction;
 }
 
-const OBB2D& MovableObject::GetOBB() const
+const OBB& MovableObject::GetOBB() const
 {
 	return _obb;
 }
 
-void MovableObject::UpdateOBB()
-{
-	if (math::IsEqualFloat(_position.x, 0.f) ||
-		math::IsEqualFloat(_position.y, 0.f))
-	{
-		return;
-	}
-	
-	const FRect texture = GetScaledTextureRect();
-	_obb = OBB2D(_position, texture.Width(), texture.Height(), Utils::DegreeToRadian(GetOBBRotationAngle()));
-}
+/* Метод рассчитывает AABB(axis-aligned bounding box) для объекта, используя его OBB. 
+Используется в классе QuadTree для разбиения пространства на части. */
 
 const FRect MovableObject::GetAABB() const
 {
@@ -80,12 +75,17 @@ float MovableObject::GetSpeed() const
 	return _speed;
 }
 
+/* Двигаем объект в его направлении. Используется линейная интерполяция, 
+чтоб сделать движение более плавным. После того, как объект подвинули, 
+обновляем его OBB. */
+
 void MovableObject::UpdatePosition(float dt)
 {
 	float dx = _position.x + _direction.x * _speed;
 	float dy = _position.y + _direction.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
+
 	UpdateOBB();
 }
 
@@ -97,4 +97,19 @@ void MovableObject::SetCollided(bool isCollided)
 bool MovableObject::IsCollided() const
 {
 	return _isCollided;
+}
+
+/* В данной реализации OBB выполнен в качестве мембера класса, 
+потому что объект двигается постоянно и на каждой итерации цикла его OBB необходимо обновлять. */
+
+void MovableObject::UpdateOBB()
+{
+	if (math::IsEqualFloat(_position.x, 0.f) ||
+		math::IsEqualFloat(_position.y, 0.f))
+	{
+		return;
+	}
+
+	const FRect texture = GetScaledTextureRect();
+	_obb = OBB(_position, texture.Width(), texture.Height(), Utils::DegreeToRadian(GetOBBRotationAngle()));
 }

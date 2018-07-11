@@ -2,6 +2,9 @@
 #include "Cannon.hpp"
 #include "Utils.hpp"
 
+/*ћаксимальный - минимальный угол, на который пушка может повернутьс€, 
+чтоб не вылезти за границы экрана. */
+
 const float Cannon::MaxCannonAngle = 157.f;
 const float Cannon::MinCannonAngle = 23.f;
 
@@ -19,15 +22,16 @@ Cannon::~Cannon()
 
 void Cannon::Update(float dt)
 {
-	GameObject::Update(dt);
-	
-	FPoint mousePosition = static_cast<FPoint>(Core::mainInput.GetMousePos());
+	const FPoint mousePosition = static_cast<FPoint>(Core::mainInput.GetMousePos());
 	
 	if (mousePosition.x == 0.f && mousePosition.y == 0)
 	{
 		return;
 	}
 	
+	/* –ассчитываем угол между текущей позицией мыши и позицией пушки,
+	и если он подходит, то устанавливаем его. */
+
 	const float angle = Utils::RadianToDegree(math::atan(mousePosition.y - _position.y, mousePosition.x - _position.x));
 	if (angle >= MinCannonAngle && angle <= MaxCannonAngle)
 	{

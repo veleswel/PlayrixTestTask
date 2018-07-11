@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.hpp"
 
+/* Пушка */
+
 class Cannon: public GameObject
 {
 public:

@@ -14,7 +14,7 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
-	_texture = nullptr;
+	_texture.reset();
 }
 
 void GameObject::Init(const std::string& textureName, const FPoint& position, float rotation)
@@ -43,11 +43,6 @@ void GameObject::Draw()
 	Render::device.PopMatrix();
 }
 
-void GameObject::Update(float dt)
-{
-	// Empty
-}
-
 void GameObject::SetPosition(const FPoint& position)
 {
 	if (_position != position)
@@ -70,10 +65,10 @@ const FPoint& GameObject::GetPosition() const
 	return _position;
 }
 
-const FPoint GameObject::GetPositionTransformed() const
-{
-	return _position + _anchorPointTransform;
-}
+/* Точка привязки используется, чтоб указать, как рисовать текстуру относительно позиции объекта.
+Значения [0;0...1;1], где 0;0 - левый нижний угол, 1;1 - правый верхний. По дефолту все создаваемые объекты 
+имеет точку привязки (0.5;0.5), т.е. центр текстуры объекта совпадает с его позицией. Используются 2 мембера:
+сама точка и рассчитанное на её основе смещение. */
 
 void GameObject::SetAnchorPoint(const FPoint& point)
 {

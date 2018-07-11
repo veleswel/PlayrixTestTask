@@ -7,12 +7,19 @@ typedef boost::intrusive_ptr<MovableObject> MovableObjectPtr;
 class QuadTree;
 typedef std::unique_ptr<QuadTree> QuadTreePtr;
 
+/* Класс, реализующий функционал quadtree, которое используется для оптимизации 
+процесса определения столкновений. Вместо того, чтоб проверять столкновения брутфорсом, 
+используется данный класс, который позволяет ограничить область поиска объектов для проверки столкновения.
+Интерфейс имеет 5 методов: добавить объект, удалить, получить все ближайшие, получить только ближайшие 
+объекты определенного типа и очистить дерево. */
+
 class QuadTree
 {
 public:
 	QuadTree(int level, const FRect& bounds);
 	~QuadTree();
 
+public:
 	void Insert(const MovableObjectPtr& object);
 	void Remove(const MovableObjectPtr& object);
 
@@ -23,9 +30,7 @@ public:
 	
 protected:
 	void Split();
-
 	int GetIndex(const FRect& rect);
-
 	bool InsertInChild(const MovableObjectPtr& object);
 
 protected:

@@ -60,9 +60,13 @@ void MainSceneWidget::Init()
 void MainSceneWidget::ReadInitialData()
 {
 	boost::system::error_code err;
-	auto stream = Core::fileSystem.OpenRead("start.txt", err);
+	const auto stream = Core::fileSystem.OpenRead("start.txt", err);
 	
-	assert(err == 0);
+	if (err != 0)
+	{
+		Log::Error("Failed to open file with initial data");
+		assert(false);
+	}
 	
 	IO::TextReader reader(stream.get());
 	
@@ -140,7 +144,7 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 	for (const ProjectilePtr& projPtr : _launchedProjectiles)
 	{
 		bool isProjectileToDestroy = false;
-		const OBB2D& obb = projPtr->GetOBB();
+		const OBB& obb = projPtr->GetOBB();
 
 		for (const WallPtr& wallPtr : _walls)
 		{

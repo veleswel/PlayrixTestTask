@@ -1,5 +1,9 @@
 #pragma once
 
+/* Базовый класс для все игровых объектов. 
+Имеет текстуру, позицию, угол поворота, масштаб 
+и точку привязки текстуры */
+
 class GameObject: public RefCounter
 {
 public:
@@ -11,14 +15,13 @@ protected:
 	GameObject& operator=(const GameObject& gameObject) = delete;
 	
 public:
+	virtual void Update(float dt) = 0;
 	virtual void Draw();
-	virtual void Update(float dt);
 	
 	virtual void SetPosition(const FPoint& position);
 	virtual void SetPosition(float x, float y);
 
 	const FPoint& GetPosition() const;
-	const FPoint GetPositionTransformed() const;
 	
 	void SetAnchorPoint(const FPoint& point);
 	const FPoint& GetAnchorPoint() const;
@@ -36,7 +39,7 @@ protected:
 	void Init(const std::string& textureName, const FPoint& position, float rotation);
 	
 protected:
-	Render::Texture* _texture;
+	Render::TexturePtr _texture;
 
 	FPoint _position;
 	

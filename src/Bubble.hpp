@@ -12,7 +12,7 @@ public:
 
 	float GetRadius() const;
 	
-	virtual float GetOBBRotationAngle() const override { return 0.f; }
+	virtual float GetOBBRotationAngle() const override;
 
 protected:
 	static const std::string BubbleTextureName;
