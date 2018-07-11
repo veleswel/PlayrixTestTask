@@ -11,7 +11,16 @@ public:
 	virtual void AcceptMessage(const Message& message) override;
 
 protected:
-	Render::Texture* _background;
+	void Init();
+	void DrawPlay();
+
+protected:
+	Render::TexturePtr _background;
+	
+	Render::TexturePtr _play;
+	IPoint _playPosition;
+	
 	Render::ShaderProgramPtr _fade;
+	
 	float _fading;
 };

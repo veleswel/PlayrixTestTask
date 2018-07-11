@@ -12,7 +12,6 @@ protected:
 	MovableObject();
 	
 public:
-	virtual void Draw() override;
 	virtual void Update(float dt) override;
 	
 	const FPoint GetVelocity(float dt) const;

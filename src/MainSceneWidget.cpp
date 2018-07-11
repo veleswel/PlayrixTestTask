@@ -14,15 +14,26 @@ const float MainSceneWidget::MinBubbleSpeed = 50.f;
 const float MainSceneWidget::MaxBubbleSpeed = 100.f;
 const float MainSceneWidget::BubbleLaunchScreenOffset = 100.f;
 
+const float MainSceneWidget::CannonPositionYOffset = -30.f;
+const float MainSceneWidget::InfoTextXOffset = 25.f;
+const float MainSceneWidget::LaunchedTextYOffset = 15.f;
+const float MainSceneWidget::BubblesTextYOffset = 45.f;
+const float MainSceneWidget::TimeTextYOffset = 75.f;
+const float MainSceneWidget::FinishImageYOffset = 25.f;
+const float MainSceneWidget::MenuEnterTextYOffset = 50.f;
+
 MainSceneWidget::MainSceneWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
 	, _cannon(nullptr)
 	, _screenRect(0.f, Render::device.Width(), 0.f, Render::device.Height())
-	, _startPosition(Render::device.Width() / 2.f, -30.f)
-	, _projectilesTotalLaunch(0)
+	, _startPosition(Render::device.Width() / 2.f, CannonPositionYOffset)
+	, _projectilesTotalLaunched(0)
 	, _timeLeft(0.f)
 	, _playTime(0.f)
 	, _effectContainer(nullptr)
+	, _gameFinishImage(nullptr)
+	, _gameStateHandlerRef(GameStateHandler::GetInstance())
+	, _gameFinishPosition(0, 0)
 {
 	Core::Timer::Sync();
 	Init();
@@ -56,9 +67,9 @@ void MainSceneWidget::ReadInitialData()
 	
 	IO::TextReader reader(stream.get());
 	
-	_startBubblesCount = ReadValue<int>(&reader, "Targets");
-	_projectileSpeed = ReadValue<float>(&reader, "Speed");
-	_playTime = ReadValue<float>(&reader, "Time");
+	_startBubblesCount = ReadLineAndGetValue<int>(&reader, "Targets");
+	_projectileSpeed = ReadLineAndGetValue<float>(&reader, "Speed");
+	_playTime = ReadLineAndGetValue<float>(&reader, "Time");
 }
 
 void MainSceneWidget::Draw()
@@ -72,17 +83,32 @@ void MainSceneWidget::Draw()
 
 	_cannon->Draw();
 	
-	for (const WallPtr& wall: _walls)
-	{
-		wall->Draw();
-	}
-	
 	_effectContainer->Draw();
 	
-	Render::BindFont("arial");
-	Render::PrintString(10.f, _screenRect.Height() - 10.f, "Projectiles launched: " + utils::lexical_cast(_projectilesTotalLaunch), 1.5f, LeftAlign);
-	Render::PrintString(10.f, _screenRect.Height() - 30.f, "Bubbles left: " + utils::lexical_cast(_bubbles.size()), 1.5f, LeftAlign);
-	Render::PrintString(10.f, _screenRect.Height() - 50.f, "Time left: " + utils::lexical_cast(_timeLeft), 1.5f, LeftAlign);
+	Render::BindFont("tahomabold");
+	
+	if (_gameStateHandlerRef.GetGameState() == EGameState::EFinish && _gameFinishImage)
+	{
+		DrawFinishImageAndText();
+	}
+	
+	Render::PrintString(InfoTextXOffset,
+						_screenRect.Height() - LaunchedTextYOffset,
+						"Projectiles launched: " + utils::lexical_cast(_projectilesTotalLaunched),
+						1.f,
+						LeftAlign);
+	
+	Render::PrintString(InfoTextXOffset,
+						_screenRect.Height() - BubblesTextYOffset,
+						"Bubbles left: " + utils::lexical_cast(_bubbles.size()),
+						1.f,
+						LeftAlign);
+	
+	Render::PrintString(InfoTextXOffset,
+						_screenRect.Height() - TimeTextYOffset,
+						"Time left: " + utils::lexical_cast(_timeLeft),
+						1.f,
+						LeftAlign);
 }
 
 void MainSceneWidget::Update(float dt)
@@ -94,7 +120,7 @@ void MainSceneWidget::Update(float dt)
 
 	_effectContainer->Update(dt);
 
-	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	const EGameState currentState = _gameStateHandlerRef.GetGameState();
 	
 	if (currentState != EGameState::EFinish && currentState != EGameState::EPause)
 	{
@@ -114,12 +140,6 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 
 	for (const ProjectilePtr& projPtr : _launchedProjectiles)
 	{
-		if (!projPtr->IsNeedToCheckCollision())
-		{
-			projPtr->Update(dt);
-			continue;
-		}
-
 		bool isProjectileToDestroy = false;
 		const OBB2D& obb = projPtr->GetOBB();
 
@@ -187,8 +207,7 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 
 void MainSceneWidget::CheckAndResolveBubblesCollisions(float dt, QuadTree& quadTree)
 {
-	
-	if (_bubbles.empty() && GameStateHandler::GetInstance().GetGameState() != EGameState::EFinish)
+	if (_bubbles.empty() && _gameStateHandlerRef.GetGameState() != EGameState::EFinish)
 	{
 		Win();
 	}
@@ -253,7 +272,7 @@ void MainSceneWidget::AcceptMessage(const Message& message)
 	const std::string& publisher = message.getPublisher();
 	const std::string& data = message.getData();
 
-	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	const EGameState currentState = _gameStateHandlerRef.GetGameState();
 	
 	if (publisher == "MenuWidget" && data == "startNewGame")
 	{
@@ -286,24 +305,24 @@ void MainSceneWidget::StartNewGame()
 	_launchedProjectiles.clear();
 	_bubbles.clear();
 	_effectContainer->KillAllEffects();
-	_projectilesTotalLaunch = 0;
+	_projectilesTotalLaunched = 0;
 
-	LaunchBubbles();
-	
 	_timeLeft = _playTime;
 	_timer.Start();
 
-	GameStateHandler::GetInstance().SetGameState(EGameState::EPlaying);
+	_gameStateHandlerRef.SetGameState(EGameState::EPlaying);
+	_gameFinishImage = nullptr;
+	
+	LaunchBubbles();
 }
 
 void MainSceneWidget::PauseGame()
 {
 	_timer.Pause();
 
-	auto& instance = GameStateHandler::GetInstance();
-	if (instance.GetGameState() != EGameState::EFinish)
+	if (_gameStateHandlerRef.GetGameState() != EGameState::EFinish)
 	{
-		instance.SetGameState(EGameState::EPause);
+		_gameStateHandlerRef.SetGameState(EGameState::EPause);
 	}
 	
 	Core::mainScreen.popLayer();
@@ -312,25 +331,54 @@ void MainSceneWidget::PauseGame()
 
 void MainSceneWidget::ResumeGame()
 {
-	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	const EGameState currentState = _gameStateHandlerRef.GetGameState();
 	
 	if (currentState != EGameState::EFinish)
 	{
 		_timer.Resume();
-		GameStateHandler::GetInstance().SetGameState(EGameState::EPlaying);
+		_gameStateHandlerRef.SetGameState(EGameState::EPlaying);
 	}
 }
 
 void MainSceneWidget::Win()
 {
-	_timer.Pause();
-	GameStateHandler::GetInstance().SetGameState(EGameState::EFinish);
+	_gameFinishImage = Core::resourceManager.Get<Render::Texture>("won");
+	FinishGame();
 }
 
 void MainSceneWidget::Loose()
 {
+	_gameFinishImage = Core::resourceManager.Get<Render::Texture>("lost");
+	FinishGame();
+}
+
+void MainSceneWidget::FinishGame()
+{
 	_timer.Pause();
-	GameStateHandler::GetInstance().SetGameState(EGameState::EFinish);
+	_launchedProjectiles.clear();
+	_gameStateHandlerRef.SetGameState(EGameState::EFinish);
+	CalculateFinishImagePosition();
+}
+
+void MainSceneWidget::DrawFinishImageAndText()
+{
+	Render::device.PushMatrix();
+	Render::device.MatrixTranslate(_gameFinishPosition);
+	_gameFinishImage->Draw();
+	Render::device.PopMatrix();
+	
+	Render::PrintString(_screenRect.Width() / 2,
+						_screenRect.Height() / 2 - MenuEnterTextYOffset,
+						"Press escape to enter menu",
+						1.f,
+						CenterAlign);
+}
+
+void MainSceneWidget::CalculateFinishImagePosition()
+{
+	const IRect textureRect(_gameFinishImage->getBitmapRect());
+	_gameFinishPosition = IPoint(_screenRect.Width() / 2 - textureRect.Width() / 2,
+								 _screenRect.Height() / 2 - textureRect.Height() / 2 + FinishImageYOffset);
 }
 
 void MainSceneWidget::UpdateCannon(float dt)
@@ -359,7 +407,7 @@ void MainSceneWidget::DrawProjectiles()
 
 void MainSceneWidget::LaunchProjectile()
 {
-	const EGameState currentState = GameStateHandler::GetInstance().GetGameState();
+	const EGameState currentState = _gameStateHandlerRef.GetGameState();
 	
 	if (currentState == EGameState::EFinish || currentState == EGameState::EPause)
 	{
@@ -386,7 +434,7 @@ void MainSceneWidget::LaunchProjectile()
 	}
 	
 	_launchedProjectiles.push_back(projectile);
-	_projectilesTotalLaunch++;
+	_projectilesTotalLaunched++;
 }
 
 const FPoint MainSceneWidget::CalculateProjectileStartPosition() const
@@ -414,25 +462,6 @@ void MainSceneWidget::DrawBubbles()
 	for (const BubblePtr& bubble : _bubbles)
 	{
 		bubble->Draw();
-	}
-}
-
-void some(float max, float min)
-{
-	std::vector<FPoint> points;
-	float yMax = max;
-	float yMin = min;
-	float r = (max - min) / 2;
-	yMin += fmod(yMax - yMin, 1) / 2;
-	for (float y = yMin; y < yMax; y++)
-	{
-		float xMax = math::cos(asinf(y/r)) * r;
-		float xMin = -xMax;
-		xMin += fmod(xMax-xMin, 1)/2;
-		for (float x = xMin; x < xMax; x++)
-		{
-			points.push_back(FPoint(x + math::random(-r/4, r/4), y + math::random(-r/4, r/4)));
-		}
 	}
 }
 

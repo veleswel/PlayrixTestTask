@@ -5,11 +5,11 @@
         <Controls>
 			<MenuWidget name="MenuWidget"/>
 			<Button name="new">
-				<position x="467" y="414"/>
+				<position x="0" y="0"/>
 				<state normal="new_normal" pressed="new_pressed"/>
 			</Button>
 			<Button name="continue">
-				<position x="467" y="320"/>
+				<position x="0" y="0"/>
 				<state normal="continue_normal" pressed="continue_pressed"/>
 			</Button>
 		</Controls>

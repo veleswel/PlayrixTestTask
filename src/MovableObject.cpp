@@ -25,41 +25,6 @@ void MovableObject::Init(const std::string& textureName, const FPoint& position,
 	UpdateOBB();
 }
 
-void MovableObject::Draw()
-{
-	GameObject::Draw();
-
-	if (MainSceneWidget::IsDebugDraw())
-	{
-		Render::device.SetTexturing(false);
-
-		const auto& corner = GetOBB().GetCorners();
-
-		Render::BeginColor(Color(0, 255, 255, 255));
-		Render::DrawLine(corner[0], corner[1]);
-		Render::DrawLine(corner[1], corner[2]);
-		Render::DrawLine(corner[2], corner[3]);
-		Render::DrawLine(corner[3], corner[0]);
-		Render::EndColor();
-
-		const FRect aabb = GetAABB();
-
-		Render::BeginColor(Color(255, 0, 0, 255));
-		Render::DrawLine(aabb.LeftBottom(), aabb.LeftTop());
-		Render::DrawLine(aabb.LeftTop(), aabb.RightTop());
-		Render::DrawLine(aabb.RightTop(), aabb.RightBottom());
-		Render::DrawLine(aabb.RightBottom(), aabb.LeftBottom());
-		Render::EndColor();
-
-
-		Render::BeginColor(Color(0, 255, 0, 255));
-		Render::DrawLine(_position, FPoint(_position.x + GetOriginalTextureRect().Width(), _position.y + GetOriginalTextureRect().Height()));
-		Render::EndColor();
-
-		Render::device.SetTexturing(true);
-	}
-}
-
 void MovableObject::Update(float dt)
 {
 	GameObject::Update(dt);

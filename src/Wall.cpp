@@ -102,25 +102,6 @@ const FPoint& Wall::GetNormal() const
 	return _normal;
 }
 
-void Wall::Draw()
-{
-	if (MainSceneWidget::IsDebugDraw())
-	{
-		Render::device.SetTexturing(false);
-
-		const auto& corner = _obb.GetCorners();
-
-		Render::BeginColor(Color(0, 255, 255, 255));
-		Render::DrawLine(corner[0], corner[1]);
-		Render::DrawLine(corner[1], corner[2]);
-		Render::DrawLine(corner[2], corner[3]);
-		Render::DrawLine(corner[3], corner[0]);
-		Render::EndColor();
-
-		Render::device.SetTexturing(true);
-	}
-}
-
 const OBB2D& Wall::GetOBB() const
 {
 	return _obb;

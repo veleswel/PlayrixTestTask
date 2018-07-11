@@ -4,11 +4,24 @@
 
 MenuWidget::MenuWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
+	, _fading(0.f)
 	, _background(nullptr)
+	, _play(nullptr)
+	, _fade(nullptr)
+{
+	Init();
+}
+
+void MenuWidget::Init()
 {
 	_background = Core::resourceManager.Get<Render::Texture>("background");
 	_fade = Core::resourceManager.Get<Render::ShaderProgram>("fade");
-	_fading = 0.f;
+	
+	_play = Core::resourceManager.Get<Render::Texture>("play");
+	const IRect textureRect(_play->getBitmapRect());
+	const IRect screenRect(0, 0, Render::device.Width(), Render::device.Height());
+	
+	_playPosition = IPoint(screenRect.Width() / 2 - textureRect.Width() / 2, 3 * screenRect.Height() / 4 - textureRect.Height() / 2);
 }
 
 void MenuWidget::Draw()
@@ -20,6 +33,7 @@ void MenuWidget::Draw()
 	_fade->SetUniform("sampler", 0);
 	_fade->SetUniform("multiplier", _fading);
 	_background->Draw();
+	DrawPlay();
 	_fade->Unbind();
 }
 
@@ -81,4 +95,12 @@ void MenuWidget::AcceptMessage(const Message& message)
 		const Message continueGame(getName(), "continueGame");
 		Core::guiManager.getLayer("MainLayer")->getWidget("MainSceneWidget")->AcceptMessage(continueGame);
 	}
+}
+
+void MenuWidget::DrawPlay()
+{
+	Render::device.PushMatrix();
+	Render::device.MatrixTranslate(_playPosition);
+	_play->Draw();
+	Render::device.PopMatrix();
 }

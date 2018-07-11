@@ -18,9 +18,6 @@ public:
 
 public:
 	const FPoint& GetNormal() const;
-
-	void Draw();
-
 	const OBB2D& GetOBB() const;
 
 protected:

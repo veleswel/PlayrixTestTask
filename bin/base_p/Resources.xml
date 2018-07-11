@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <Resources>
 	<FreeTypeFonts group="TestGroup" upload="false">
-		<font name="arial" family="arial" size="12" color="255;255;255;255" letterSpacing="0">
-			<Effect alpha="0.1" type="shadow" blurX="2" blurY="2" strength="50" angle="0" inner="false" color="0;0;0;255" offset="0"/>
-		</font>
+		<font name="tahomabold" family="tahomabold" size="24" color="255;255;255;255" letterSpacing="0"/>
 	</FreeTypeFonts>
 	<Textures>
 		<texture id="new_normal" path="textures/new_normal"  group="TestGroup" upload="false"/>

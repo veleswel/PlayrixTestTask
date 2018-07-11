@@ -1,5 +1,5 @@
 #pragma once
-#include "Utils.hpp"
+#include "GameStateHandler.hpp"
 
 class QuadTree;
 
@@ -40,7 +40,7 @@ protected:
 	void ReadInitialData();
 	
 	template<typename T>
-	T ReadValue(IO::TextReader* reader, const std::string& valueName)
+	T ReadLineAndGetValue(IO::TextReader* reader, const std::string& valueName)
 	{
 		std::string out, name, value;
 		T result;
@@ -52,7 +52,7 @@ protected:
 		}
 		else
 		{
-			Log::Error("Failed to read initial data from file");
+			Log::Error("Failed to read data from file");
 			assert(false);
 		}
 		
@@ -64,7 +64,11 @@ protected:
 	void ResumeGame();
 	void Win();
 	void Loose();
+	void FinishGame();
 
+	void DrawFinishImageAndText();
+	void CalculateFinishImagePosition();
+	
 	void UpdateCannon(float dt);
 	void UpdateGameItems(float dt);
 
@@ -87,8 +91,20 @@ protected:
 	static const float MaxBubbleSpeed;
 	
 	static const float BubbleLaunchScreenOffset;
-
+	
+	static const float CannonPositionYOffset;
+	static const float InfoTextXOffset;
+	static const float LaunchedTextYOffset;
+	static const float BubblesTextYOffset;
+	static const float TimeTextYOffset;
+	static const float FinishImageYOffset;
+	static const float MenuEnterTextYOffset;
+	
 protected:
+	float _projectileSpeed;
+	int _startBubblesCount;
+	float _playTime;
+	
 	const FPoint _startPosition;
 	const FRect _screenRect;
 
@@ -101,14 +117,14 @@ protected:
 	
 	std::array<WallPtr, 4> _walls;
 
-	size_t _projectilesTotalLaunch;
+	size_t _projectilesTotalLaunched;
 
 	Core::Timer _timer;
 	float _timeLeft;
 
-	Render::Texture* _background;
+	Render::TexturePtr _background;
+	Render::TexturePtr _gameFinishImage;
+	IPoint _gameFinishPosition;
 	
-	float _projectileSpeed;
-	int _startBubblesCount;
-	float _playTime;
+	GameStateHandler& _gameStateHandlerRef;
 };
