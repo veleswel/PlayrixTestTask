@@ -11,6 +11,9 @@ public:
 	virtual void Update(float dt) override;
 	
 protected:
+	static const float MaxCannonAngle;
+	static const float MinCannonAngle;
+	
 	static const std::string CannonTextureName;
 };
 

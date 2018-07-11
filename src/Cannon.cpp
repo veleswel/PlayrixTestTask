@@ -1,5 +1,9 @@
 #include "stdafx.h"
 #include "Cannon.hpp"
+#include "Utils.hpp"
+
+const float Cannon::MaxCannonAngle = 157.f;
+const float Cannon::MinCannonAngle = 23.f;
 
 const std::string Cannon::CannonTextureName = "cannon";
 
@@ -24,5 +28,9 @@ void Cannon::Update(float dt)
 		return;
 	}
 	
-	_angle = (math::atan(mousePosition.y - _position.y, mousePosition.x - _position.x) * 180.f) / math::PI;
+	const float angle = Utils::RadianToDegree(math::atan(mousePosition.y - _position.y, mousePosition.x - _position.x));
+	if (angle >= MinCannonAngle && angle <= MaxCannonAngle)
+	{
+		_angle = angle;
+	}
 }

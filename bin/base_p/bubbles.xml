@@ -10,14 +10,8 @@
 				<Key time="1.0" fixedGrad="true" repeat="false" valueLower="-5.6" valueUpper="5.6" lgradLower="-5.6" lgradUpper="5.6" rgradLower="0.0" rgradUpper="0.0"/>
 			</Param>
 			<Param name="size" similar="false" removal="0.0">
-				<Key time="0.0" fixedGrad="false" repeat="false" valueLower="4.46" valueUpper="10.24"/>
-				<Key time="0.12" fixedGrad="false" repeat="false" valueLower="4.417" valueUpper="10.443"/>
-				<Key time="0.231" fixedGrad="false" repeat="false" valueLower="2.608" valueUpper="7.259"/>
-				<Key time="0.35" fixedGrad="false" repeat="false" valueLower="1.263" valueUpper="5.306"/>
-				<Key time="0.48" fixedGrad="false" repeat="false" valueLower="0.988" valueUpper="4.292"/>
-				<Key time="0.6" fixedGrad="false" repeat="false" valueLower="1.002" valueUpper="3.718"/>
-				<Key time="0.77" fixedGrad="false" repeat="false" valueLower="1.092" valueUpper="2.888"/>
-				<Key time="1.0" fixedGrad="false" repeat="false" valueLower="1.552" valueUpper="1.552"/>
+				<Key time="0.0" fixedGrad="false" repeat="false" valueLower="0.0" valueUpper="16.0"/>
+				<Key time="1.0" fixedGrad="false" repeat="false" valueLower="0.0" valueUpper="8.0"/>
 			</Param>
 			<Param name="angle" similar="false" removal="0.0">
 				<Key time="0.0" fixedGrad="true" repeat="false" valueLower="-360.0" valueUpper="360.0" lgradLower="0.0" lgradUpper="0.0" rgradLower="-25.2" rgradUpper="25.2"/>

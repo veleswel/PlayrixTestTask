@@ -13,7 +13,6 @@
 const float MainSceneWidget::MinBubbleSpeed = 50.f;
 const float MainSceneWidget::MaxBubbleSpeed = 100.f;
 const float MainSceneWidget::BubbleLaunchScreenOffset = 100.f;
-
 const float MainSceneWidget::CannonPositionYOffset = -30.f;
 const float MainSceneWidget::InfoTextXOffset = 25.f;
 const float MainSceneWidget::LaunchedTextYOffset = 15.f;
@@ -84,9 +83,9 @@ void MainSceneWidget::Draw()
 	DrawProjectiles();
 
 	_cannon->Draw();
-	
+
 	Render::BindFont("tahomabold");
-	
+
 	if (_gameStateHandlerRef.GetGameState() == EGameState::EFinish && _gameFinishImage)
 	{
 		DrawFinishImageAndText();
@@ -264,16 +263,6 @@ bool MainSceneWidget::MouseDown(const IPoint &mouse_pos)
 	return false;
 }
 
-void MainSceneWidget::MouseMove(const IPoint &mouse_pos)
-{
-
-}
-
-void MainSceneWidget::MouseUp(const IPoint &mouse_pos)
-{
-	
-}
-
 void MainSceneWidget::AcceptMessage(const Message& message)
 {
 	const std::string& publisher = message.getPublisher();
@@ -431,15 +420,8 @@ void MainSceneWidget::LaunchProjectile()
 		return;
 	}
 
-	ProjectilePtr projectile(new Projectile(startPosition, angle, direction.Normalized(), _projectileSpeed, _effectContainer));
-	
-	if (projectile->GetOBB().Overlaps(_walls[0]->GetOBB()))
-	{
-		projectile.reset();
-		projectile = nullptr;
-		return;
-	}
-	
+	const ProjectilePtr projectile(new Projectile(startPosition, angle, direction.Normalized(), _projectileSpeed, _effectContainer));
+
 	_launchedProjectiles.push_back(projectile);
 	_projectilesTotalLaunched++;
 }
@@ -447,12 +429,9 @@ void MainSceneWidget::LaunchProjectile()
 const FPoint MainSceneWidget::CalculateProjectileStartPosition() const
 {
 	const float angle = Utils::DegreeToRadian(_cannon->GetRotationAngle());
-	const float cannonTextHeight = _cannon->GetScaledTextureRect().Width() + 20.f;
+	const float cannonTextHeight = _cannon->GetScaledTextureRect().Width();
 
-	return FPoint(
-		_startPosition.x + cannonTextHeight * math::cos(angle), 
-		_startPosition.y + cannonTextHeight * math::sin(angle)
-	);
+	return FPoint(_startPosition.x + cannonTextHeight * math::cos(angle), _startPosition.y + cannonTextHeight * math::sin(angle));
 }
 
 void MainSceneWidget::RemoveProjectile(const ProjectilePtr& projectile)

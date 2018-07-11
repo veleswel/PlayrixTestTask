@@ -13,7 +13,7 @@ protected:
 	
 public:
 	virtual void Update(float dt) override;
-	
+
 	const FPoint GetVelocity(float dt) const;
 
 	virtual void SetDirection(const FPoint& direction);
