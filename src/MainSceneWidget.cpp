@@ -78,12 +78,12 @@ void MainSceneWidget::Draw()
 
 	_background->Draw();
 	
+	_effectContainer->Draw();
+	
 	DrawBubbles();
 	DrawProjectiles();
 
 	_cannon->Draw();
-	
-	_effectContainer->Draw();
 	
 	Render::BindFont("tahomabold");
 	

@@ -12,6 +12,7 @@ LoadResource("Resources.xml")
 --
 LoadEffects("Example2_Flames.xml")
 LoadEffects("Example3_FindObject.xml")
+LoadEffects("Bubbles.xml")
 
 --
 -- Загрузка слоёв.

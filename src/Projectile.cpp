@@ -33,7 +33,7 @@ void Projectile::Init(const std::string& textureName,
 {
 	MovableObject::Init(textureName, position, rotation, direction, speed);
 
-	_effect = container->AddEffect("Iskra");
+	_effect = container->AddEffect("Bubbles");
 	_effect->posX = _position.x + 0.f;
 	_effect->posY = _position.y + 0.f;
 	_effect->Reset();

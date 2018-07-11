@@ -1,9 +1,6 @@
 #pragma once
 #include "GameObject.hpp"
 
-class Cannon;
-typedef std::unique_ptr<Cannon> CannonPtr;
-
 class Cannon: public GameObject
 {
 public:
@@ -16,3 +13,5 @@ public:
 protected:
 	static const std::string CannonTextureName;
 };
+
+typedef std::unique_ptr<Cannon> CannonPtr;
