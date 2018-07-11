@@ -182,6 +182,13 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 				continue;
 			}
 
+			const FPoint bubblePosition = bubblePtr->GetPosition();
+			
+			ParticleEffectPtr burst = _effectContainer->AddEffect("BubbleBurst");
+			burst->posX = bubblePosition.x + 0.f;
+			burst->posY = bubblePosition.y + 0.f;
+			burst->Reset();
+			
 			quadTree.Remove(bubblePtr);
 			RemoveBubble(bubblePtr);
 			isProjectileToDestroy = true;

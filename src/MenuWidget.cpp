@@ -21,7 +21,7 @@ void MenuWidget::Init()
 	const IRect textureRect(_play->getBitmapRect());
 	const IRect screenRect(0, 0, Render::device.Width(), Render::device.Height());
 	
-	_playPosition = IPoint(screenRect.Width() / 2 - textureRect.Width() / 2, 3 * screenRect.Height() / 4 - textureRect.Height() / 2);
+	_playPosition = IPoint(screenRect.Width() / 2 - textureRect.Width() / 2, 3 * screenRect.Height() / 4 - textureRect.Height() / 2 - 25.f);
 }
 
 void MenuWidget::Draw()
