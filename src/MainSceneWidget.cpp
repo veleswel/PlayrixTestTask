@@ -42,15 +42,18 @@ void MainSceneWidget::Init()
 {
 	_effectContainer.reset(new EffectsContainer);
 	
+	
+	// Создаем стены при старте
 	_walls = {
-		WallPtr(new Wall(_screenRect.xStart, _screenRect.yStart, _screenRect.xEnd, _screenRect.yStart)), // bottom
-		WallPtr(new Wall(_screenRect.xEnd, _screenRect.yStart, _screenRect.xEnd, _screenRect.yEnd)), // right
-		WallPtr(new Wall(_screenRect.xEnd, _screenRect.yEnd, _screenRect.xStart, _screenRect.yEnd)), // top
-		WallPtr(new Wall(_screenRect.xStart, _screenRect.yEnd, _screenRect.xStart, _screenRect.yStart)) // left
+		WallPtr(new Wall(_screenRect.xStart, _screenRect.yStart, _screenRect.xEnd, _screenRect.yStart)), // низ
+		WallPtr(new Wall(_screenRect.xEnd, _screenRect.yStart, _screenRect.xEnd, _screenRect.yEnd)), // право
+		WallPtr(new Wall(_screenRect.xEnd, _screenRect.yEnd, _screenRect.xStart, _screenRect.yEnd)), // верх
+		WallPtr(new Wall(_screenRect.xStart, _screenRect.yEnd, _screenRect.xStart, _screenRect.yStart)) // лево
 	};
 
 	_background = Core::resourceManager.Get<Render::Texture>("background");
 	
+	// Создаем пушку
 	_cannon.reset(new Cannon(_startPosition, 90.f));
 	_cannon->SetAnchorPoint(FPoint(0.f, .5f));
 	
@@ -70,6 +73,7 @@ void MainSceneWidget::ReadInitialData()
 	
 	IO::TextReader reader(stream.get());
 	
+	// Важен порядок вычитывания данных из файла
 	_startBubblesCount = ReadLineAndGetValue<int>(&reader, "Targets");
 	_projectileSpeed = ReadLineAndGetValue<float>(&reader, "Speed");
 	_playTime = ReadLineAndGetValue<float>(&reader, "Time");
@@ -90,11 +94,13 @@ void MainSceneWidget::Draw()
 
 	Render::BindFont("tahomabold");
 
+	// Если игра закончилась, рисуем картинку финиша
 	if (_gameStateHandlerRef.GetGameState() == EGameState::EFinish && _gameFinishImage)
 	{
 		DrawFinishImageAndText();
 	}
 	
+	// Рисуем статы
 	Render::PrintString(InfoTextXOffset,
 						_screenRect.Height() - LaunchedTextYOffset,
 						"Projectiles launched: " + utils::lexical_cast(_projectilesTotalLaunched),
@@ -117,14 +123,15 @@ void MainSceneWidget::Draw()
 void MainSceneWidget::Update(float dt)
 {
 	GUI::Widget::Update(dt);
-	
+
 	UpdateCannon(dt);
 	UpdateGameItems(dt);
 
 	_effectContainer->Update(dt);
 
+	// Проверяем текущее состояние игры и оставшееся время
+	// Если времени больше не осталось - проигрыш
 	const EGameState currentState = _gameStateHandlerRef.GetGameState();
-	
 	if (currentState != EGameState::EFinish && currentState != EGameState::EPause)
 	{
 		_timeLeft = math::ceil(_playTime - _timer.getElapsedTime()) + 0.f;
@@ -136,6 +143,7 @@ void MainSceneWidget::Update(float dt)
 	}
 }
 
+// Метод, который проверяет и разрешает столкновения снарядов с шарами и краями экрана
 void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& quadTree)
 {
 	std::vector<ProjectilePtr> projectilesToDestroy;
@@ -146,6 +154,7 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 		bool isProjectileToDestroy = false;
 		const OBB& obb = projPtr->GetOBB();
 
+		// Стены перебираем обычным брутфорсом, так как их всего 4, и нет смысла помещать их в дерево
 		for (const WallPtr& wallPtr : _walls)
 		{
 			if (!wallPtr->GetOBB().Overlaps(obb))
@@ -153,15 +162,18 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 				continue;
 			}
 
+			// Если снаряд столкнулся с верхней или нижней стеной, помечаем его к удалению
 			if (wallPtr == _walls.at(0) || wallPtr == _walls.at(2))
 			{
 				isProjectileToDestroy = true;
 				break;
 			}
 
+			// Иначе разрешаем столкновение со стеной как статическим объектом
 			CollisionUtils::ResolveFixedCollision(projPtr, wallPtr->GetNormal(), dt);
 		}
 
+		// Если снаряд помечен к удалению, убираем его из дерева
 		if (isProjectileToDestroy)
 		{
 			quadTree.Remove(projPtr);
@@ -169,7 +181,10 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 			continue;
 		}
 
+		// Проверяем столкновение снаряда с шарами
 		returnObjects.clear();
+		
+		// Получаем все шары, с которыми снаряд преположительно может столнкуться
 		quadTree.Retrieve(returnObjects, projPtr, CollisionUtils::EColliderType::EBubble);
 
 		for (const MovableObjectPtr& object : returnObjects)
@@ -185,6 +200,8 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 				continue;
 			}
 
+			// Если снаряд столкнулся с шаром, помечаем снаряд к удалению
+			// Уничтожаем шар и проигрываем эффект уничтожения шара
 			const FPoint bubblePosition = bubblePtr->GetPosition();
 			
 			ParticleEffectPtr burst = _effectContainer->AddEffect("BubbleBurst");
@@ -208,6 +225,7 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 		projPtr->Update(dt);
 	}
 
+	// Удаляем все помеченные снаряды
 	for (auto& projPtr: projectilesToDestroy)
 	{
 		RemoveProjectile(projPtr);
@@ -215,6 +233,7 @@ void MainSceneWidget::CheckAndResolveProjectilesCollisions(float dt, QuadTree& q
 	}
 }
 
+// Метод, который проверяет и разрешает столкновения шаров с краями экрана и друг с другом
 void MainSceneWidget::CheckAndResolveBubblesCollisions(float dt, QuadTree& quadTree)
 {
 	if (_bubbles.empty() && _gameStateHandlerRef.GetGameState() != EGameState::EFinish)
@@ -227,10 +246,15 @@ void MainSceneWidget::CheckAndResolveBubblesCollisions(float dt, QuadTree& quadT
 	for (const BubblePtr& bubble : _bubbles)
 	{
 		returnObjects.clear();
+		
+		// Получаем из дерева все шары, с которыми текущий шар предположительно может столкнуться
 		quadTree.Retrieve(returnObjects, bubble, CollisionUtils::EColliderType::EBubble);
 
 		for (const MovableObjectPtr& object : returnObjects)
 		{
+			// Если это тот же самый объект, или он уже сталкивался на текущей итерации игрового цикла,
+			// переходим к следующему
+			
 			if (bubble == object || object->IsCollided())
 			{
 				continue;
@@ -242,13 +266,16 @@ void MainSceneWidget::CheckAndResolveBubblesCollisions(float dt, QuadTree& quadT
 				continue;
 			}
 
+			// Проверяем столкновение и рассчитываем примерное время до столкновения
 			float collisionTime = 0.f;
 			if (CollisionUtils::DetectDynamicBubblesCollision(bubble, otherBubble, collisionTime, dt))
 			{
+				// Если шары столкнуться, то разрешаем столкновение
 				CollisionUtils::ResolveBubbleToBubbleCollision(bubble, otherBubble, collisionTime, dt);
 			}
 		}
 
+		// Проверяем столкновение со стенами
 		for (const WallPtr& wallPtr : _walls)
 		{
 			if (bubble->GetOBB().Overlaps(wallPtr->GetOBB()))
@@ -263,6 +290,7 @@ void MainSceneWidget::CheckAndResolveBubblesCollisions(float dt, QuadTree& quadT
 
 bool MainSceneWidget::MouseDown(const IPoint &mouse_pos)
 {
+	// Запускаем снаряд по клику мыши
 	LaunchProjectile();	
 	return false;
 }
@@ -282,26 +310,22 @@ void MainSceneWidget::AcceptMessage(const Message& message)
 	{
 		ResumeGame();
 	}
-	else if (publisher == "Layer" && data == "LayerInit")
-	{
-		Log::Debug("Layer Init");
-	}
-	else if (publisher == "Layer" && data == "LayerDeinit")
-	{
-		Log::Debug("Layer Deinit");
-	}
 }
 
 void MainSceneWidget::KeyPressed(int keyCode)
 {
 	if (keyCode == VK_ESCAPE)
 	{
+		// Ставим игру на паузу по нажатию на Escape
 		PauseGame();
 	}
 }
 
 void MainSceneWidget::StartNewGame()
 {
+	// Уничтожаем все движущиеся объекты,
+	// сбрасываем все счетчики и таймеры и запускаем пузыри
+	
 	_launchedProjectiles.clear();
 	_bubbles.clear();
 	_effectContainer->KillAllEffects();
@@ -325,6 +349,7 @@ void MainSceneWidget::PauseGame()
 		_gameStateHandlerRef.SetGameState(EGameState::EPause);
 	}
 	
+	// Показываем меню
 	Core::mainScreen.popLayer();
 	Core::mainScreen.pushLayer("MenuLayer");
 }
@@ -332,7 +357,6 @@ void MainSceneWidget::PauseGame()
 void MainSceneWidget::ResumeGame()
 {
 	const EGameState currentState = _gameStateHandlerRef.GetGameState();
-	
 	if (currentState != EGameState::EFinish)
 	{
 		_timer.Resume();
@@ -342,6 +366,7 @@ void MainSceneWidget::ResumeGame()
 
 void MainSceneWidget::Win()
 {
+	// Создаем картинку в зависимости от результата игры
 	_gameFinishImage = Core::resourceManager.Get<Render::Texture>("won");
 	FinishGame();
 }
@@ -357,11 +382,15 @@ void MainSceneWidget::FinishGame()
 	_timer.Pause();
 	_launchedProjectiles.clear();
 	_gameStateHandlerRef.SetGameState(EGameState::EFinish);
+	
+	// Рассчитываем позицию картинки на экране
 	CalculateFinishImagePosition();
 }
 
 void MainSceneWidget::DrawFinishImageAndText()
 {
+	// Рисуем картинку окончания игры и текст
+	
 	Render::device.PushMatrix();
 	Render::device.MatrixTranslate(_gameFinishPosition);
 	_gameFinishImage->Draw();
@@ -388,11 +417,14 @@ void MainSceneWidget::UpdateCannon(float dt)
 
 void MainSceneWidget::UpdateGameItems(float dt)
 {
+	// Создаем объект quadtree
 	QuadTree quad(0, _screenRect);
 	quad.Clear();
 
+	// Заполняем его
 	FillQuadTree(quad);
 
+	// Проверяем столкновения, разрешаем их и апдейтим объекты
 	CheckAndResolveProjectilesCollisions(dt, quad);
 	CheckAndResolveBubblesCollisions(dt, quad);
 }
@@ -414,22 +446,24 @@ void MainSceneWidget::LaunchProjectile()
 		return;
 	}
 
+	// Рассчитываем параметры запуска снаряда на основе угла повороты пушки и её позиции
 	const float angle = _cannon->GetRotationAngle();
 	const float angleRad = Utils::DegreeToRadian(angle);
 	const FPoint startPosition(CalculateProjectileStartPosition());
 	const FPoint direction(math::cos(angleRad), math::sin(angleRad));
 
+	// Не можем запустить снаряд вниз
 	if (direction.y < 0.f)
 	{
 		return;
 	}
 
 	const ProjectilePtr projectile(new Projectile(startPosition, angle, direction.Normalized(), _projectileSpeed, _effectContainer));
-
 	_launchedProjectiles.push_back(projectile);
 	_projectilesTotalLaunched++;
 }
 
+// Метод рассчитывает стартовую позицию снаряда на основе угла поворота пушки и высоты её текстуры
 const FPoint MainSceneWidget::CalculateProjectileStartPosition() const
 {
 	const float angle = Utils::DegreeToRadian(_cannon->GetRotationAngle());
@@ -457,18 +491,27 @@ void MainSceneWidget::DrawBubbles()
 
 void MainSceneWidget::LaunchBubbles()
 {
+	// Ограничиваем область запуска пузырей на экране
 	const float width = _screenRect.Width() - BubbleLaunchScreenOffset;
 	const float height = _screenRect.Height() - BubbleLaunchScreenOffset;
 	
 	for (int i = 0; i < _startBubblesCount; ++i)
 	{
+		// Рандомно создаем позицию
 		const FPoint position(math::random(BubbleLaunchScreenOffset, width), math::random(BubbleLaunchScreenOffset, height));
+		
+		// Рандомно выбираем скорость
 		const float speed = math::random(MinBubbleSpeed, MaxBubbleSpeed);
-		const float angle = math::random(1.f + 0.f, 2 * math::PI - 1.f);
+		
+		// Рандомно выбираем угол направления полета
+		const float angle = math::random(1.f, 2 * math::PI - 1.f);
 		
 		const FPoint direction(math::cos(angle), math::sin(angle));
 
-		BubblePtr bubblePtr(new Bubble(position, 0.f, direction.Normalized(), speed));
+		// Создаем пузырь с заданными параметрами и углом поворота 0
+		// Пузырь всегда повернут в одну и ту же сторону, вне зависимости от того, куда он летит
+		
+		const BubblePtr bubblePtr(new Bubble(position, 0.f, direction.Normalized(), speed));
 		_bubbles.push_back(bubblePtr);
 	}
 }
@@ -484,6 +527,9 @@ void MainSceneWidget::RemoveBubble(const BubblePtr& bubble)
 
 void MainSceneWidget::FillQuadTree(QuadTree& quad)
 {
+	// Заполняем quadtree всеми объектами на сцене, кроме пушки и стен.
+	// Пушка не участвует в определении столкновений, а стены проверяются вручную
+	
 	for (const auto& projPtr: _launchedProjectiles)
 	{
 		projPtr->SetCollided(false);

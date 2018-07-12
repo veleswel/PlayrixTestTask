@@ -17,6 +17,10 @@ typedef boost::intrusive_ptr<Bubble> BubblePtr;
 
 typedef std::unique_ptr<EffectsContainer> EffectsContainerPtr;
 
+// Основной виджет в игре. Содержит все игровые объекты,
+// контейнер с эффектами, обрабатывает пользовательский ввод,
+// управляет состоянием игры, управляет определением и разрешением столкновений
+
 class MainSceneWidget: public GUI::Widget
 {
 public:
@@ -30,13 +34,14 @@ public:
 	bool MouseDown(const IPoint& mouse_pos) override;
 	
 	virtual void KeyPressed(int keyCode) override;
-	
-	static bool IsDebugDraw() { return false; }
 
 protected:
 	void Init();
+	
+	// Метод, который вычитывает из файла стартовые данные
 	void ReadInitialData();
 	
+	// Метод, который вычитывает из файла пару "ключ-значение"
 	template<typename T>
 	T ReadLineAndGetValue(IO::TextReader* reader, const std::string& valueName)
 	{
@@ -60,6 +65,7 @@ protected:
 	void StartNewGame();
 	void PauseGame();
 	void ResumeGame();
+	
 	void Win();
 	void Loose();
 	void FinishGame();
