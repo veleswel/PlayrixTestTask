@@ -37,7 +37,6 @@
 		E36CF9C620F3461200171498 /* CollisionUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9C520F3461200171498 /* CollisionUtils.cpp */; };
 		E36CF9CA20F3464700171498 /* MenuWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9C920F3464700171498 /* MenuWidget.cpp */; };
 		E36CF9CD20F3466500171498 /* Wall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36CF9CB20F3466500171498 /* Wall.cpp */; };
-		E36CF9CF20F35DF500171498 /* include in Resources */ = {isa = PBXBuildFile; fileRef = E36CF9CE20F35DF500171498 /* include */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -101,7 +100,6 @@
 		E36CF9C920F3464700171498 /* MenuWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MenuWidget.cpp; path = ../../src/MenuWidget.cpp; sourceTree = "<group>"; };
 		E36CF9CB20F3466500171498 /* Wall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Wall.cpp; path = ../../src/Wall.cpp; sourceTree = "<group>"; };
 		E36CF9CC20F3466500171498 /* Wall.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Wall.hpp; path = ../../src/Wall.hpp; sourceTree = "<group>"; };
-		E36CF9CE20F35DF500171498 /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; name = include; path = ../../../engine/include; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,7 +141,6 @@
 		C6C0D9D41A710B6400F125C2 = {
 			isa = PBXGroup;
 			children = (
-				E36CF9CE20F35DF500171498 /* include */,
 				A6869E001D229E5D00C1D1B1 /* base_p */,
 				C6C0DA031A71106C00F125C2 /* Dependencies */,
 				C6C0DA021A71106500F125C2 /* Frameworks */,
@@ -308,7 +305,6 @@
 				A6869E011D229E5D00C1D1B1 /* base_p in Resources */,
 				C637A4CF1A82376D003061B9 /* MainMenu.xib in Resources */,
 				C6DF33721A8114BA00716306 /* Images.xcassets in Resources */,
-				E36CF9CF20F35DF500171498 /* include in Resources */,
 				C6B8C3521AD501E200AF7B11 /* mac.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
