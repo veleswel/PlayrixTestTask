@@ -10,7 +10,6 @@ Projectile::Projectile(const FPoint& position,
 					   float speed,
 					   const EffectsContainerPtr& container)
 	: _effect(nullptr)
-	, _isDrawn(false)
 {
 	Init(ProjectileTextureName, position, rotation, direction, speed, container);
 }
@@ -23,6 +22,8 @@ Projectile::~Projectile()
 		_effect = nullptr;
 	}
 }
+
+// При инициализации снаряда создаем эффект
 
 void Projectile::Init(const std::string& textureName,
 					  const FPoint& position,
@@ -39,16 +40,7 @@ void Projectile::Init(const std::string& textureName,
 	_effect->Reset();
 }
 
-void Projectile::Draw()
-{
-	MovableObject::Draw();
-	_isDrawn = true;
-}
-
-void Projectile::Update(float dt)
-{
-	MovableObject::Update(dt);
-}
+// При изменении позиции снаряда меняем позицию эффека
 
 void Projectile::SetPosition(const FPoint& position)
 {
@@ -70,10 +62,14 @@ void Projectile::SetPosition(float x, float y)
 	}
 }
 
-void  Projectile::SetDirection(const FPoint& direction)
+// При изменении вектора направления движения меняем так же угол наклона снаряда
+
+void Projectile::SetDirection(const FPoint& direction)
 {
 	if (!math::IsEqualFloat(direction.x, 0.f) && !math::IsEqualFloat(direction.y, 0.f))
 	{
+		// Рассчитываем угол между текущим вектором и новым
+		// и прибавляем к текущему углу
 		const float angle = Utils::RadianToDegree(_direction.GetDirectedAngle(direction));
 		_angle += angle;
 		while (_angle > 360.f)

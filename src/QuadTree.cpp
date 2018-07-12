@@ -2,10 +2,10 @@
 #include "QuadTree.hpp"
 #include "MovableObject.hpp"
 
-// Максимальное количество объектов в ноде до того, как она поделится
+// РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕР±СЉРµРєС‚РѕРІ РІ РЅРѕРґРµ РґРѕ С‚РѕРіРѕ, РєР°Рє РѕРЅР° РїРѕРґРµР»РёС‚СЃСЏ
 const int QuadTree::MaxObjects = 5;
 
-// Максимальный уровень сабноды
+// РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ СЃР°Р±РЅРѕРґС‹
 const int QuadTree::MaxLevels = 4;
 
 const int QuadTree::IndexNotFound = -1;
@@ -78,28 +78,6 @@ void QuadTree::Remove(const MovableObjectPtr& object)
 	}
 }
 
-void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const MovableObjectPtr& object)
-{
-	if (_hasChildren)
-	{
-		const int index = GetIndex(object->GetAABB());
-
-		if (index != IndexNotFound)
-		{
-			_nodes[index]->Retrieve(returnObjects, object);
-		}
-	}
-
-	const auto predicate = [object](const MovableObjectPtr& objectToCheck)
-	{
-		/* Указатель на объект, для которого мы запрашиваем ближайшие, 
-		 тоже может содержаться в выборке, поэтому делается эту проверку */
-		return object != objectToCheck;
-	};
-
-	std::copy_if(_objects.begin(), _objects.end(), std::back_inserter(returnObjects), predicate);
-}
-
 void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const MovableObjectPtr& object, CollisionUtils::EColliderType type)
 {
 	if (_hasChildren)
@@ -114,7 +92,8 @@ void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const Movabl
 
 	const auto predicate = [type, object](const MovableObjectPtr& objectToCheck)
 	{
-		/* Проверяем, что объект имеет нужный тип коллайдера */
+		// РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РѕР±СЉРµРєС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ РѕРїСЂРµРґРµР»РµРЅРЅРѕРјСѓ С‚РёРїСѓ 
+		// Рё РІ С‚Рѕ Р¶Рµ РІСЂРµРјСЏ РЅРµ СЏРІР»СЏРµС‚СЃСЏ РїСЂРѕРІРµСЂСЏРµРјС‹Рј РѕР±СЉРµРєС‚РѕРј
 		return objectToCheck->GetColliderType() == type && object != objectToCheck;
 	};
 
@@ -132,8 +111,7 @@ void QuadTree::Clear()
 	}
 }
 
-/* Метод, который разделяет ноду на 4 сабноды, если количество 
-объектов или уровень достигли максимума. */
+// РњРµС‚РѕРґ, РєРѕС‚РѕСЂС‹Р№ СЂР°Р·РґРµР»СЏРµС‚ РЅРѕРґСѓ РґРµСЂРµРІР° РЅР° СЃР°Р±РЅРѕРґС‹
 
 void QuadTree::Split()
 {
@@ -151,9 +129,8 @@ void QuadTree::Split()
 	_hasChildren = true;
 }
 
-/* Возвращает индекс ноды, в которой находится проверяемый объект(его AABB).
-Если объект не помещается полностью ни в одну из дочерних нод и является частью 
-парент-ноды, то вернет -1. */
+// РњРµС‚РѕРґ, РєРѕС‚РѕСЂС‹Р№ РїРѕР·РІРѕР»СЏРµС‚ РѕРїСЂРµРґРµР»РёС‚СЊ РїРѕР»РѕР¶РµРЅРёРµ РѕР±СЉРµРєС‚Р°(РµРіРѕ AABB) РІ РґРѕС‡РµСЂРЅРёС… РЅРѕРґР°С… РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С‚РµРєСѓС‰РµР№.
+// Р•СЃР»Рё РѕР±СЉРµРєС‚ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ СЂР°Р·РјРµС‰РµРЅ РЅРё РІ РѕРґРЅРѕР№ РёР· РґРѕС‡РµСЂРЅРёС… РЅРѕРґ, РІРѕР·РІСЂР°С‰Р°РµС‚ -1
 
 int QuadTree::GetIndex(const FRect& rect)
 {
@@ -174,8 +151,7 @@ int QuadTree::GetIndex(const FRect& rect)
 	return IndexNotFound;
 }
 
-/* Метод-хелпер, проверяет, можно ли вставить объект в дочернюю ноду 
-и вставляет, если можно. */
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РјРµС‚РѕРґ, РєРѕС‚РѕСЂС‹Р№ РІСЃС‚Р°РІР»СЏРµС‚ РѕР±СЉРµРєС‚ РІ РЅРѕРґСѓ
 
 bool QuadTree::InsertInChild(const MovableObjectPtr& object)
 {

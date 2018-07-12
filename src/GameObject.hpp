@@ -1,8 +1,7 @@
 #pragma once
 
-/* Базовый класс для все игровых объектов. 
-Имеет текстуру, позицию, угол поворота, масштаб 
-и точку привязки текстуры */
+// Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ РґР»СЏ РёРіСЂРѕРІС‹С… РѕР±СЉРµРєС‚РѕРІ.
+// РЎРѕРґРµСЂР¶РёС‚ С‚РµРєСЃС‚СѓСЂСѓ, РїРѕР·РёС†РёСЋ, РјР°СЃС€С‚Р°Р±, СѓРіРѕР» РЅР°РєР»РѕРЅР° Рё С‚РѕС‡РєСѓ РїСЂРёРІСЏР·РєРё С‚РµРєСЃС‚СѓСЂС‹
 
 class GameObject: public RefCounter
 {
@@ -38,6 +37,8 @@ public:
 protected:
 	void Init(const std::string& textureName, const FPoint& position, float rotation);
 	
+	void UpdateAnchorPointTransform();
+
 protected:
 	Render::TexturePtr _texture;
 

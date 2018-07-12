@@ -2,6 +2,8 @@
 #include "MenuWidget.hpp"
 #include "GameStateHandler.hpp"
 
+const int MenuWidget::PlayOffset = 25;
+
 MenuWidget::MenuWidget(const std::string& name, rapidxml::xml_node<>* elem)
 	: Widget(name)
 	, _fading(0.f)
@@ -21,7 +23,7 @@ void MenuWidget::Init()
 	const IRect textureRect(_play->getBitmapRect());
 	const IRect screenRect(0, 0, Render::device.Width(), Render::device.Height());
 	
-	_playPosition = IPoint(screenRect.Width() / 2 - textureRect.Width() / 2, 3 * screenRect.Height() / 4 - textureRect.Height() / 2 - 25.f);
+	_playPosition = IPoint(screenRect.Width() / 2 - textureRect.Width() / 2, 3 * screenRect.Height() / 4 - textureRect.Height() / 2 - PlayOffset);
 }
 
 void MenuWidget::Draw()
@@ -50,6 +52,8 @@ void MenuWidget::Update(float dt)
 	}
 }
 
+// Обрабатываем различные сообщения от лейера и кнопок
+
 void MenuWidget::AcceptMessage(const Message& message)
 {
 	const std::string& publisher = message.getPublisher();
@@ -66,6 +70,8 @@ void MenuWidget::AcceptMessage(const Message& message)
 	
 	if (publisher == "Layer" && data == "Init")
 	{
+		// Если игра уже закончилась или еще не началась, показываем только одну кнопку (new game),
+		//  иначе показываем две (new game и continue)
 		if (currentState == EGameState::EMenu || currentState == EGameState::EFinish)
 		{
 			continueBtn->setVisible(false);
@@ -81,6 +87,8 @@ void MenuWidget::AcceptMessage(const Message& message)
 	}
 	else if (publisher == "new" && data == "press")
 	{
+		// Начинаем новую игру
+
 		Core::mainScreen.popLayer();
 		Core::mainScreen.pushLayer("MainLayer");
 		
@@ -89,6 +97,8 @@ void MenuWidget::AcceptMessage(const Message& message)
 	}
 	else if (publisher == "continue" && data == "press")
 	{
+		// Продолжаем текущую
+
 		Core::mainScreen.popLayer();
 		Core::mainScreen.pushLayer("MainLayer");
 

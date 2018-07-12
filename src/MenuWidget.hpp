@@ -1,5 +1,8 @@
 #pragma once
 
+// Виджет для представления меню игры. Содержит фон, прочие декоративные элементы, а так же шейдер, 
+// который реализует fade эффект при запуске игры 
+
 class MenuWidget : public GUI::Widget
 {
 public:
@@ -15,12 +18,14 @@ protected:
 	void DrawPlay();
 
 protected:
+	static const int PlayOffset;
+
+protected:
 	Render::TexturePtr _background;
 	
 	Render::TexturePtr _play;
 	IPoint _playPosition;
 	
 	Render::ShaderProgramPtr _fade;
-	
 	float _fading;
 };

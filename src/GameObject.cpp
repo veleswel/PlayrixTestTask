@@ -21,9 +21,7 @@ void GameObject::Init(const std::string& textureName, const FPoint& position, fl
 {
 	_texture = Core::resourceManager.Get<Render::Texture>(textureName);
 
-	IRect textureRect = _texture->getBitmapRect();
-	_anchorPointTransform.x = -textureRect.Width() * _anchorPoint.x;
-	_anchorPointTransform.y = -textureRect.Height() * _anchorPoint.y;
+	UpdateAnchorPointTransform();
 	
 	_position = position;
 	_angle = rotation;
@@ -65,20 +63,16 @@ const FPoint& GameObject::GetPosition() const
 	return _position;
 }
 
-/* Òî÷êà ïðèâÿçêè èñïîëüçóåòñÿ, ÷òîá óêàçàòü, êàê ðèñîâàòü òåêñòóðó îòíîñèòåëüíî ïîçèöèè îáúåêòà.
-Çíà÷åíèÿ [0;0...1;1], ãäå 0;0 - ëåâûé íèæíèé óãîë, 1;1 - ïðàâûé âåðõíèé. Ïî äåôîëòó âñå ñîçäàâàåìûå îáúåêòû 
-èìååò òî÷êó ïðèâÿçêè (0.5;0.5), ò.å. öåíòð òåêñòóðû îáúåêòà ñîâïàäàåò ñ åãî ïîçèöèåé. Èñïîëüçóþòñÿ 2 ìåìáåðà:
-ñàìà òî÷êà è ðàññ÷èòàííîå íà å¸ îñíîâå ñìåùåíèå. */
+// Ð¢Ð¾Ñ‡ÐºÐ° Ð¿Ñ€Ð¸Ð²ÑÐ·ÐºÐ¸ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹ ÑƒÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÑ‚ Ð½Ð° Ñ‚Ð¾, ÐºÐ°Ðº Ñ€ÐµÐ½Ð´ÐµÑ€Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°.
+// Ð’Ð°Ñ€Ð¸Ð°Ð½Ñ‚Ñ‹ Ð·Ð°Ð½Ñ‡ÐµÐ½Ð¸Ð¹ [(0.0;0.0)...(1.0;1.0)], Ð³Ð´Ðµ (0.0;0.0) - Ð»ÐµÐ²Ñ‹Ð¹ Ð½Ð¸Ð¶Ð½Ð¸Ð¹ ÑƒÐ³Ð¾Ð», (1.0;1.0) - Ð¿Ñ€Ð°Ð²Ñ‹Ð¹ Ð²ÐµÑ€Ñ…Ð½Ð¸Ð¹.
+// ÐŸÐ¾ Ð´ÐµÑ„Ð¾Ð»Ñ‚Ñƒ Ñƒ Ð²ÑÐµÑ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² Ñ‚Ð¾Ñ‡ÐºÐ° Ð¿Ñ€Ð¸Ð²ÑÐ·ÐºÐ¸ (0.5;0.5), Ñ‚.Ðµ. Ñ†ÐµÐ½Ñ‚Ñ€ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹ ÑÐ¾Ð²Ð¿Ð°Ð´Ð°ÐµÑ‚ Ñ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÐµÐ¹ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 
 void GameObject::SetAnchorPoint(const FPoint& point)
 {
 	if (_anchorPoint != point)
 	{
 		_anchorPoint = point;
-		
-		IRect textureRect = _texture->getBitmapRect();
-		_anchorPointTransform.x = -textureRect.Width() * _anchorPoint.x;
-		_anchorPointTransform.y = -textureRect.Height() * _anchorPoint.y;
+		UpdateAnchorPointTransform();
 	}
 }
 
@@ -105,10 +99,7 @@ void GameObject::SetScale(float scale)
 	if (_scale != scale)
 	{
 		_scale = scale;
-		
-		IRect textureRect = _texture->getBitmapRect();
-		_anchorPointTransform.x = -textureRect.Width() * _anchorPoint.x;
-		_anchorPointTransform.y = -textureRect.Height() * _anchorPoint.y;
+		UpdateAnchorPointTransform();		
 	}
 }
 
@@ -125,4 +116,11 @@ const FRect GameObject::GetOriginalTextureRect() const
 const FRect GameObject::GetScaledTextureRect() const
 {
 	return FRect(_texture->getBitmapRect()).Scaled(_scale);
+}
+
+void GameObject::UpdateAnchorPointTransform()
+{
+	const IRect textureRect = _texture->getBitmapRect();
+	_anchorPointTransform.x = -textureRect.Width() * _anchorPoint.x * _scale;
+	_anchorPointTransform.y = -textureRect.Height() * _anchorPoint.y * _scale;
 }

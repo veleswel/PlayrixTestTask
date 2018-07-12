@@ -45,7 +45,7 @@ OBB& OBB::operator = (const OBB& other)
 
 bool OBB::Overlaps(const OBB& other) const
 {
-	return OverlapsOneWay(other) && other.OverlapsOneWay(*this);
+	return OverlapsOther(other) && other.OverlapsOther(*this);
 }
 
 const std::array<FPoint, 4>& OBB::GetCorners() const
@@ -53,7 +53,7 @@ const std::array<FPoint, 4>& OBB::GetCorners() const
 	return _corner;
 }
 
-bool OBB::OverlapsOneWay(const OBB& other) const
+bool OBB::OverlapsOther(const OBB& other) const
 {
 	for (int a = 0; a < 2; ++a)
 	{
@@ -85,7 +85,7 @@ bool OBB::OverlapsOneWay(const OBB& other) const
 	return true;
 }
 
-void  OBB::ComputeAxes()
+void OBB::ComputeAxes()
 {
 	_axis[0] = _corner[1] - _corner[0];
 	_axis[1] = _corner[3] - _corner[0];

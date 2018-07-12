@@ -25,15 +25,14 @@ void MovableObject::Init(const std::string& textureName, const FPoint& position,
 	UpdateOBB();
 }
 
-/* На каждой итерации игрового цикла обновляем позицию объекта. */
+// РќР° РєР°Р¶РґРѕРј РѕР±РЅРѕРІР»РµРЅРёРё РёРіСЂРѕРІРѕРіРѕ С†РёРєР»Р° РґРІРёРіР°РµРј РѕР±СЉРµРєС‚
 
 void MovableObject::Update(float dt)
 {
 	UpdatePosition(dt);
 }
 
-/* Метод возвращает вектор скорости объекта в текущий момент времени, 
-т.е. какую дистанцию объект преодолеет за время dt. */
+// РњРµС‚РѕРґ, РєРѕС‚РѕСЂС‹Р№ СЂР°СЃСЃС‡РёС‚С‹РІР°РµС‚ РІРµРєС‚РѕСЂ СЃРєРѕСЂРѕСЃС‚Рё РѕР±СЉРµРєС‚Р° РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РѕС‚СЂРµР·РєР° РІСЂРµРјРµРЅРё
 
 const FPoint MovableObject::GetVelocity(float dt) const
 {
@@ -55,8 +54,8 @@ const OBB& MovableObject::GetOBB() const
 	return _obb;
 }
 
-/* Метод рассчитывает AABB(axis-aligned bounding box) для объекта, используя его OBB. 
-Используется в классе QuadTree для разбиения пространства на части. */
+// РњРµС‚РѕРґ СЂР°СЃСЃС‡РёС‚С‹РІР°РµС‚ AABB(axis-oriented bounding box) РґР»СЏ РѕР±СЉРµРєС‚Р° РЅР° РѕСЃРЅРѕРІРµ РµРіРѕ OBB.
+// РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ СЂР°Р·РјРµС‰РµРЅРёСЏ РѕР±СЉРµРєС‚РѕРІ РІ quadtree
 
 const FRect MovableObject::GetAABB() const
 {
@@ -75,9 +74,9 @@ float MovableObject::GetSpeed() const
 	return _speed;
 }
 
-/* Двигаем объект в его направлении. Используется линейная интерполяция, 
-чтоб сделать движение более плавным. После того, как объект подвинули, 
-обновляем его OBB. */
+// РЎРґРІРёРіР°РµРј РѕР±СЉРµРєС‚ РІ РЅР°РїСЂР°РІР»РµРЅРёРё РµРіРѕ РґРІРёР¶РµРЅРёСЏ.
+// Р”Р»СЏ Р±РѕР»РµРµ РїР»Р°РІРЅРѕРіРѕ РґРІРёР¶РµРЅРёСЏ РїСЂРёРјРµРЅСЏРµС‚СЃСЏ Р»РёРЅРµР№РЅР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ
+// РџРѕСЃР»Рµ РєР°Р¶РґРѕРіРѕ СЃРјРµС‰РµРЅРёСЏ РѕР±РЅРѕРІР»СЏРµРј OBB
 
 void MovableObject::UpdatePosition(float dt)
 {
@@ -85,7 +84,7 @@ void MovableObject::UpdatePosition(float dt)
 	float dy = _position.y + _direction.y * _speed;
 
 	SetPosition(math::lerp(_position.x, dx, dt), math::lerp(_position.y, dy, dt));
-
+	
 	UpdateOBB();
 }
 
@@ -99,17 +98,8 @@ bool MovableObject::IsCollided() const
 	return _isCollided;
 }
 
-/* В данной реализации OBB выполнен в качестве мембера класса, 
-потому что объект двигается постоянно и на каждой итерации цикла его OBB необходимо обновлять. */
-
 void MovableObject::UpdateOBB()
 {
-	if (math::IsEqualFloat(_position.x, 0.f) ||
-		math::IsEqualFloat(_position.y, 0.f))
-	{
-		return;
-	}
-
 	const FRect texture = GetScaledTextureRect();
-	_obb = OBB(_position, texture.Width(), texture.Height(), Utils::DegreeToRadian(GetOBBRotationAngle()));
+	_obb = OBB(_position, texture.Width(), texture.Height(), Utils::DegreeToRadian(_angle));
 }

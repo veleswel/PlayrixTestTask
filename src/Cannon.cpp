@@ -2,8 +2,7 @@
 #include "Cannon.hpp"
 #include "Utils.hpp"
 
-/*Максимальный - минимальный угол, на который пушка может повернуться, 
-чтоб не вылезти за границы экрана. */
+// Р—РЅР°С‡РµРЅРёСЏ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ Рё РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СѓРіР»Р° РЅР°РєР»РѕРЅР° РґР»СЏ РїСѓС€РєРё
 
 const float Cannon::MaxCannonAngle = 157.f;
 const float Cannon::MinCannonAngle = 23.f;
@@ -29,8 +28,7 @@ void Cannon::Update(float dt)
 		return;
 	}
 	
-	/* Рассчитываем угол между текущей позицией мыши и позицией пушки,
-	и если он подходит, то устанавливаем его. */
+	// РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СѓРіРѕР» РЅР°РєР»РѕРЅР° РЅР°С…РѕРґРёС‚СЃСЏ РІ Р·Р°РґР°РЅРЅРѕР№ РѕР±Р»Р°СЃС‚Рё
 
 	const float angle = Utils::RadianToDegree(math::atan(mousePosition.y - _position.y, mousePosition.x - _position.x));
 	if (angle >= MinCannonAngle && angle <= MaxCannonAngle)

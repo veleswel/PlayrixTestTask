@@ -1,6 +1,10 @@
 #pragma once
 #include "OBB.hpp"
 
+// Класс, который реализует невидимую стену.
+// Объекты этого класса размещаются по сторонам экрана и
+// используются для обнаружении столкновений объектов с экраном.
+
 class Wall
 {
 public:
@@ -17,7 +21,10 @@ public:
 	friend bool operator == (const Wall& left, const Wall& right);
 
 public:
+	// Возвращает вектор нормали стены
 	const FPoint& GetNormal() const;
+	
+	// Возвращает OBB
 	const OBB& GetOBB() const;
 
 protected:

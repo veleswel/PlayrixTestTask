@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.hpp"
 
-/* ����� */
+// Пушка, наследует функционал GameObject
 
 class Cannon: public GameObject
 {

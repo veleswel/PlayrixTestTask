@@ -1,6 +1,6 @@
 #pragma once
-#include "MovableObject.hpp"
-#include "Bubble.hpp"
+
+// Вспомогательные функции, которые никуда больше не влезли
 
 namespace Utils
 {

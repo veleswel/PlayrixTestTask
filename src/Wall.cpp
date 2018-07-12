@@ -2,6 +2,7 @@
 #include "Wall.hpp"
 #include "MainSceneWidget.hpp"
 
+// Толщина невидимой стены
 const float Wall::Width = 2.f;
 
 Wall::Wall()
@@ -66,6 +67,18 @@ void Wall::Init()
 	CalculateOBB();
 }
 
+const FPoint& Wall::GetNormal() const
+{
+	return _normal;
+}
+
+const OBB& Wall::GetOBB() const
+{
+	return _obb;
+}
+
+// Метод, который рассчитывает векторы для стены (вектор направления и нормаль)
+
 void Wall::CalculateVectors()
 {
 	_vector = _end - _start;
@@ -73,6 +86,8 @@ void Wall::CalculateVectors()
 	_normal.x = -v.y + 0.f;
 	_normal.y = v.x + 0.f;
 }
+
+// OBB для стены рассчитывается всего один раз при создании
 
 void Wall::CalculateOBB()
 {
@@ -95,14 +110,4 @@ void Wall::CalculateOBB()
 	const FPoint center(minX + width / 2, minY + height / 2);
 
 	_obb = OBB(center, width, height, 0.f);
-}
-
-const FPoint& Wall::GetNormal() const
-{
-	return _normal;
-}
-
-const OBB& Wall::GetOBB() const
-{
-	return _obb;
 }

@@ -1,6 +1,8 @@
 #pragma once
 #include "MovableObject.hpp"
 
+// Пузырь, наследует функционал MovableObject
+
 class Bubble: public MovableObject
 {
 public:
@@ -11,8 +13,6 @@ public:
 	virtual CollisionUtils::EColliderType GetColliderType() const override;
 
 	float GetRadius() const;
-	
-	virtual float GetOBBRotationAngle() const override;
 
 protected:
 	static const std::string BubbleTextureName;
