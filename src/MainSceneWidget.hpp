@@ -46,7 +46,7 @@ protected:
 	T ReadLineAndGetValue(IO::TextReader* reader, const std::string& valueName)
 	{
 		std::string out, name, value;
-		T result;
+		T result = 0;
 		
 		out = reader->ReadAsciiLine();
 		if (utils::ReadNvp(out, name, value) && name == valueName)
