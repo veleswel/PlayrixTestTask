@@ -2,10 +2,10 @@
 #include "QuadTree.hpp"
 #include "MovableObject.hpp"
 
-// Максимальное количество объектов в ноде до того, как она поделится
+// Maximal number of objects in node before it splits
 const int QuadTree::MaxObjects = 5;
 
-// Максимальный уровень сабноды
+// Maximal level of the subnode
 const int QuadTree::MaxLevels = 4;
 
 const int QuadTree::IndexNotFound = -1;
@@ -27,7 +27,7 @@ QuadTree::~QuadTree()
 
 void QuadTree::Insert(const MovableObjectPtr& object)
 {
-	if (_hasChildren && InsertInChild(object))
+	if (_hasChildren && InsertIntoChild(object))
 	{
 		return;
 	}
@@ -53,7 +53,7 @@ void QuadTree::Insert(const MovableObjectPtr& object)
 
 	const auto predicate = [this](const MovableObjectPtr& object)
 	{
-		return InsertInChild(object);
+		return InsertIntoChild(object);
 	};
 
 	_objects.erase(std::remove_if(_objects.begin(), _objects.end(), predicate), _objects.end());
@@ -92,8 +92,6 @@ void QuadTree::Retrieve(std::list<MovableObjectPtr>& returnObjects, const Movabl
 
 	const auto predicate = [type, object](const MovableObjectPtr& objectToCheck)
 	{
-		// Проверяем, что объект соответствует определенному типу 
-		// и в то же время не является проверяемым объектом
 		return objectToCheck->GetColliderType() == type && object != objectToCheck;
 	};
 
@@ -111,8 +109,6 @@ void QuadTree::Clear()
 	}
 }
 
-// Метод, который разделяет ноду дерева на сабноды
-
 void QuadTree::Split()
 {
 	const float subWidth = _bounds.Width() / 2.f;
@@ -129,8 +125,8 @@ void QuadTree::Split()
 	_hasChildren = true;
 }
 
-// Метод, который позволяет определить положение объекта(его AABB) в дочерних нодах относительно текущей.
-// Если объект не может быть размещен ни в одной из дочерних нод, возвращает -1
+// A method allows to calculate a position of an object (its AABB) in child node relatively to current node.
+// If an object can't be placed into any child node, returns -1
 
 int QuadTree::GetIndex(const FRect& rect)
 {
@@ -151,9 +147,7 @@ int QuadTree::GetIndex(const FRect& rect)
 	return IndexNotFound;
 }
 
-// Вспомогательный метод, который вставляет объект в ноду
-
-bool QuadTree::InsertInChild(const MovableObjectPtr& object)
+bool QuadTree::InsertIntoChild(const MovableObjectPtr& object)
 {
 	const int index = GetIndex(object->GetAABB());
 

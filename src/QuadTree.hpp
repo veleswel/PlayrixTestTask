@@ -7,9 +7,8 @@ typedef boost::intrusive_ptr<MovableObject> MovableObjectPtr;
 class QuadTree;
 typedef std::unique_ptr<QuadTree> QuadTreePtr;
 
-// Класс, реализующий функционал quadtree, который используется для оптимизации поиска объектов при определении столкновений.
-// Интерфейс реализует 4 метода: добавить объект в дерево, удалить объект, получить все объекты рядом с проверяемым объектом 
-// и очистить дерево
+// This class implements quadtree funcional that is used for search optimization during collision detection.
+// The interface has 4 methods: add an object to the tree, remove an object, retrieve all objects near to specific object and clear the tree
 
 class QuadTree
 {
